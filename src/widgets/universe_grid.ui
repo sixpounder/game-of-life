@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <requires lib="gtk" version="4.0"/>
+  <template class="GameOfLifeUniverseGrid" parent="GtkWidget">
+    <child>
+      <object class="GtkDrawingArea" id="drawing_area">
+        <property name="vexpand">True</property>
+        <property name="hexpand">True</property>
+        <property name="valign">fill</property>
+        <property name="halign">fill</property>
+      </object>
+    </child>
+  </template>
+</interface>

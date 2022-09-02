@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist gettext-domain="game-of-life">
+	<schema id="com.github.sixpounder.GameOfLife" path="/com/github/sixpounder/GameOfLife/">
+	  <key name="fg-tint" type="s">
+	    <default>#00adb6</default>
+	  </key>
+	  <key name="bg-tint" type="s">
+	    <default>#e1e1e1</default>
+	  </key>
+	</schema>
+</schemalist>
