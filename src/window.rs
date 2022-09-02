@@ -1,11 +1,15 @@
+use crate::models::UniverseGridMode;
+use crate::widgets::UniverseGridRequest;
 use gtk::prelude::*;
 use gtk::subclass::prelude::*;
 use gtk::{gio, glib, glib::clone, CompositeTemplate};
-use crate::models::UniverseGridMode;
-use crate::widgets::UniverseGridRequest;
 
 mod imp {
     use super::*;
+    use glib::{
+        ParamFlags, ParamSpec, ParamSpecString,
+    };
+    use once_cell::sync::Lazy;
 
     #[derive(Debug, Default, CompositeTemplate)]
     #[template(resource = "/com/github/sixpounder/GameOfLife/window.ui")]
@@ -19,8 +23,6 @@ mod imp {
 
         #[template_child]
         pub run_button: TemplateChild<gtk::Button>,
-
-        pub(crate) running: std::cell::Cell<bool>,
 
         pub(crate) mode: std::cell::Cell<UniverseGridMode>,
     }
@@ -43,8 +45,32 @@ mod imp {
     impl ObjectImpl for GameOfLifeWindow {
         fn constructed(&self, obj: &Self::Type) {
             self.parent_constructed(obj);
-            obj.imp().running.set(false);
             obj.connect_events();
+        }
+
+        fn properties() -> &'static [glib::ParamSpec] {
+            static PROPERTIES: Lazy<Vec<ParamSpec>> = Lazy::new(|| {
+                vec![ParamSpecString::new(
+                    "run-button-label",
+                    "",
+                    "",
+                    Some("Run"),
+                    ParamFlags::READABLE,
+                )]
+            });
+
+            PROPERTIES.as_ref()
+        }
+
+        fn property(&self, obj: &Self::Type, _id: usize, pspec: &ParamSpec) -> glib::Value {
+            match pspec.name() {
+                "run-button-label" => match obj.is_running() {
+                    true => "Stop",
+                    false => "Run",
+                }
+                .to_value(),
+                _ => unimplemented!(),
+            }
         }
     }
     impl WidgetImpl for GameOfLifeWindow {}
@@ -73,21 +99,37 @@ impl GameOfLifeWindow {
     }
 
     fn connect_events(&self) {
-        self.imp().run_button.connect_clicked(
-            clone!(@strong self as this => move |_widget| {
+        self.imp()
+            .run_button
+            .connect_clicked(clone!(@strong self as this => move |_widget| {
                 this.toggle_run();
-            })
+            }));
+
+        self.imp().universe_grid.connect_notify_local(
+            Some("is-running"),
+            clone!(@strong self as this => move |_widget, _param| {
+                this.notify("run-button-label");
+            }),
         );
     }
 
-    pub fn toggle_run(&self) {
-        let currently_running = self.imp().running.get();
-        self.imp().running.set(!currently_running);
+    pub fn is_running(&self) -> bool {
+        let grid = &self.imp().universe_grid;
 
+        if grid.is_bound() {
+            self.imp().universe_grid.is_running()
+        } else {
+            false
+        }
+    }
+
+    pub fn toggle_run(&self) {
         let sender = self.imp().universe_grid.get_sender();
-        match currently_running {
+        match self.is_running() {
             false => sender.send(UniverseGridRequest::Run).unwrap(),
-            true => sender.send(UniverseGridRequest::Halt).unwrap()
+            true => sender.send(UniverseGridRequest::Halt).unwrap(),
         }
     }
 }
+
+

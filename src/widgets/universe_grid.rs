@@ -1,4 +1,4 @@
-use crate::models::{Universe, UniverseCell, UniverseGridMode};
+use crate::models::{Universe, UniverseGridMode};
 use gtk::{
     gio, glib,
     glib::{clone, Receiver, Sender},
@@ -21,7 +21,9 @@ pub enum UniverseGridRequest {
 
 mod imp {
     use super::*;
-    use glib::{types::StaticType, ParamFlags, ParamSpec, ParamSpecEnum};
+    use glib::{
+        types::StaticType, ParamFlags, ParamSpec, ParamSpecBoolean, ParamSpecEnum,
+    };
     use once_cell::sync::Lazy;
 
     #[derive(Debug, Default, CompositeTemplate)]
@@ -32,7 +34,7 @@ mod imp {
 
         pub(crate) mode: Cell<UniverseGridMode>,
 
-        pub(crate) locked: Cell<bool>,
+        pub(crate) frozen: Cell<bool>,
 
         pub(crate) universe: Arc<Mutex<Universe>>,
 
@@ -81,14 +83,18 @@ mod imp {
 
         fn properties() -> &'static [glib::ParamSpec] {
             static PROPERTIES: Lazy<Vec<ParamSpec>> = Lazy::new(|| {
-                vec![ParamSpecEnum::new(
-                    "mode",
-                    "",
-                    "",
-                    UniverseGridMode::static_type(),
-                    0,
-                    ParamFlags::READWRITE,
-                )]
+                vec![
+                    ParamSpecEnum::new(
+                        "mode",
+                        "",
+                        "",
+                        UniverseGridMode::static_type(),
+                        0,
+                        ParamFlags::READWRITE,
+                    ),
+                    ParamSpecBoolean::new("frozen", "", "", false, ParamFlags::READWRITE),
+                    ParamSpecBoolean::new("is-running", "", "", false, ParamFlags::READABLE),
+                ]
             });
             PROPERTIES.as_ref()
         }
@@ -104,13 +110,18 @@ mod imp {
                 "mode" => {
                     obj.set_mode(value.get::<UniverseGridMode>().unwrap());
                 }
+                "frozen" => {
+                    obj.set_frozen(value.get::<bool>().unwrap());
+                }
                 _ => unimplemented!(),
             }
         }
 
-        fn property(&self, _obj: &Self::Type, _id: usize, pspec: &ParamSpec) -> glib::Value {
+        fn property(&self, obj: &Self::Type, _id: usize, pspec: &ParamSpec) -> glib::Value {
             match pspec.name() {
                 "mode" => self.mode.get().to_value(),
+                "frozen" => self.frozen.get().to_value(),
+                "is-running" => obj.is_running().to_value(),
                 _ => unimplemented!(),
             }
         }
@@ -138,26 +149,10 @@ impl GameOfLifeUniverseGrid {
         );
     }
 
-    fn process_action(&self, action: UniverseGridRequest) -> glib::Continue {
-        match action {
-            UniverseGridRequest::Lock => self.set_locked(true),
-            UniverseGridRequest::Unlock => self.set_locked(false),
-            UniverseGridRequest::Run => self.run(),
-            UniverseGridRequest::Halt => self.halt(),
-            UniverseGridRequest::Redraw => self.imp().drawing_area.queue_draw(),
-            _ => (),
-        }
-
-        glib::Continue(true)
-    }
-
     fn setup_drawing_area(&self) {
-        let fg_color = gtk::gdk::RGBA::from_str("#64baff").unwrap();
-        let bg_color = gtk::gdk::RGBA::from_str("#fafafa").unwrap();
-
         self.imp().drawing_area.connect_resize(
             clone!(@strong self as this => move |_widget, _width, _height| {
-                this.set_locked(true);
+                this.set_frozen(true);
                 let sender = this.get_sender();
                 glib::timeout_add_once(std::time::Duration::from_millis(500), move || {
                     sender.send(UniverseGridRequest::Unlock).expect("Could not unlock grid");
@@ -166,50 +161,72 @@ impl GameOfLifeUniverseGrid {
         );
 
         self.imp().drawing_area.set_draw_func(
-            clone!(@strong self as this => move |_widget, context, width, height| {
-                if !this.locked() {
-                    let universe = this.imp().universe.lock().unwrap();
-
-                    context.set_source_rgba(
-                        bg_color.red() as f64,
-                        bg_color.green() as f64,
-                        bg_color.blue() as f64,
-                        bg_color.alpha() as f64,
-                    );
-                    context.rectangle(0.0, 0.0, width.into(), height.into());
-                    context.fill().unwrap();
-
-                    let mut size: (f64, f64) = (
-                        width as f64 / universe.columns() as f64,
-                        height as f64 / universe.rows() as f64,
-                    );
-
-                    if size.0 <= size.1 {
-                        size = (size.0, size.0);
-                    } else {
-                        size = (size.1, size.1);
-                    }
-
-                    context.set_source_rgba(
-                        fg_color.red() as f64,
-                        fg_color.green() as f64,
-                        fg_color.blue() as f64,
-                        fg_color.alpha() as f64,
-                    );
-
-                    for el in universe.last_delta().iter() {
-                        if el.cell().is_alive() {
-                            let w = el.row();
-                            let h = el.column();
-                            let coords: (f64, f64) = ((w as f64) * size.0, (h as f64) * size.1);
-
-                            context.rectangle(coords.0, coords.1, size.0, size.1);
-                            context.fill().unwrap();
-                        }
-                    }
-                }
-            }),
+            clone!(@strong self as this => move |widget, context, width, height| this.render(widget, context, width, height) ),
         );
+    }
+
+    fn process_action(&self, action: UniverseGridRequest) -> glib::Continue {
+        match action {
+            UniverseGridRequest::Lock => self.set_frozen(true),
+            UniverseGridRequest::Unlock => self.set_frozen(false),
+            UniverseGridRequest::Run => self.run(),
+            UniverseGridRequest::Halt => self.halt(),
+            UniverseGridRequest::Redraw => self.imp().drawing_area.queue_draw(),
+        }
+
+        glib::Continue(true)
+    }
+
+    fn render(
+        &self,
+        _widget: &gtk::DrawingArea,
+        context: &gtk::cairo::Context,
+        width: i32,
+        height: i32,
+    ) {
+        if !self.frozen() {
+            let fg_color = gtk::gdk::RGBA::from_str("#64baff").unwrap();
+            let bg_color = gtk::gdk::RGBA::from_str("#fafafa").unwrap();
+            let universe = self.imp().universe.lock().unwrap();
+
+            context.set_source_rgba(
+                bg_color.red() as f64,
+                bg_color.green() as f64,
+                bg_color.blue() as f64,
+                bg_color.alpha() as f64,
+            );
+            context.rectangle(0.0, 0.0, width.into(), height.into());
+            context.fill().unwrap();
+
+            let mut size: (f64, f64) = (
+                width as f64 / universe.columns() as f64,
+                height as f64 / universe.rows() as f64,
+            );
+
+            if size.0 <= size.1 {
+                size = (size.0, size.0);
+            } else {
+                size = (size.1, size.1);
+            }
+
+            context.set_source_rgba(
+                fg_color.red() as f64,
+                fg_color.green() as f64,
+                fg_color.blue() as f64,
+                fg_color.alpha() as f64,
+            );
+
+            for el in universe.iter_cells() {
+                if el.cell().is_alive() {
+                    let w = el.row();
+                    let h = el.column();
+                    let coords: (f64, f64) = ((w as f64) * size.0, (h as f64) * size.1);
+
+                    context.rectangle(coords.0, coords.1, size.0, size.1);
+                    context.fill().unwrap();
+                }
+            }
+        }
     }
 
     pub fn mode(&self) -> UniverseGridMode {
@@ -226,7 +243,11 @@ impl GameOfLifeUniverseGrid {
         }
     }
 
-    pub fn set_locked(&self, value: bool) {
+    pub fn is_running(&self) -> bool {
+        self.imp().render_thread_stopper.borrow().is_some()
+    }
+
+    pub fn set_frozen(&self, value: bool) {
         match value {
             false => {
                 self.imp().drawing_area.queue_draw();
@@ -234,11 +255,11 @@ impl GameOfLifeUniverseGrid {
             _ => (),
         }
 
-        self.imp().locked.set(value);
+        self.imp().frozen.set(value);
     }
 
-    pub fn locked(&self) -> bool {
-        self.imp().locked.get()
+    pub fn frozen(&self) -> bool {
+        self.imp().frozen.get()
     }
 
     pub fn get_sender(&self) -> Sender<UniverseGridRequest> {
@@ -254,20 +275,20 @@ impl GameOfLifeUniverseGrid {
         let (thread_render_stopper_sender, thread_render_stopper_receiver) =
             std::sync::mpsc::channel::<()>();
 
-        self.imp().render_thread_stopper.replace(Some(thread_render_stopper_receiver));
+        self.imp()
+            .render_thread_stopper
+            .replace(Some(thread_render_stopper_receiver));
 
-        std::thread::spawn(move || {
-            loop {
-                match thread_render_stopper_sender.send(()) {
-                    Ok(_) => (),
-                    Err(_) => break
-                };
+        std::thread::spawn(move || loop {
+            match thread_render_stopper_sender.send(()) {
+                Ok(_) => (),
+                Err(_) => break,
+            };
 
-                std::thread::sleep(std::time::Duration::from_millis(50));
-                let mut locked_universe = universe.lock().unwrap();
-                locked_universe.tick();
-                thread_render_sentinel.send(()).unwrap();
-            }
+            std::thread::sleep(std::time::Duration::from_millis(50));
+            let mut locked_universe = universe.lock().unwrap();
+            locked_universe.tick();
+            thread_render_sentinel.send(()).unwrap();
         });
 
         thread_render_receiver.attach(
@@ -277,11 +298,15 @@ impl GameOfLifeUniverseGrid {
                 glib::Continue(true)
             }),
         );
+
+        self.notify("is-running");
     }
 
     pub fn halt(&self) {
         let inner = self.imp().render_thread_stopper.take();
         drop(inner);
+        self.notify("is-running");
     }
 }
+
 

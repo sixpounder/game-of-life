@@ -33,7 +33,12 @@
               <property name="halign">center</property>
               <child>
                 <object class="GtkButton" id="run_button">
-                  <property name="label">Run</property>
+                  <property
+                      name="label"
+                      bind-property="run-button-label"
+                      bind-source="GameOfLifeWindow"
+                      bind-flags="default|sync-create"
+                  ></property>
                 </object>
               </child>
           </object>
