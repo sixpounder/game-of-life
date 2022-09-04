@@ -305,6 +305,13 @@ impl GameOfLifeUniverseGrid {
 
         lock.snapshot()
     }
+
+    pub fn random_seed(&self) {
+        let mut lock = self.imp().universe.lock().unwrap();
+        let (rows, cols) = (lock.rows(), lock.columns());
+        *lock = Universe::new_random(rows, cols);
+        self.process_action(UniverseGridRequest::Redraw);
+    }
 }
 
 

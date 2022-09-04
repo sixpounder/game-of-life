@@ -55,6 +55,18 @@ mod imp {
 
         fn class_init(klass: &mut Self::Class) {
             Self::bind_template(klass);
+
+            klass.install_action("win.play", None, move |win, _, _| {
+                win.toggle_run();
+            });
+
+            klass.install_action("win.random-seed", None, move |win, _, _| {
+                win.seed_universe();
+            });
+
+            klass.install_action("win.snapshot", None, move |win, _, _| {
+                win.make_and_save_snapshot();
+            });
         }
 
         fn instance_init(obj: &glib::subclass::InitializingObject<Self>) {
@@ -79,7 +91,7 @@ mod imp {
                         ParamFlags::READABLE,
                     ),
                     ParamSpecBoolean::new("is-running", "", "", false, ParamFlags::READABLE),
-                    ParamSpecBoolean::new("can-snapshot", "", "", true, ParamFlags::READABLE)
+                    ParamSpecBoolean::new("is-stopped", "", "", true, ParamFlags::READABLE),
                 ]
             });
 
@@ -94,7 +106,7 @@ mod imp {
                 }
                 .to_value(),
                 "is-running" => obj.is_running().to_value(),
-                "can-snapshot" => (!obj.is_running()).to_value(),
+                "is-stopped" => (!obj.is_running()).to_value(),
                 _ => unimplemented!(),
             }
         }
@@ -139,17 +151,6 @@ impl GameOfLifeWindow {
 
     fn connect_events(&self) {
         let imp = self.imp();
-        imp
-            .run_button
-            .connect_clicked(clone!(@strong self as this => move |_widget| {
-                this.toggle_run();
-            }));
-
-        imp.save_snapshot_button.connect_clicked(
-            clone!(@strong self as this => move |_widget| {
-                this.make_and_save_snapshot();
-            })
-        );
 
         // Updates buttons and other stuff when UniverseGrid running state changes
         imp.universe_grid.connect_notify_local(
@@ -157,7 +158,7 @@ impl GameOfLifeWindow {
             clone!(@strong self as this => move |_widget, _param| {
                 this.notify("run-button-icon-name");
                 this.notify("is-running");
-                this.notify("can-snapshot");
+                this.notify("is-stopped");
             }),
         );
     }
@@ -166,7 +167,7 @@ impl GameOfLifeWindow {
         let grid = &self.imp().universe_grid;
 
         if grid.is_bound() {
-            self.imp().universe_grid.is_running()
+            self.imp().universe_grid.get().is_running()
         } else {
             false
         }
@@ -183,6 +184,10 @@ impl GameOfLifeWindow {
     fn make_and_save_snapshot(&self) {
         let snapshot = self.imp().universe_grid.get_universe_snapshot();
     }
-}
 
+    fn seed_universe(&self) {
+        let universe_grid = self.imp().universe_grid.get();
+        universe_grid.random_seed();
+    }
+}
 

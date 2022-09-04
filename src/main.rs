@@ -24,6 +24,9 @@ fn main() {
         .expect("Could not load resources");
     gio::resources_register(&resources);
 
+    gtk::glib::set_application_name("Game of Life");
+    gtk::glib::set_program_name(Some("game-of-life"));
+
     // Create a new GtkApplication. The application manages our main loop,
     // application windows, integration with the window manager/compositor, and
     // desktop features such as file opening and single-instance applications.

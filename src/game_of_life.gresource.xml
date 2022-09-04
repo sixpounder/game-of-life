@@ -2,8 +2,12 @@
 <gresources>
   <gresource prefix="/com/github/sixpounder/GameOfLife">
     <file alias="style.css">gtk/style.css</file>
-    <file>window.ui</file>
-    <file>gtk/help-overlay.ui</file>
-    <file alias="universe_grid.ui">widgets/universe_grid.ui</file>
+    <file preprocess="xml-stripblanks">window.ui</file>
+    <file preprocess="xml-stripblanks">gtk/help-overlay.ui</file>
+    <file preprocess="xml-stripblanks" alias="universe_grid.ui">widgets/universe_grid.ui</file>
+  </gresource>
+  <gresource prefix="/com/github/sixpounder/GameOfLife/icons/scalable/actions/">
+    <file preprocess="xml-stripblanks" alias="dice3-symbolic.svg">assets/icons/dice3-symbolic.svg</file>
+    <file preprocess="xml-stripblanks" alias="snapshots-alt-symbolic.svg">assets/icons/snapshots-alt-symbolic.svg</file>
   </gresource>
 </gresources>

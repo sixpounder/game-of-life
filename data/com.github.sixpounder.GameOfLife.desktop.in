@@ -1,8 +1,10 @@
 [Desktop Entry]
 Name=Game of Life
+GenericName=Game of Life Simulator
 Exec=game-of-life
-Icon=com.github.sixpounder.GameOfLife
+Icon=@APPLICATION_ID@
 Terminal=false
 Type=Application
 Categories=GTK;
 StartupNotify=true
+X-SingleMainWindow=true

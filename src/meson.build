@@ -40,6 +40,7 @@ rust_sources = files(
   'window.rs',
   'widgets/mod.rs',
   'widgets/universe_grid.rs',
+  'widgets/universe_controls.rs',
   'models/mod.rs',
   'models/universe.rs',
 )
