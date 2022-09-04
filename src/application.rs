@@ -83,7 +83,7 @@ impl GameOfLifeApplication {
         let dialog = gtk::AboutDialog::builder()
             .transient_for(&window)
             .modal(true)
-            .program_name("game-of-life")
+            .program_name("Game of Life")
             .version(VERSION)
             .authors(vec!["Andrea Coronese".into()])
             .build();

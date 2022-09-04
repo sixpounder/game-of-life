@@ -2,8 +2,8 @@
 <interface>
   <requires lib="gtk" version="4.0"/>
   <template class="GameOfLifeWindow" parent="GtkApplicationWindow">
-    <property name="default-width">800</property>
-    <property name="default-height">600</property>
+    <property name="default-width">850</property>
+    <property name="default-height">985</property>
     <child type="titlebar">
       <object class="GtkHeaderBar" id="header_bar">
         <child type="end">
@@ -18,6 +18,7 @@
       <object class="GtkBox">
         <property name="orientation">vertical</property>
         <property name="spacing">10</property>
+        <property name="margin-bottom">10</property>
         <child>
           <object class="GameOfLifeUniverseGrid" id="universe_grid">
             <property name="valign">fill</property>
@@ -28,25 +29,45 @@
         </child>
         <child>
           <object class="GtkBox">
-              <property name="orientation">horizontal</property>
-              <property name="hexpand">true</property>
-              <property name="halign">center</property>
-              <child>
-                <object class="GtkButton" id="run_button">
-                  <property
-                      name="label"
-                      bind-property="run-button-label"
-                      bind-source="GameOfLifeWindow"
-                      bind-flags="default|sync-create"
-                  ></property>
-                </object>
-              </child>
+            <property name="orientation">horizontal</property>
+            <property name="hexpand">true</property>
+            <property name="halign">center</property>
+            <property name="homogeneous">false</property>
+            <property name="margin-top">10</property>
+            <property name="margin-bottom">10</property>
+            <property name="spacing">24</property>
+            <child>
+              <object class="GtkButton" id="run_button">
+                <property name="icon-name" bind-property="run-button-icon-name" bind-source="GameOfLifeWindow" bind-flags="default|sync-create"/>
+                <property name="tooltip-text" translatable="yes">Toggle universe run</property>
+                <style>
+                  <class name="circular"/>
+                  <class name="large"/>
+                </style>
+                <accessibility>
+                  <property name="label" translatable="yes" context="a11y">Toggle universe run</property>
+                </accessibility>
+              </object>
+            </child>
+            <child>
+              <object class="GtkButton" id="save_snapshot_button">
+                <property name="icon-name">document-save-symbolic</property>
+                <property name="tooltip-text" translatable="yes">Save the current state snapshot</property>
+                <property name="sensitive" bind-property="can-snapshot" bind-source="GameOfLifeWindow" bind-flags="default|sync-create">
+                  </property>
+                <style>
+                  <class name="circular"/>
+                </style>
+                <accessibility>
+                  <property name="label" translatable="yes" context="a11y">Save the current state snapshot</property>
+                </accessibility>
+              </object>
+            </child>
           </object>
         </child>
       </object>
     </child>
   </template>
-
   <menu id="primary_menu">
     <section>
       <item>
@@ -64,3 +85,4 @@
     </section>
   </menu>
 </interface>
+

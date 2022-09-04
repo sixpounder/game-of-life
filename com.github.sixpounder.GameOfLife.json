@@ -21,7 +21,7 @@
         ],
         "env" : {
             "RUST_BACKTRACE" : "1",
-            "RUST_LOG" : "game-of-life=debug"
+            "RUST_LOG" : "game-of-life=debug,glib=debug"
         }
     },
     "cleanup" : [

@@ -1,4 +1,4 @@
-use crate::models::{Universe, UniverseGridMode};
+use crate::models::{Universe, UniverseGridMode, UniversePointMatrix, UniverseSnapshot};
 use gtk::{
     gio, glib,
     glib::{clone, Receiver, Sender},
@@ -21,9 +21,7 @@ pub enum UniverseGridRequest {
 
 mod imp {
     use super::*;
-    use glib::{
-        types::StaticType, ParamFlags, ParamSpec, ParamSpecBoolean, ParamSpecEnum,
-    };
+    use glib::{types::StaticType, ParamFlags, ParamSpec, ParamSpecBoolean, ParamSpecEnum};
     use once_cell::sync::Lazy;
 
     #[derive(Debug, Default, CompositeTemplate)]
@@ -269,12 +267,11 @@ impl GameOfLifeUniverseGrid {
     pub fn run(&self) {
         let universe = self.imp().universe.clone();
         let local_sender = self.get_sender();
-        let (thread_render_sentinel, thread_render_receiver) =
-            glib::MainContext::channel::<()>(glib::PRIORITY_DEFAULT);
 
         let (thread_render_stopper_sender, thread_render_stopper_receiver) =
             std::sync::mpsc::channel::<()>();
 
+        // Drop this to stop ticking thread
         self.imp()
             .render_thread_stopper
             .replace(Some(thread_render_stopper_receiver));
@@ -288,16 +285,8 @@ impl GameOfLifeUniverseGrid {
             std::thread::sleep(std::time::Duration::from_millis(50));
             let mut locked_universe = universe.lock().unwrap();
             locked_universe.tick();
-            thread_render_sentinel.send(()).unwrap();
+            local_sender.send(UniverseGridRequest::Redraw).unwrap();
         });
-
-        thread_render_receiver.attach(
-            None,
-            clone!(@strong self as this => move |_| {
-                local_sender.send(UniverseGridRequest::Redraw).unwrap();
-                glib::Continue(true)
-            }),
-        );
 
         self.notify("is-running");
     }
@@ -306,6 +295,15 @@ impl GameOfLifeUniverseGrid {
         let inner = self.imp().render_thread_stopper.take();
         drop(inner);
         self.notify("is-running");
+    }
+
+    pub fn get_universe_snapshot(&self) -> UniverseSnapshot {
+        let imp = self.imp();
+
+        let clone = Arc::clone(&imp.universe);
+        let lock = clone.lock().unwrap();
+
+        lock.snapshot()
     }
 }
 

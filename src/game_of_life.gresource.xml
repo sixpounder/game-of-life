@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <gresources>
   <gresource prefix="/com/github/sixpounder/GameOfLife">
+    <file alias="style.css">gtk/style.css</file>
     <file>window.ui</file>
     <file>gtk/help-overlay.ui</file>
     <file alias="universe_grid.ui">widgets/universe_grid.ui</file>

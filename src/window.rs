@@ -4,14 +4,14 @@ use gtk::prelude::*;
 use gtk::subclass::prelude::*;
 use gtk::{gio, glib, glib::clone, CompositeTemplate};
 
+use crate::config::{APPLICATION_G_PATH, APPLICATION_ID};
+
 mod imp {
     use super::*;
-    use glib::{
-        ParamFlags, ParamSpec, ParamSpecString,
-    };
+    use glib::{ParamFlags, ParamSpec, ParamSpecBoolean, ParamSpecString};
     use once_cell::sync::Lazy;
 
-    #[derive(Debug, Default, CompositeTemplate)]
+    #[derive(Debug, CompositeTemplate)]
     #[template(resource = "/com/github/sixpounder/GameOfLife/window.ui")]
     pub struct GameOfLifeWindow {
         // Template widgets
@@ -23,8 +23,13 @@ mod imp {
 
         #[template_child]
         pub run_button: TemplateChild<gtk::Button>,
+        #[template_child]
+        pub save_snapshot_button: TemplateChild<gtk::Button>,
 
         pub(crate) mode: std::cell::Cell<UniverseGridMode>,
+
+        pub provider: gtk::CssProvider,
+        // pub settings: gtk::gio::Settings,
     }
 
     #[glib::object_subclass]
@@ -32,6 +37,21 @@ mod imp {
         const NAME: &'static str = "GameOfLifeWindow";
         type Type = super::GameOfLifeWindow;
         type ParentType = gtk::ApplicationWindow;
+
+        fn new() -> Self {
+            Self {
+                header_bar: TemplateChild::default(),
+                universe_grid: TemplateChild::default(),
+                run_button: TemplateChild::default(),
+                save_snapshot_button: TemplateChild::default(),
+                mode: std::cell::Cell::default(),
+                provider: gtk::CssProvider::new(),
+                // settings: gtk::gio::Settings::with_path(
+                //     APPLICATION_ID,
+                //     format!("{}/", APPLICATION_G_PATH).as_str(),
+                // ),
+            }
+        }
 
         fn class_init(klass: &mut Self::Class) {
             Self::bind_template(klass);
@@ -50,13 +70,17 @@ mod imp {
 
         fn properties() -> &'static [glib::ParamSpec] {
             static PROPERTIES: Lazy<Vec<ParamSpec>> = Lazy::new(|| {
-                vec![ParamSpecString::new(
-                    "run-button-label",
-                    "",
-                    "",
-                    Some("Run"),
-                    ParamFlags::READABLE,
-                )]
+                vec![
+                    ParamSpecString::new(
+                        "run-button-icon-name",
+                        "",
+                        "",
+                        Some("media-playback-start-symbolic"),
+                        ParamFlags::READABLE,
+                    ),
+                    ParamSpecBoolean::new("is-running", "", "", false, ParamFlags::READABLE),
+                    ParamSpecBoolean::new("can-snapshot", "", "", true, ParamFlags::READABLE)
+                ]
             });
 
             PROPERTIES.as_ref()
@@ -64,11 +88,13 @@ mod imp {
 
         fn property(&self, obj: &Self::Type, _id: usize, pspec: &ParamSpec) -> glib::Value {
             match pspec.name() {
-                "run-button-label" => match obj.is_running() {
-                    true => "Stop",
-                    false => "Run",
+                "run-button-icon-name" => match obj.is_running() {
+                    true => "media-playback-stop-symbolic",
+                    false => "media-playback-start-symbolic",
                 }
                 .to_value(),
+                "is-running" => obj.is_running().to_value(),
+                "can-snapshot" => (!obj.is_running()).to_value(),
                 _ => unimplemented!(),
             }
         }
@@ -86,8 +112,12 @@ glib::wrapper! {
 
 impl GameOfLifeWindow {
     pub fn new<P: glib::IsA<gtk::Application>>(application: &P) -> Self {
-        glib::Object::new(&[("application", application)])
-            .expect("Failed to create GameOfLifeWindow")
+        let win: Self = glib::Object::new(&[("application", application)])
+            .expect("Failed to create GameOfLifeWindow");
+
+        win.setup_provider();
+
+        win
     }
 
     pub fn mode(&self) -> UniverseGridMode {
@@ -98,17 +128,36 @@ impl GameOfLifeWindow {
         self.imp().mode.set(value);
     }
 
+    fn setup_provider(&self) {
+        let imp = self.imp();
+        imp.provider
+            .load_from_resource(format!("{}/{}", APPLICATION_G_PATH, "style.css").as_str());
+        if let Some(display) = gtk::gdk::Display::default() {
+            gtk::StyleContext::add_provider_for_display(&display, &imp.provider, 400);
+        }
+    }
+
     fn connect_events(&self) {
-        self.imp()
+        let imp = self.imp();
+        imp
             .run_button
             .connect_clicked(clone!(@strong self as this => move |_widget| {
                 this.toggle_run();
             }));
 
-        self.imp().universe_grid.connect_notify_local(
+        imp.save_snapshot_button.connect_clicked(
+            clone!(@strong self as this => move |_widget| {
+                this.make_and_save_snapshot();
+            })
+        );
+
+        // Updates buttons and other stuff when UniverseGrid running state changes
+        imp.universe_grid.connect_notify_local(
             Some("is-running"),
             clone!(@strong self as this => move |_widget, _param| {
-                this.notify("run-button-label");
+                this.notify("run-button-icon-name");
+                this.notify("is-running");
+                this.notify("can-snapshot");
             }),
         );
     }
@@ -129,6 +178,10 @@ impl GameOfLifeWindow {
             false => sender.send(UniverseGridRequest::Run).unwrap(),
             true => sender.send(UniverseGridRequest::Halt).unwrap(),
         }
+    }
+
+    fn make_and_save_snapshot(&self) {
+        let snapshot = self.imp().universe_grid.get_universe_snapshot();
     }
 }
 

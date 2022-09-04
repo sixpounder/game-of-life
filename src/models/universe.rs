@@ -1,58 +1,14 @@
+use super::{UniverseCell, UniversePoint, UniversePointMatrix};
 use rand::Rng;
+use serde::{Deserialize, Serialize};
 use std::fmt;
-
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub enum UniverseCell {
-    Dead = 0,
-    Alive = 1,
-}
-
-impl UniverseCell {
-    pub fn is_alive(&self) -> bool {
-        match self {
-            UniverseCell::Alive => true,
-            _ => false
-        }
-    }
-}
-
-impl fmt::Display for UniverseCell {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{}", match self.is_alive() { true => "Alive", _ => "Dead" })
-    }
-}
-
-#[derive(Debug, Clone)]
-pub struct UniversePoint {
-    row: usize,
-    column: usize,
-    cell: UniverseCell,
-}
-
-impl UniversePoint {
-    pub fn row(&self) -> usize {
-        self.row
-    }
-
-    pub fn column(&self) -> usize {
-        self.column
-    }
-
-    pub fn cell(&self) -> &UniverseCell {
-        &self.cell
-    }
-}
 
 fn compute_initial_delta(universe: &mut Universe) {
     let mut initial_delta: Vec<UniversePoint> = vec![];
     for row in 0..universe.rows {
         for column in 0..universe.columns {
             let index = universe.get_index(row, column);
-            let delta_point = UniversePoint {
-                row,
-                column,
-                cell: universe.cells[index],
-            };
+            let delta_point = UniversePoint::new(row, column, universe.cells[index]);
             initial_delta.push(delta_point);
         }
     }
@@ -68,7 +24,7 @@ pub struct Universe {
     rows: usize,
     cells: Vec<UniverseCell>,
     generations: u64,
-    last_delta: Option<Vec<UniversePoint>>
+    last_delta: Option<Vec<UniversePoint>>,
 }
 
 impl Default for Universe {
@@ -192,7 +148,7 @@ impl Universe {
                 let idx = self.get_index(neighbor_row, neighbor_col);
                 match self.cells[idx] {
                     UniverseCell::Alive => count += 1,
-                    UniverseCell::Dead => ()
+                    UniverseCell::Dead => (),
                 };
             }
         }
@@ -209,11 +165,11 @@ impl Universe {
             new_state.cells[index] = self.cell_next_state(point.row(), point.column());
 
             if new_state.cells[index] != self.cells[index] {
-                delta.push(UniversePoint {
-                    row: point.row(),
-                    column: point.column(),
-                    cell: new_state.cells[index],
-                });
+                delta.push(UniversePoint::new(
+                    point.row(),
+                    point.column(),
+                    new_state.cells[index],
+                ));
             }
         }
         self.cells = new_state.cells.clone();
@@ -222,32 +178,28 @@ impl Universe {
         self.last_delta = Some(delta);
     }
 
-    /// Gets the number of columns for this universe
-    pub fn columns(&self) -> usize {
-        self.columns
-    }
-
-    /// Gets the number of rows for this universe
-    pub fn rows(&self) -> usize {
-        self.rows
-    }
-
     /// Counts and returns the number of alive cells
     /// in this universe
     pub fn alive_cells_count(&self) -> usize {
-        self.cells.iter().filter(|cell| match cell {
-            UniverseCell::Alive => true,
-            UniverseCell::Dead => false,
-        }).count()
+        self.cells
+            .iter()
+            .filter(|cell| match cell {
+                UniverseCell::Alive => true,
+                UniverseCell::Dead => false,
+            })
+            .count()
     }
 
     /// Counts and returns the number of dead cells
     /// in this universe
     pub fn dead_cells_count(&self) -> usize {
-        self.cells.iter().filter(|cell| match cell {
-            UniverseCell::Alive => false,
-            UniverseCell::Dead => true,
-        }).count()
+        self.cells
+            .iter()
+            .filter(|cell| match cell {
+                UniverseCell::Alive => false,
+                UniverseCell::Dead => true,
+            })
+            .count()
     }
 
     /// Gets the last delta for this universe.
@@ -256,19 +208,52 @@ impl Universe {
     pub fn last_delta(&self) -> Vec<UniversePoint> {
         match &self.last_delta {
             Some(delta) => delta.to_vec(),
-            None => self.iter_cells().collect::<Vec<UniversePoint>>()
+            None => self.iter_cells().collect::<Vec<UniversePoint>>(),
         }
     }
 
     pub fn iter_cells(&self) -> UniverseIterator {
         UniverseIterator::new(&self)
     }
+
+    pub fn snapshot(&self) -> UniverseSnapshot {
+        UniverseSnapshot::from(self)
+    }
+}
+
+impl UniversePointMatrix for Universe {
+    type SetCellError = ();
+
+    fn rows(&self) -> usize {
+        self.rows
+    }
+
+    fn columns(&self) -> usize {
+        self.columns
+    }
+
+    fn get(&self, row: usize, column: usize) -> UniversePoint {
+        match self.cells.get(self.get_index(row, column)) {
+            Some(cell) => UniversePoint::new(row, column, *cell),
+            None => panic!("Could not get cell at row {} column {}", row, column),
+        }
+    }
+
+    fn set(
+        &mut self,
+        row: usize,
+        column: usize,
+        value: UniverseCell,
+    ) -> Result<UniversePoint, Self::SetCellError> {
+        self.set_cell(row, column, value);
+        Ok(self.get(row, column))
+    }
 }
 
 pub struct UniverseIterator<'a> {
     universe: &'a Universe,
     row: usize,
-    column: usize
+    column: usize,
 }
 
 impl<'a> UniverseIterator<'a> {
@@ -276,7 +261,7 @@ impl<'a> UniverseIterator<'a> {
         Self {
             universe,
             row: 0,
-            column: 0
+            column: 0,
         }
     }
 }
@@ -295,18 +280,14 @@ impl<'a> Iterator for UniverseIterator<'a> {
             self.row += 1;
             self.column += 1;
 
-            return Some(UniversePoint {
-                cell: *last,
-                row: self.row - 1,
-                column: self.column - 1
-            });
+            return Some(UniversePoint::new(self.row - 1, self.column - 1, *last));
         }
 
-        let point = UniversePoint {
-            cell: *self.universe.get_cell(self.row, self.column),
-            row: self.row,
-            column: self.column
-        };
+        let point = UniversePoint::new(
+            self.row,
+            self.column,
+            *self.universe.get_cell(self.row, self.column),
+        );
 
         if self.column == self.universe.columns() - 1 {
             self.column = 0;
@@ -323,7 +304,11 @@ impl fmt::Display for Universe {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         for line in self.cells.as_slice().chunks(self.columns()) {
             for &cell in line {
-                let symbol = if cell == UniverseCell::Dead { '◻' } else { '◼' };
+                let symbol = if cell == UniverseCell::Dead {
+                    '◻'
+                } else {
+                    '◼'
+                };
                 write!(f, "{}", symbol)?;
             }
             write!(f, "\n")?;
@@ -338,4 +323,70 @@ impl Drop for Universe {
         self.generations = 0;
     }
 }
+
+pub enum SnapshotError {}
+
+#[derive(Serialize, Deserialize, Debug)]
+pub struct UniverseSnapshot {
+    columns: usize,
+    rows: usize,
+    cells: Vec<UniverseCell>,
+}
+
+impl From<&Universe> for UniverseSnapshot {
+    fn from(value: &Universe) -> Self {
+        UniverseSnapshot {
+            cells: value.cells.clone(),
+            rows: value.rows(),
+            columns: value.columns(),
+        }
+    }
+}
+
+impl UniverseSnapshot {
+    fn get_index(&self, row: usize, column: usize) -> usize {
+        ((row * self.columns) + column) as usize
+    }
+}
+
+impl UniversePointMatrix for UniverseSnapshot {
+    type SetCellError = &'static str;
+
+    fn rows(&self) -> usize {
+        self.rows
+    }
+
+    fn columns(&self) -> usize {
+        self.columns
+    }
+
+    fn get(&self, row: usize, column: usize) -> UniversePoint {
+        match self.cells.get(self.get_index(row, column)) {
+            Some(cell) => UniversePoint::new(row, column, *cell),
+            None => panic!("Could not get cell at row {} column {}", row, column),
+        }
+    }
+
+    fn set(
+        &mut self,
+        row: usize,
+        column: usize,
+        value: UniverseCell,
+    ) -> Result<UniversePoint, Self::SetCellError> {
+        Err("UniverseSnapshot is readonly")
+    }
+}
+
+impl From<UniverseSnapshot> for Universe {
+    fn from(snapshot: UniverseSnapshot) -> Self {
+        Self {
+            rows: snapshot.rows,
+            columns: snapshot.columns,
+            cells: snapshot.cells.clone(),
+            generations: 0,
+            last_delta: None,
+        }
+    }
+}
+
 

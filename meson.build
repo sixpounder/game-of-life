@@ -16,6 +16,25 @@ cargo_sources = files(
   'Cargo.lock',
 )
 
+if get_option('profile') == 'development'
+  profile = '.Devel'
+  if fs.is_dir('.git')
+    vcs_tag = run_command('git', 'rev-parse', '--short', 'HEAD').stdout().strip()
+    if vcs_tag == ''
+      version_suffix = '-devel'
+    else
+      version_suffix = '-@0@'.format(vcs_tag)
+    endif
+  else
+    version_suffix = '-devel'
+  endif
+else
+  profile = ''
+  version_suffix = ''
+endif
+
+application_id = 'com.github.sixpounder.GameOfLife@0@'.format(profile)
+
 subdir('data')
 subdir('src')
 subdir('po')

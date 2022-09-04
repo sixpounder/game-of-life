@@ -8,11 +8,16 @@ gnome.compile_resources('game-of-life',
   install_dir: pkgdatadir,
 )
 
+g_path_template = '/@0@'
+g_path = g_path_template.format(application_id.replace('.', '/'))
+
 conf = configuration_data()
 conf.set_quoted('VERSION', meson.project_version())
 conf.set_quoted('GETTEXT_PACKAGE', 'game-of-life')
 conf.set_quoted('LOCALEDIR', join_paths(get_option('prefix'), get_option('localedir')))
 conf.set_quoted('PKGDATADIR', pkgdatadir)
+conf.set_quoted('APPLICATION_ID', application_id)
+conf.set_quoted('APPLICATION_G_PATH', g_path)
 
 configure_file(
     input: 'config.rs.in',
@@ -33,6 +38,10 @@ rust_sources = files(
   'config.rs',
   'main.rs',
   'window.rs',
+  'widgets/mod.rs',
+  'widgets/universe_grid.rs',
+  'models/mod.rs',
+  'models/universe.rs',
 )
 
 sources = [cargo_sources, rust_sources]
