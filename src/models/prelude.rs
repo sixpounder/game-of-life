@@ -2,11 +2,11 @@ use gtk::glib;
 use serde::{Deserialize, Serialize};
 use std::fmt;
 
-#[derive(Clone, Debug, glib::Enum, Copy)]
+#[derive(Clone, Debug, glib::Enum, Copy, PartialEq)]
 #[enum_type(name = "UniverseGridMode")]
 pub enum UniverseGridMode {
-    Design,
-    Run,
+    Design = 0,
+    Run = 1,
 }
 
 impl Default for UniverseGridMode {

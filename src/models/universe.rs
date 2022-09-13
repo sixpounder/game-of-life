@@ -3,6 +3,8 @@ use rand::Rng;
 use serde::{Deserialize, Serialize};
 use std::fmt;
 
+const UNIVERSE_RANDOM_ALIVE_PROBABILITY: f64 = 0.6;
+
 fn compute_initial_delta(universe: &mut Universe) {
     let mut initial_delta: Vec<UniversePoint> = vec![];
     for row in 0..universe.rows {
@@ -72,7 +74,7 @@ impl Universe {
         for i in 0..self.rows - 1 {
             for j in 0..self.columns - 1 {
                 let y: f64 = rng.gen();
-                if y >= 0.5 {
+                if y >= UNIVERSE_RANDOM_ALIVE_PROBABILITY {
                     self.set_cell(i, j, UniverseCell::Alive);
                 } else {
                     self.set_cell(i, j, UniverseCell::Dead);

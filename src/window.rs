@@ -3,8 +3,10 @@ use crate::widgets::UniverseGridRequest;
 use gtk::prelude::*;
 use gtk::subclass::prelude::*;
 use gtk::{gio, glib, glib::clone, CompositeTemplate};
+use std::cell::RefCell;
 
-use crate::config::{APPLICATION_G_PATH, APPLICATION_ID};
+use crate::application::GameOfLifeApplication;
+use crate::config::APPLICATION_G_PATH;
 
 mod imp {
     use super::*;
@@ -22,13 +24,12 @@ mod imp {
         pub universe_grid: TemplateChild<crate::widgets::GameOfLifeUniverseGrid>,
 
         #[template_child]
-        pub run_button: TemplateChild<gtk::Button>,
-        #[template_child]
-        pub save_snapshot_button: TemplateChild<gtk::Button>,
+        pub controls: TemplateChild<crate::widgets::GameOfLifeUniverseControls>,
 
         pub(crate) mode: std::cell::Cell<UniverseGridMode>,
 
         pub provider: gtk::CssProvider,
+        // pub application_events_receiver: RefCell<Option<glib::Receiver<GameOfLifeApplicationEvent>>>,
         // pub settings: gtk::gio::Settings,
     }
 
@@ -42,10 +43,10 @@ mod imp {
             Self {
                 header_bar: TemplateChild::default(),
                 universe_grid: TemplateChild::default(),
-                run_button: TemplateChild::default(),
-                save_snapshot_button: TemplateChild::default(),
+                controls: TemplateChild::default(),
                 mode: std::cell::Cell::default(),
                 provider: gtk::CssProvider::new(),
+                // application_events_receiver: RefCell::new(None),
                 // settings: gtk::gio::Settings::with_path(
                 //     APPLICATION_ID,
                 //     format!("{}/", APPLICATION_G_PATH).as_str(),
@@ -66,6 +67,10 @@ mod imp {
 
             klass.install_action("win.snapshot", None, move |win, _, _| {
                 win.make_and_save_snapshot();
+            });
+
+            klass.install_action("win.toggle-design-mode", None, move |win, _, _| {
+                win.toggle_edit_mode();
             });
         }
 
@@ -123,11 +128,19 @@ glib::wrapper! {
 }
 
 impl GameOfLifeWindow {
-    pub fn new<P: glib::IsA<gtk::Application>>(application: &P) -> Self {
+    pub fn new<P: glib::IsA<gtk::Application>>(
+        application: &P,
+        style_manager: &adw::StyleManager,
+    ) -> Self {
         let win: Self = glib::Object::new(&[("application", application)])
             .expect("Failed to create GameOfLifeWindow");
 
         win.setup_provider();
+        win.update_prefers_dark_mode(style_manager.is_dark());
+
+        style_manager.connect_dark_notify(glib::clone!(@strong win as this => move |sm| {
+            this.update_prefers_dark_mode(sm.is_dark());
+        }));
 
         win
     }
@@ -181,6 +194,20 @@ impl GameOfLifeWindow {
         }
     }
 
+    pub fn toggle_edit_mode(&self) {
+        let sender = self.imp().universe_grid.get_sender();
+        let grid = self.imp().universe_grid.get();
+        let next_mode = match grid.mode() {
+            UniverseGridMode::Design => UniverseGridMode::Run,
+            UniverseGridMode::Run => UniverseGridMode::Design,
+        };
+
+        sender.send(UniverseGridRequest::Mode(next_mode)).unwrap();
+
+        let controls = self.imp().controls.get();
+        controls.set_mode(next_mode);
+    }
+
     fn make_and_save_snapshot(&self) {
         let snapshot = self.imp().universe_grid.get_universe_snapshot();
     }
@@ -189,5 +216,10 @@ impl GameOfLifeWindow {
         let universe_grid = self.imp().universe_grid.get();
         universe_grid.random_seed();
     }
+
+    fn update_prefers_dark_mode(&self, value: bool) {
+        self.imp().universe_grid.get().set_prefers_dark_mode(value);
+    }
 }
+
 

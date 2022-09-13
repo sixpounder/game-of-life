@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <requires lib="gtk" version="4.0"/>
+  <template class="GameOfLifeUniverseControls" parent="GtkWidget">
+    <child>
+      <object class="GtkCenterBox">
+        <property name="margin-start">10</property>
+        <property name="margin-end">10</property>
+        <property name="margin-top">10</property>
+        <property name="margin-bottom">10</property>
+        <child type="start">
+          <object class="GtkBox">
+            <property name="orientation">horizontal</property>
+            <property name="spacing">24</property>
+            <child>
+              <object class="GtkToggleButton">
+                <property name="icon-name">document-edit-symbolic</property>
+                <property name="valign">center</property>
+                <property name="halign">center</property>
+                <property name="active" bind-property="editing" bind-source="GameOfLifeUniverseControls" bind-flags="default|sync-create">
+                </property>
+                <property name="sensitive" bind-property="stopped" bind-source="GameOfLifeUniverseControls" bind-flags="default|sync-create">
+                </property>
+                <property name="tooltip-text" translatable="yes">Toggle design mode</property>
+                <property name="action-name">win.toggle-design-mode</property>
+                <style>
+                  <class name="circular" />
+                </style>
+                <accessibility>
+                  <property name="label" translatable="yes" context="a11y">Toggle design mode</property>
+                </accessibility>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child type="center">
+          <object class="GtkBox">
+            <property name="orientation">horizontal</property>
+            <property name="hexpand">true</property>
+            <property name="halign">center</property>
+            <property name="homogeneous">false</property>
+            <property name="spacing">24</property>
+            <child>
+              <object class="GtkMenuButton">
+                <property name="icon-name">speedometer-symbolic</property>
+                <property name="valign">center</property>
+                <property name="halign">center</property>
+                <property name="sensitive" bind-property="stopped" bind-source="GameOfLifeUniverseControls" bind-flags="default|sync-create">
+                </property>
+                <property name="tooltip-text" translatable="yes">Universe evolution speed</property>
+                <style>
+                  <class name="circular" />
+                </style>
+                <accessibility>
+                  <property name="label" translatable="yes" context="a11y">Modify universe evolution speed</property>
+                </accessibility>
+              </object>
+            </child>
+            <child>
+              <object class="GtkButton" id="run_button">
+                <property name="icon-name" bind-property="run-button-icon-name" bind-source="GameOfLifeUniverseControls" bind-flags="default|sync-create"/>
+                <property name="tooltip-text" translatable="yes">Toggle universe run</property>
+                <!-- <property name="sensitive" bind-property="editing" bind-source="GameOfLifeUniverseControls" bind-flags="default|sync-create"> -->
+                <!-- </property> -->
+                <property name="action-name">win.play</property>
+                <style>
+                  <class name="circular"/>
+                  <class name="large"/>
+                </style>
+                <accessibility>
+                  <property name="label" translatable="yes" context="a11y">Toggle universe run</property>
+                </accessibility>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child type="end">
+          <object class="GtkBox">
+            <property name="spacing">24</property>
+            <property name="orientation">horizontal</property>
+            <child>
+              <object class="GtkButton" id="save_snapshot_button">
+                <property name="icon-name">snapshots-alt-symbolic</property>
+                <property name="tooltip-text" translatable="yes">Save the current state snapshot</property>
+                <property name="sensitive" bind-property="stopped" bind-source="GameOfLifeUniverseControls" bind-flags="default|sync-create">
+                </property>
+                <property name="action-name">win.snapshot</property>
+                <property name="valign">center</property>
+                <property name="halign">center</property>
+                <style>
+                  <class name="circular"/>
+                </style>
+                <accessibility>
+                  <property name="label" translatable="yes" context="a11y">Save the current state snapshot</property>
+                </accessibility>
+              </object>
+            </child>
+            <child>
+              <object class="GtkButton" id="random_seed_button">
+                <property name="icon-name">dice3-symbolic</property>
+                <property name="tooltip-text" translatable="yes">Randomly seed this universe</property>
+                <property name="sensitive" bind-property="stopped" bind-source="GameOfLifeUniverseControls" bind-flags="default|sync-create">
+                </property>
+                <property name="action-name">win.random-seed</property>
+                <property name="valign">center</property>
+                <property name="halign">center</property>
+                <style>
+                  <class name="circular"/>
+                </style>
+                <accessibility>
+                  <property name="label" translatable="yes" context="a11y">Randomly seed this universe</property>
+                </accessibility>
+              </object>
+            </child>
+          </object>
+        </child>
+      </object>
+    </child>
+  </template>
+</interface>

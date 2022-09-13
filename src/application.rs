@@ -1,5 +1,7 @@
+use std::cell::RefCell;
 use glib::clone;
 use gtk::prelude::*;
+use adw::prelude::AdwApplicationExt;
 use gtk::subclass::prelude::*;
 use gtk::{gio, glib};
 use adw::subclass::prelude::*;
@@ -7,23 +9,43 @@ use adw::subclass::prelude::*;
 use crate::config::VERSION;
 use crate::GameOfLifeWindow;
 
+pub enum GameOfLifeApplicationEvent {
+    DarkColorSchemePreference(bool)
+}
+
 mod imp {
     use super::*;
 
-    #[derive(Debug, Default)]
-    pub struct GameOfLifeApplication {}
+    #[derive(Debug)]
+    pub struct GameOfLifeApplication {
+        pub(crate) sender: RefCell<Option<glib::Sender<GameOfLifeApplicationEvent>>>,
+        receiver: RefCell<Option<glib::Receiver<GameOfLifeApplicationEvent>>>
+    }
+
+    impl Default for GameOfLifeApplication {
+        fn default() -> Self {
+            let (sender, receiver) = glib::MainContext::channel(glib::PRIORITY_DEFAULT);
+            Self {
+                sender: RefCell::new(Some(sender)),
+                receiver: RefCell::new(Some(receiver))
+            }
+        }
+    }
 
     #[glib::object_subclass]
     impl ObjectSubclass for GameOfLifeApplication {
         const NAME: &'static str = "GameOfLifeApplication";
         type Type = super::GameOfLifeApplication;
         type ParentType = adw::Application;
+
+        fn new() -> Self {
+            Self::default()
+        }
     }
 
     impl ObjectImpl for GameOfLifeApplication {
         fn constructed(&self, obj: &Self::Type) {
             self.parent_constructed(obj);
-
             obj.setup_gactions();
             obj.set_accels_for_action("app.quit", &["<primary>q"]);
         }
@@ -35,11 +57,12 @@ mod imp {
         // tries to launch a "second instance" of the application. When they try
         // to do that, we'll just present any existing window.
         fn activate(&self, application: &Self::Type) {
+            let r = self.receiver.take().unwrap();
             // Get the current window or create one if necessary
             let window = if let Some(window) = application.active_window() {
                 window
             } else {
-                let window = GameOfLifeWindow::new(application);
+                let window = GameOfLifeWindow::new(application, &application.style_manager());
                 window.upcast()
             };
 
@@ -91,3 +114,4 @@ impl GameOfLifeApplication {
         dialog.present();
     }
 }
+

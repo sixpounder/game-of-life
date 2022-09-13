@@ -5,6 +5,7 @@
     <file preprocess="xml-stripblanks">window.ui</file>
     <file preprocess="xml-stripblanks">gtk/help-overlay.ui</file>
     <file preprocess="xml-stripblanks" alias="universe_grid.ui">widgets/universe_grid.ui</file>
+    <file preprocess="xml-stripblanks" alias="universe_controls.ui">widgets/universe_controls.ui</file>
   </gresource>
   <gresource prefix="/com/github/sixpounder/GameOfLife/icons/scalable/actions/">
     <file preprocess="xml-stripblanks" alias="dice3-symbolic.svg">assets/icons/dice3-symbolic.svg</file>

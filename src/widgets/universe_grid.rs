@@ -1,4 +1,5 @@
 use crate::models::{Universe, UniverseGridMode, UniversePointMatrix, UniverseSnapshot};
+use adw::prelude::AdwApplicationExt;
 use gtk::{
     gio, glib,
     glib::{clone, Receiver, Sender},
@@ -6,14 +7,22 @@ use gtk::{
     subclass::prelude::*,
     CompositeTemplate,
 };
+
 use std::cell::{Cell, RefCell};
 use std::str::FromStr;
 use std::sync::{Arc, Mutex};
 
+const FG_COLOR_LIGHT: &str = "#64baff";
+const BG_COLOR_LIGHT: &str = "#fafafa";
+const FG_COLOR_DARK: &str = "#C061CB";
+const BG_COLOR_DARK: &str = "#3D3846";
+
 #[derive(Debug)]
 pub enum UniverseGridRequest {
-    Lock,
-    Unlock,
+    Freeze,
+    Unfreeze,
+    Mode(UniverseGridMode),
+    DarkColorSchemePreference(bool),
     Run,
     Halt,
     Redraw,
@@ -21,7 +30,9 @@ pub enum UniverseGridRequest {
 
 mod imp {
     use super::*;
-    use glib::{types::StaticType, ParamFlags, ParamSpec, ParamSpecBoolean, ParamSpecEnum};
+    use glib::{
+        types::StaticType, ParamFlags, ParamSpec, ParamSpecBoolean, ParamSpecEnum, ParamSpecObject,
+    };
     use once_cell::sync::Lazy;
 
     #[derive(Debug, Default, CompositeTemplate)]
@@ -30,9 +41,13 @@ mod imp {
         #[template_child]
         pub drawing_area: TemplateChild<gtk::DrawingArea>,
 
+        pub(crate) application: RefCell<Option<crate::GameOfLifeApplication>>,
+
         pub(crate) mode: Cell<UniverseGridMode>,
 
         pub(crate) frozen: Cell<bool>,
+
+        pub(crate) prefers_dark_mode: Cell<bool>,
 
         pub(crate) universe: Arc<Mutex<Universe>>,
 
@@ -41,6 +56,10 @@ mod imp {
         pub(crate) sender: Option<Sender<UniverseGridRequest>>,
 
         pub(crate) render_thread_stopper: RefCell<Option<std::sync::mpsc::Receiver<()>>>,
+
+        pub(crate) fg_color: std::cell::Cell<Option<gtk::gdk::RGBA>>,
+
+        pub(crate) bg_color: std::cell::Cell<Option<gtk::gdk::RGBA>>,
     }
 
     #[glib::object_subclass]
@@ -57,6 +76,13 @@ mod imp {
 
             this.receiver = receiver;
             this.sender = Some(sender);
+            this.mode.set(UniverseGridMode::Run);
+
+            // Defaults to light color scheme
+            this.fg_color
+                .set(Some(gtk::gdk::RGBA::from_str(FG_COLOR_LIGHT).unwrap()));
+            this.bg_color
+                .set(Some(gtk::gdk::RGBA::from_str(BG_COLOR_DARK).unwrap()));
 
             this
         }
@@ -82,16 +108,30 @@ mod imp {
         fn properties() -> &'static [glib::ParamSpec] {
             static PROPERTIES: Lazy<Vec<ParamSpec>> = Lazy::new(|| {
                 vec![
+                    ParamSpecObject::new(
+                        "application",
+                        "",
+                        "",
+                        crate::GameOfLifeApplication::static_type(),
+                        ParamFlags::WRITABLE,
+                    ),
                     ParamSpecEnum::new(
                         "mode",
                         "",
                         "",
                         UniverseGridMode::static_type(),
-                        0,
+                        1,
                         ParamFlags::READWRITE,
                     ),
                     ParamSpecBoolean::new("frozen", "", "", false, ParamFlags::READWRITE),
                     ParamSpecBoolean::new("is-running", "", "", false, ParamFlags::READABLE),
+                    ParamSpecBoolean::new(
+                        "prefers-dark-mode",
+                        "",
+                        "",
+                        false,
+                        ParamFlags::READWRITE,
+                    ),
                 ]
             });
             PROPERTIES.as_ref()
@@ -111,6 +151,16 @@ mod imp {
                 "frozen" => {
                     obj.set_frozen(value.get::<bool>().unwrap());
                 }
+                "application" => {
+                    obj.imp()
+                        .application
+                        .replace(Some(value.get::<crate::GameOfLifeApplication>().unwrap()));
+                }
+                "prefers-dark-mode" => {
+                    obj.imp()
+                        .prefers_dark_mode
+                        .replace(value.get::<bool>().unwrap());
+                }
                 _ => unimplemented!(),
             }
         }
@@ -119,6 +169,7 @@ mod imp {
             match pspec.name() {
                 "mode" => self.mode.get().to_value(),
                 "frozen" => self.frozen.get().to_value(),
+                "prefers-dark-mode" => self.prefers_dark_mode.get().to_value(),
                 "is-running" => obj.is_running().to_value(),
                 _ => unimplemented!(),
             }
@@ -129,7 +180,7 @@ mod imp {
 
 glib::wrapper! {
     pub struct GameOfLifeUniverseGrid(ObjectSubclass<imp::GameOfLifeUniverseGrid>)
-        @extends gtk::Widget, gtk::Window, gtk::ApplicationWindow,
+        @extends gtk::Widget,
         @implements gio::ActionGroup, gio::ActionMap;
 }
 
@@ -148,12 +199,21 @@ impl GameOfLifeUniverseGrid {
     }
 
     fn setup_drawing_area(&self) {
+        if let Ok(application_ref) = self.try_property::<gtk::Application>("application") {
+            if let Ok(application_ref) = application_ref.downcast::<adw::Application>() {
+                application_ref.style_manager().connect_dark_notify(
+                    clone!(@strong self as this => move |app| {
+                        this.imp().prefers_dark_mode.set(app.is_dark());
+                    }),
+                );
+            }
+        }
         self.imp().drawing_area.connect_resize(
             clone!(@strong self as this => move |_widget, _width, _height| {
                 this.set_frozen(true);
                 let sender = this.get_sender();
                 glib::timeout_add_once(std::time::Duration::from_millis(500), move || {
-                    sender.send(UniverseGridRequest::Unlock).expect("Could not unlock grid");
+                    sender.send(UniverseGridRequest::Unfreeze).expect("Could not unlock grid");
                 });
             }),
         );
@@ -165,14 +225,42 @@ impl GameOfLifeUniverseGrid {
 
     fn process_action(&self, action: UniverseGridRequest) -> glib::Continue {
         match action {
-            UniverseGridRequest::Lock => self.set_frozen(true),
-            UniverseGridRequest::Unlock => self.set_frozen(false),
+            UniverseGridRequest::Freeze => self.set_frozen(true),
+            UniverseGridRequest::Unfreeze => self.set_frozen(false),
+            UniverseGridRequest::Mode(m) => self.set_mode(m),
             UniverseGridRequest::Run => self.run(),
             UniverseGridRequest::Halt => self.halt(),
             UniverseGridRequest::Redraw => self.imp().drawing_area.queue_draw(),
+            UniverseGridRequest::DarkColorSchemePreference(prefers_dark) => {
+                self.set_prefers_dark_mode(prefers_dark)
+            }
         }
 
         glib::Continue(true)
+    }
+
+    pub fn set_prefers_dark_mode(&self, prefers_dark_variant: bool) {
+        let imp = self.imp();
+        imp.prefers_dark_mode.replace(prefers_dark_variant);
+
+        match prefers_dark_variant {
+            true => {
+                imp.fg_color
+                    .set(Some(gtk::gdk::RGBA::from_str(FG_COLOR_DARK).unwrap()));
+                imp.bg_color
+                    .set(Some(gtk::gdk::RGBA::from_str(BG_COLOR_DARK).unwrap()));
+            }
+            false => {
+                imp.fg_color
+                    .set(Some(gtk::gdk::RGBA::from_str(FG_COLOR_LIGHT).unwrap()));
+                imp.bg_color
+                    .set(Some(gtk::gdk::RGBA::from_str(BG_COLOR_LIGHT).unwrap()));
+            }
+        }
+    }
+
+    pub fn prefers_dark_mode(&self) -> bool {
+        self.imp().prefers_dark_mode.get()
     }
 
     fn render(
@@ -183,8 +271,9 @@ impl GameOfLifeUniverseGrid {
         height: i32,
     ) {
         if !self.frozen() {
-            let fg_color = gtk::gdk::RGBA::from_str("#64baff").unwrap();
-            let bg_color = gtk::gdk::RGBA::from_str("#fafafa").unwrap();
+            let imp = self.imp();
+            let fg_color = imp.fg_color.get().unwrap();
+            let bg_color = imp.bg_color.get().unwrap();
             let universe = self.imp().universe.lock().unwrap();
 
             context.set_source_rgba(
@@ -232,13 +321,16 @@ impl GameOfLifeUniverseGrid {
     }
 
     pub fn set_mode(&self, value: UniverseGridMode) {
-        self.imp().mode.set(value);
-        self.notify("mode");
+        if !self.is_running() {
+            self.imp().mode.set(value);
 
-        match self.mode() {
-            UniverseGridMode::Design => {}
-            UniverseGridMode::Run => {}
+            match self.mode() {
+                UniverseGridMode::Design => {}
+                UniverseGridMode::Run => {}
+            }
         }
+
+        self.notify("mode");
     }
 
     pub fn is_running(&self) -> bool {
@@ -265,6 +357,8 @@ impl GameOfLifeUniverseGrid {
     }
 
     pub fn run(&self) {
+        self.set_mode(UniverseGridMode::Run);
+
         let universe = self.imp().universe.clone();
         let local_sender = self.get_sender();
 

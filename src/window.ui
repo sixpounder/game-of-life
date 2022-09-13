@@ -24,80 +24,12 @@
             <property name="valign">fill</property>
             <property name="halign">fill</property>
             <property name="vexpand">True</property>
-            <property name="mode">Design</property>
+            <property name="mode">Run</property>
           </object>
         </child>
         <child>
-          <object class="GtkCenterBox">
-            <property name="margin-start">10</property>
-            <property name="margin-end">10</property>
-            <property name="margin-top">10</property>
-            <property name="margin-bottom">10</property>
-            <child type="start">
-            </child>
-            <child type="center">
-              <object class="GtkBox">
-                <property name="orientation">horizontal</property>
-                <property name="hexpand">true</property>
-                <property name="halign">center</property>
-                <property name="homogeneous">false</property>
-                <property name="spacing">24</property>
-                <child>
-                  <object class="GtkButton" id="run_button">
-                    <property name="icon-name" bind-property="run-button-icon-name" bind-source="GameOfLifeWindow" bind-flags="default|sync-create"/>
-                    <property name="tooltip-text" translatable="yes">Toggle universe run</property>
-                    <property name="action-name">win.play</property>
-                    <style>
-                      <class name="circular"/>
-                      <class name="large"/>
-                    </style>
-                    <accessibility>
-                      <property name="label" translatable="yes" context="a11y">Toggle universe run</property>
-                    </accessibility>
-                  </object>
-                </child>
-              </object>
-            </child>
-            <child type="end">
-              <object class="GtkBox">
-                <property name="spacing">24</property>
-                <property name="orientation">horizontal</property>
-                <child>
-                  <object class="GtkButton" id="save_snapshot_button">
-                    <property name="icon-name">snapshots-alt-symbolic</property>
-                    <property name="tooltip-text" translatable="yes">Save the current state snapshot</property>
-                    <property name="sensitive" bind-property="is-stopped" bind-source="GameOfLifeWindow" bind-flags="default|sync-create">
-                    </property>
-                    <property name="action-name">win.snapshot</property>
-                    <property name="valign">center</property>
-                    <property name="halign">center</property>
-                    <style>
-                      <class name="circular"/>
-                    </style>
-                    <accessibility>
-                      <property name="label" translatable="yes" context="a11y">Save the current state snapshot</property>
-                    </accessibility>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkButton" id="random_seed_button">
-                    <property name="icon-name">dice3-symbolic</property>
-                    <property name="tooltip-text" translatable="yes">Randomly seed this universe</property>
-                    <property name="sensitive" bind-property="is-stopped" bind-source="GameOfLifeWindow" bind-flags="default|sync-create">
-                    </property>
-                    <property name="action-name">win.random-seed</property>
-                    <property name="valign">center</property>
-                    <property name="halign">center</property>
-                    <style>
-                      <class name="circular"/>
-                    </style>
-                    <accessibility>
-                      <property name="label" translatable="yes" context="a11y">Randomly seed this universe</property>
-                    </accessibility>
-                  </object>
-                </child>
-              </object>
-            </child>
+          <object class="GameOfLifeUniverseControls" id="controls">
+            <property name="playing" bind-property="is-running" bind-source="GameOfLifeWindow" bind-flags="default|sync-create"></property>
           </object>
         </child>
       </object>
