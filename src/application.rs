@@ -1,7 +1,5 @@
-use std::cell::RefCell;
 use glib::clone;
 use gtk::prelude::*;
-use adw::prelude::AdwApplicationExt;
 use gtk::subclass::prelude::*;
 use gtk::{gio, glib};
 use adw::subclass::prelude::*;
@@ -9,26 +7,15 @@ use adw::subclass::prelude::*;
 use crate::config::VERSION;
 use crate::GameOfLifeWindow;
 
-pub enum GameOfLifeApplicationEvent {
-    DarkColorSchemePreference(bool)
-}
-
 mod imp {
     use super::*;
 
     #[derive(Debug)]
-    pub struct GameOfLifeApplication {
-        pub(crate) sender: RefCell<Option<glib::Sender<GameOfLifeApplicationEvent>>>,
-        receiver: RefCell<Option<glib::Receiver<GameOfLifeApplicationEvent>>>
-    }
+    pub struct GameOfLifeApplication {}
 
     impl Default for GameOfLifeApplication {
         fn default() -> Self {
-            let (sender, receiver) = glib::MainContext::channel(glib::PRIORITY_DEFAULT);
-            Self {
-                sender: RefCell::new(Some(sender)),
-                receiver: RefCell::new(Some(receiver))
-            }
+            Self {}
         }
     }
 
@@ -57,12 +44,11 @@ mod imp {
         // tries to launch a "second instance" of the application. When they try
         // to do that, we'll just present any existing window.
         fn activate(&self, application: &Self::Type) {
-            let r = self.receiver.take().unwrap();
             // Get the current window or create one if necessary
             let window = if let Some(window) = application.active_window() {
                 window
             } else {
-                let window = GameOfLifeWindow::new(application, &application.style_manager());
+                let window = GameOfLifeWindow::new(application);
                 window.upcast()
             };
 

@@ -1,5 +1,7 @@
-use crate::models::{Universe, UniverseGridMode, UniversePointMatrix, UniverseSnapshot};
-use adw::prelude::AdwApplicationExt;
+use crate::config::{APPLICATION_ID, G_LOG_DOMAIN};
+use crate::models::{
+    Universe, UniverseGridMode, UniversePoint, UniversePointMatrix, UniverseSnapshot,
+};
 use gtk::{
     gio, glib,
     glib::{clone, Receiver, Sender},
@@ -10,26 +12,55 @@ use gtk::{
 
 use std::cell::{Cell, RefCell};
 use std::str::FromStr;
-use std::sync::{Arc, Mutex};
 
 const FG_COLOR_LIGHT: &str = "#64baff";
 const BG_COLOR_LIGHT: &str = "#fafafa";
 const FG_COLOR_DARK: &str = "#C061CB";
 const BG_COLOR_DARK: &str = "#3D3846";
 
-fn universe_point_from_interaction_point(drawing_area: &gtk::DrawingArea, x: f64, y: f64) {
-    let (width, height) = (drawing_area.width(), drawing_area.height());
+/// Maps a point on the widget area onto a cell in a given universe
+fn widget_area_point_to_universe_cell(
+    drawing_area: &gtk::DrawingArea,
+    universe: Option<&Universe>,
+    x: f64,
+    y: f64,
+) -> Option<UniversePoint> {
+    if let Some(universe) = universe {
+        let (widget_width, widget_height) = (drawing_area.width(), drawing_area.height());
+        let (universe_width, universe_height) = (universe.rows(), universe.columns());
+
+        let universe_row = ((x.round() as i32) * universe_width as i32) / widget_width as i32;
+        let universe_column = ((y.round() as i32) * universe_height as i32) / widget_height as i32;
+
+        Some(universe.get(universe_row as usize, universe_column as usize))
+    } else {
+        None
+    }
 }
 
 #[derive(Debug)]
 pub enum UniverseGridRequest {
+        /// Freezes rendering process. Useful when moving windows and the likes.
     Freeze,
+
+    /// Restores normal rendering operations
     Unfreeze,
+
+    /// Sets the widget mode (run or design)
     Mode(UniverseGridMode),
+
+    /// Sets the color scheme for the grid
     DarkColorSchemePreference(bool),
+
+    /// Starts evolving the inner universe
     Run,
+
+    /// Halts the evolution of the inner universe
     Halt,
-    Redraw(Universe),
+
+    /// Requests the grid to redraw itself.If the value is Some(universe) the contained
+    /// value will replace the current model inside the widget
+    Redraw(Option<Universe>),
 }
 
 mod imp {
@@ -224,8 +255,10 @@ impl GameOfLifeUniverseGrid {
             UniverseGridRequest::Run => self.run(),
             UniverseGridRequest::Halt => self.halt(),
             UniverseGridRequest::Redraw(new_universe_state) => {
-                self.imp().universe.replace(Some(new_universe_state));
-                self.imp().drawing_area.queue_draw();
+                if let Some(new_universe_state) = new_universe_state {
+                    self.imp().universe.replace(Some(new_universe_state));
+                }
+                self.redraw();
             }
             UniverseGridRequest::DarkColorSchemePreference(prefers_dark) => {
                 self.set_prefers_dark_mode(prefers_dark)
@@ -235,9 +268,26 @@ impl GameOfLifeUniverseGrid {
         glib::Continue(true)
     }
 
-    fn on_drawing_area_clicked(&self, gesture: &gtk::GestureClick, n_press: i32, x: f64, y: f64) {
+    fn on_drawing_area_clicked(&self, _gesture: &gtk::GestureClick, _n_press: i32, x: f64, y: f64) {
         if self.mode() == UniverseGridMode::Design {
-            println!("{}x{}", x, y);
+            let universe_borrow = self.imp().universe.borrow();
+            if let Some(universe_point) = widget_area_point_to_universe_cell(
+                &self.imp().drawing_area,
+                universe_borrow.as_ref(),
+                x,
+                y,
+            ) {
+                // If a point is found, invert its cell value
+                drop(universe_borrow);
+                let mut universe_mut_borrow = self.imp().universe.borrow_mut();
+                let mut_borrow = universe_mut_borrow.as_mut().unwrap();
+                mut_borrow.set_cell(
+                    universe_point.row(),
+                    universe_point.column(),
+                    !(*universe_point.cell()),
+                );
+                self.redraw();
+            }
         }
     }
 
@@ -291,16 +341,10 @@ impl GameOfLifeUniverseGrid {
             // Get a lock on the universe object
             let universe = self.imp().universe.borrow();
             if let Some(universe) = universe.as_ref() {
-                let mut size: (f64, f64) = (
+                let (width, height) = (
                     width as f64 / universe.columns() as f64,
                     height as f64 / universe.rows() as f64,
                 );
-
-                if size.0 <= size.1 {
-                    size = (size.0, size.0);
-                } else {
-                    size = (size.1, size.1);
-                }
 
                 context.set_source_rgba(
                     fg_color.red() as f64,
@@ -313,14 +357,14 @@ impl GameOfLifeUniverseGrid {
                     if el.cell().is_alive() {
                         let w = el.row();
                         let h = el.column();
-                        let coords: (f64, f64) = ((w as f64) * size.0, (h as f64) * size.1);
+                        let coords: (f64, f64) = ((w as f64) * width, (h as f64) * height);
 
-                        context.rectangle(coords.0, coords.1, size.0, size.1);
+                        context.rectangle(coords.0, coords.1, width, height);
                         context.fill().unwrap();
                     }
                 }
             } else {
-                println!("No universe to render");
+                glib::warn!("No universe to render");
             }
         }
     }
@@ -389,13 +433,13 @@ impl GameOfLifeUniverseGrid {
                 std::thread::sleep(std::time::Duration::from_millis(50));
                 thread_universe.tick();
                 local_sender
-                    .send(UniverseGridRequest::Redraw(thread_universe.clone()))
+                    .send(UniverseGridRequest::Redraw(Some(thread_universe.clone())))
                     .unwrap();
             });
 
             self.notify("is-running");
         } else {
-            println!("No universe to run");
+            glib::warn!("No universe to run");
         }
     }
 
@@ -420,7 +464,11 @@ impl GameOfLifeUniverseGrid {
         drop(current_universe);
 
         let new_universe = Universe::new_random(rows, cols);
-        self.process_action(UniverseGridRequest::Redraw(new_universe));
+        self.process_action(UniverseGridRequest::Redraw(Some(new_universe)));
+    }
+
+    pub fn redraw(&self) {
+        self.imp().drawing_area.queue_draw();
     }
 }
 

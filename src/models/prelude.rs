@@ -30,6 +30,16 @@ impl UniverseCell {
     }
 }
 
+impl std::ops::Not for UniverseCell {
+    type Output = UniverseCell;
+    fn not(self) -> Self::Output {
+        match self {
+            UniverseCell::Alive => UniverseCell::Dead,
+            UniverseCell::Dead => UniverseCell::Alive
+        }
+    }
+}
+
 impl fmt::Display for UniverseCell {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(

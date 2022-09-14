@@ -1,12 +1,13 @@
+use std::cell::RefCell;
 use crate::models::UniverseGridMode;
 use crate::widgets::UniverseGridRequest;
 use gtk::prelude::*;
 use gtk::subclass::prelude::*;
 use gtk::{gio, glib, glib::clone, CompositeTemplate};
-use std::cell::RefCell;
+use adw::prelude::AdwApplicationExt;
 
-use crate::application::GameOfLifeApplication;
-use crate::config::APPLICATION_G_PATH;
+// use crate::application::GameOfLifeApplication;
+use crate::config::{APPLICATION_ID, APPLICATION_G_PATH};
 
 mod imp {
     use super::*;
@@ -28,9 +29,8 @@ mod imp {
 
         pub(crate) mode: std::cell::Cell<UniverseGridMode>,
 
-        pub provider: gtk::CssProvider,
-
-        // pub settings: gtk::gio::Settings,
+        pub(crate) provider: gtk::CssProvider,
+        // pub(crate) settings: gtk::gio::Settings,
     }
 
     #[glib::object_subclass]
@@ -127,12 +127,11 @@ glib::wrapper! {
 }
 
 impl GameOfLifeWindow {
-    pub fn new<P: glib::IsA<gtk::Application>>(
-        application: &P,
-        style_manager: &adw::StyleManager,
-    ) -> Self {
+    pub fn new<P: glib::IsA<adw::Application>>(application: &P) -> Self {
         let win: Self = glib::Object::new(&[("application", application)])
             .expect("Failed to create GameOfLifeWindow");
+
+        let style_manager = application.style_manager();
 
         win.setup_provider();
         win.update_prefers_dark_mode(style_manager.is_dark());

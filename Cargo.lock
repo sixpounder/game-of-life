@@ -156,6 +156,7 @@ version = "0.1.0"
 dependencies = [
  "bincode",
  "gettext-rs",
+ "glib",
  "gtk4",
  "libadwaita",
  "once_cell",
@@ -298,6 +299,7 @@ dependencies = [
  "glib-sys",
  "gobject-sys",
  "libc",
+ "log",
  "once_cell",
  "smallvec",
  "thiserror",
@@ -512,6 +514,15 @@ dependencies = [
  "objc-foundation",
  "regex",
  "winapi",
+]
+
+[[package]]
+name = "log"
+version = "0.4.17"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "abb12e687cfb44aa40f41fc3978ef76448f9b6038cad6aef4259d3c095a2382e"
+dependencies = [
+ "cfg-if",
 ]
 
 [[package]]

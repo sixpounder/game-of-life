@@ -4,3 +4,6 @@ pub static LOCALEDIR: &str = @LOCALEDIR@;
 pub static PKGDATADIR: &str = @PKGDATADIR@;
 pub static APPLICATION_ID: &str = @APPLICATION_ID@;
 pub static APPLICATION_G_PATH: &str = @APPLICATION_G_PATH@;
+
+pub static G_LOG_DOMAIN: &str = @APPLICATION_ID@;
+

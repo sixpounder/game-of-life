@@ -4,3 +4,6 @@ pub static LOCALEDIR: &str = "/app/share/locale";
 pub static PKGDATADIR: &str = "/app/share/game-of-life";
 pub static APPLICATION_ID: &str = "com.github.sixpounder.GameOfLife";
 pub static APPLICATION_G_PATH: &str = "/com/github/sixpounder/GameOfLife";
+
+pub static G_LOG_DOMAIN: &str = "com.github.sixpounder.GameOfLife";
+
