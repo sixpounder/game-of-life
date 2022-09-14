@@ -29,7 +29,7 @@ mod imp {
         pub(crate) mode: std::cell::Cell<UniverseGridMode>,
 
         pub provider: gtk::CssProvider,
-        // pub application_events_receiver: RefCell<Option<glib::Receiver<GameOfLifeApplicationEvent>>>,
+
         // pub settings: gtk::gio::Settings,
     }
 
@@ -46,7 +46,6 @@ mod imp {
                 controls: TemplateChild::default(),
                 mode: std::cell::Cell::default(),
                 provider: gtk::CssProvider::new(),
-                // application_events_receiver: RefCell::new(None),
                 // settings: gtk::gio::Settings::with_path(
                 //     APPLICATION_ID,
                 //     format!("{}/", APPLICATION_G_PATH).as_str(),

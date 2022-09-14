@@ -17,6 +17,10 @@ const BG_COLOR_LIGHT: &str = "#fafafa";
 const FG_COLOR_DARK: &str = "#C061CB";
 const BG_COLOR_DARK: &str = "#3D3846";
 
+fn universe_point_from_interaction_point(drawing_area: &gtk::DrawingArea, x: f64, y: f64) {
+    let (width, height) = (drawing_area.width(), drawing_area.height());
+}
+
 #[derive(Debug)]
 pub enum UniverseGridRequest {
     Freeze,
@@ -25,7 +29,7 @@ pub enum UniverseGridRequest {
     DarkColorSchemePreference(bool),
     Run,
     Halt,
-    Redraw,
+    Redraw(Universe),
 }
 
 mod imp {
@@ -41,15 +45,13 @@ mod imp {
         #[template_child]
         pub drawing_area: TemplateChild<gtk::DrawingArea>,
 
-        pub(crate) application: RefCell<Option<crate::GameOfLifeApplication>>,
-
         pub(crate) mode: Cell<UniverseGridMode>,
 
         pub(crate) frozen: Cell<bool>,
 
         pub(crate) prefers_dark_mode: Cell<bool>,
 
-        pub(crate) universe: Arc<Mutex<Universe>>,
+        pub(crate) universe: RefCell<Option<Universe>>,
 
         pub(crate) receiver: RefCell<Option<Receiver<UniverseGridRequest>>>,
 
@@ -73,6 +75,8 @@ mod imp {
             let receiver = RefCell::new(Some(r));
 
             let mut this = Self::default();
+
+            this.universe.replace(Some(Universe::new_random(200, 200)));
 
             this.receiver = receiver;
             this.sender = Some(sender);
@@ -100,7 +104,6 @@ mod imp {
     impl ObjectImpl for GameOfLifeUniverseGrid {
         fn constructed(&self, obj: &Self::Type) {
             self.parent_constructed(obj);
-
             obj.setup_drawing_area();
             obj.setup_channel();
         }
@@ -108,13 +111,6 @@ mod imp {
         fn properties() -> &'static [glib::ParamSpec] {
             static PROPERTIES: Lazy<Vec<ParamSpec>> = Lazy::new(|| {
                 vec![
-                    ParamSpecObject::new(
-                        "application",
-                        "",
-                        "",
-                        crate::GameOfLifeApplication::static_type(),
-                        ParamFlags::WRITABLE,
-                    ),
                     ParamSpecEnum::new(
                         "mode",
                         "",
@@ -150,11 +146,6 @@ mod imp {
                 }
                 "frozen" => {
                     obj.set_frozen(value.get::<bool>().unwrap());
-                }
-                "application" => {
-                    obj.imp()
-                        .application
-                        .replace(Some(value.get::<crate::GameOfLifeApplication>().unwrap()));
                 }
                 "prefers-dark-mode" => {
                     obj.imp()
@@ -198,17 +189,19 @@ impl GameOfLifeUniverseGrid {
         );
     }
 
+    /// Initializes the inner drawing area with callbacks, controllers etc...
     fn setup_drawing_area(&self) {
-        if let Ok(application_ref) = self.try_property::<gtk::Application>("application") {
-            if let Ok(application_ref) = application_ref.downcast::<adw::Application>() {
-                application_ref.style_manager().connect_dark_notify(
-                    clone!(@strong self as this => move |app| {
-                        this.imp().prefers_dark_mode.set(app.is_dark());
-                    }),
-                );
-            }
-        }
-        self.imp().drawing_area.connect_resize(
+        let drawing_area = self.imp().drawing_area.get();
+
+        let controller = gtk::GestureClick::new();
+        controller.connect_pressed(
+            clone!(@strong self as this => move |gesture, n_press, x, y| {
+                this.on_drawing_area_clicked(gesture, n_press, x, y);
+            }),
+        );
+        drawing_area.add_controller(&controller);
+
+        drawing_area.connect_resize(
             clone!(@strong self as this => move |_widget, _width, _height| {
                 this.set_frozen(true);
                 let sender = this.get_sender();
@@ -218,7 +211,7 @@ impl GameOfLifeUniverseGrid {
             }),
         );
 
-        self.imp().drawing_area.set_draw_func(
+        drawing_area.set_draw_func(
             clone!(@strong self as this => move |widget, context, width, height| this.render(widget, context, width, height) ),
         );
     }
@@ -230,13 +223,22 @@ impl GameOfLifeUniverseGrid {
             UniverseGridRequest::Mode(m) => self.set_mode(m),
             UniverseGridRequest::Run => self.run(),
             UniverseGridRequest::Halt => self.halt(),
-            UniverseGridRequest::Redraw => self.imp().drawing_area.queue_draw(),
+            UniverseGridRequest::Redraw(new_universe_state) => {
+                self.imp().universe.replace(Some(new_universe_state));
+                self.imp().drawing_area.queue_draw();
+            }
             UniverseGridRequest::DarkColorSchemePreference(prefers_dark) => {
                 self.set_prefers_dark_mode(prefers_dark)
             }
         }
 
         glib::Continue(true)
+    }
+
+    fn on_drawing_area_clicked(&self, gesture: &gtk::GestureClick, n_press: i32, x: f64, y: f64) {
+        if self.mode() == UniverseGridMode::Design {
+            println!("{}x{}", x, y);
+        }
     }
 
     pub fn set_prefers_dark_mode(&self, prefers_dark_variant: bool) {
@@ -272,9 +274,10 @@ impl GameOfLifeUniverseGrid {
     ) {
         if !self.frozen() {
             let imp = self.imp();
+
+            // Determine colors
             let fg_color = imp.fg_color.get().unwrap();
             let bg_color = imp.bg_color.get().unwrap();
-            let universe = self.imp().universe.lock().unwrap();
 
             context.set_source_rgba(
                 bg_color.red() as f64,
@@ -285,33 +288,39 @@ impl GameOfLifeUniverseGrid {
             context.rectangle(0.0, 0.0, width.into(), height.into());
             context.fill().unwrap();
 
-            let mut size: (f64, f64) = (
-                width as f64 / universe.columns() as f64,
-                height as f64 / universe.rows() as f64,
-            );
+            // Get a lock on the universe object
+            let universe = self.imp().universe.borrow();
+            if let Some(universe) = universe.as_ref() {
+                let mut size: (f64, f64) = (
+                    width as f64 / universe.columns() as f64,
+                    height as f64 / universe.rows() as f64,
+                );
 
-            if size.0 <= size.1 {
-                size = (size.0, size.0);
-            } else {
-                size = (size.1, size.1);
-            }
-
-            context.set_source_rgba(
-                fg_color.red() as f64,
-                fg_color.green() as f64,
-                fg_color.blue() as f64,
-                fg_color.alpha() as f64,
-            );
-
-            for el in universe.iter_cells() {
-                if el.cell().is_alive() {
-                    let w = el.row();
-                    let h = el.column();
-                    let coords: (f64, f64) = ((w as f64) * size.0, (h as f64) * size.1);
-
-                    context.rectangle(coords.0, coords.1, size.0, size.1);
-                    context.fill().unwrap();
+                if size.0 <= size.1 {
+                    size = (size.0, size.0);
+                } else {
+                    size = (size.1, size.1);
                 }
+
+                context.set_source_rgba(
+                    fg_color.red() as f64,
+                    fg_color.green() as f64,
+                    fg_color.blue() as f64,
+                    fg_color.alpha() as f64,
+                );
+
+                for el in universe.iter_cells() {
+                    if el.cell().is_alive() {
+                        let w = el.row();
+                        let h = el.column();
+                        let coords: (f64, f64) = ((w as f64) * size.0, (h as f64) * size.1);
+
+                        context.rectangle(coords.0, coords.1, size.0, size.1);
+                        context.fill().unwrap();
+                    }
+                }
+            } else {
+                println!("No universe to render");
             }
         }
     }
@@ -358,8 +367,6 @@ impl GameOfLifeUniverseGrid {
 
     pub fn run(&self) {
         self.set_mode(UniverseGridMode::Run);
-
-        let universe = self.imp().universe.clone();
         let local_sender = self.get_sender();
 
         let (thread_render_stopper_sender, thread_render_stopper_receiver) =
@@ -370,19 +377,26 @@ impl GameOfLifeUniverseGrid {
             .render_thread_stopper
             .replace(Some(thread_render_stopper_receiver));
 
-        std::thread::spawn(move || loop {
-            match thread_render_stopper_sender.send(()) {
-                Ok(_) => (),
-                Err(_) => break,
-            };
+        let thread_universe = self.imp().universe.borrow();
+        if let Some(universe) = thread_universe.as_ref() {
+            let mut thread_universe = universe.clone();
+            std::thread::spawn(move || loop {
+                match thread_render_stopper_sender.send(()) {
+                    Ok(_) => (),
+                    Err(_) => break,
+                };
 
-            std::thread::sleep(std::time::Duration::from_millis(50));
-            let mut locked_universe = universe.lock().unwrap();
-            locked_universe.tick();
-            local_sender.send(UniverseGridRequest::Redraw).unwrap();
-        });
+                std::thread::sleep(std::time::Duration::from_millis(50));
+                thread_universe.tick();
+                local_sender
+                    .send(UniverseGridRequest::Redraw(thread_universe.clone()))
+                    .unwrap();
+            });
 
-        self.notify("is-running");
+            self.notify("is-running");
+        } else {
+            println!("No universe to run");
+        }
     }
 
     pub fn halt(&self) {
@@ -393,18 +407,20 @@ impl GameOfLifeUniverseGrid {
 
     pub fn get_universe_snapshot(&self) -> UniverseSnapshot {
         let imp = self.imp();
-
-        let clone = Arc::clone(&imp.universe);
-        let lock = clone.lock().unwrap();
-
-        lock.snapshot()
+        imp.universe.borrow().as_ref().unwrap().snapshot()
     }
 
     pub fn random_seed(&self) {
-        let mut lock = self.imp().universe.lock().unwrap();
-        let (rows, cols) = (lock.rows(), lock.columns());
-        *lock = Universe::new_random(rows, cols);
-        self.process_action(UniverseGridRequest::Redraw);
+        let current_universe = self.imp().universe.borrow();
+        let (rows, cols) = match current_universe.as_ref() {
+            Some(universe) => (universe.rows(), universe.columns()),
+            None => (200, 200),
+        };
+
+        drop(current_universe);
+
+        let new_universe = Universe::new_random(rows, cols);
+        self.process_action(UniverseGridRequest::Redraw(new_universe));
     }
 }
 
