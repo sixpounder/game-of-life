@@ -41,22 +41,22 @@ fn widget_area_point_to_universe_cell(
 #[derive(Debug)]
 pub enum UniverseGridRequest {
     /// Freezes rendering process. Useful when moving windows and the likes.
-    Freeze,
+    // Freeze,
 
     /// Restores normal rendering operations
     Unfreeze,
 
     /// Sets the widget mode (run or design)
-    Mode(UniverseGridMode),
+    // Mode(UniverseGridMode),
 
     /// Sets the color scheme for the grid
-    DarkColorSchemePreference(bool),
+    // DarkColorSchemePreference(bool),
 
     /// Starts evolving the inner universe
-    Run,
+    // Run,
 
     /// Halts the evolution of the inner universe
-    Halt,
+    // Halt,
 
     /// Requests the grid to redraw itself.If the value is Some(universe) the contained
     /// value will replace the current model inside the widget
@@ -90,7 +90,7 @@ mod imp {
 
         pub(super) render_thread_stopper: RefCell<Option<std::sync::mpsc::Receiver<()>>>,
 
-        pub(super) allowDrawOnResize: std::cell::Cell<bool>,
+        pub(super) allow_draw_on_resize: std::cell::Cell<bool>,
 
         pub(super) fg_color: std::cell::Cell<Option<gtk::gdk::RGBA>>,
 
@@ -152,7 +152,13 @@ mod imp {
                         1,
                         ParamFlags::READWRITE,
                     ),
-                    ParamSpecBoolean::new("allow-draw-on-resize", "", "", false, ParamFlags::READWRITE),
+                    ParamSpecBoolean::new(
+                        "allow-draw-on-resize",
+                        "",
+                        "",
+                        false,
+                        ParamFlags::READWRITE,
+                    ),
                     ParamSpecBoolean::new("frozen", "", "", false, ParamFlags::READWRITE),
                     ParamSpecBoolean::new("is-running", "", "", false, ParamFlags::READABLE),
                     ParamSpecBoolean::new(
@@ -198,7 +204,7 @@ mod imp {
                 "mode" => self.mode.get().to_value(),
                 "frozen" => self.frozen.get().to_value(),
                 "prefers-dark-mode" => self.prefers_dark_mode.get().to_value(),
-                "allow-draw-on-resize" => self.allowDrawOnResize.get().to_value(),
+                "allow-draw-on-resize" => self.allow_draw_on_resize.get().to_value(),
                 "is-running" => obj.is_running().to_value(),
                 _ => unimplemented!(),
             }
@@ -258,19 +264,12 @@ impl GameOfLifeUniverseGrid {
 
     fn process_action(&self, action: UniverseGridRequest) -> glib::Continue {
         match action {
-            UniverseGridRequest::Freeze => self.set_frozen(true),
             UniverseGridRequest::Unfreeze => self.set_frozen(false),
-            UniverseGridRequest::Mode(m) => self.set_mode(m),
-            UniverseGridRequest::Run => self.run(),
-            UniverseGridRequest::Halt => self.halt(),
             UniverseGridRequest::Redraw(new_universe_state) => {
                 if let Some(new_universe_state) = new_universe_state {
                     self.imp().universe.replace(Some(new_universe_state));
                 }
                 self.redraw();
-            }
-            UniverseGridRequest::DarkColorSchemePreference(prefers_dark) => {
-                self.set_prefers_dark_mode(prefers_dark)
             }
         }
 
@@ -391,11 +390,11 @@ impl GameOfLifeUniverseGrid {
     }
 
     pub fn allow_draw_on_resize(&self) -> bool {
-        self.imp().allowDrawOnResize.get()
+        self.imp().allow_draw_on_resize.get()
     }
 
     pub fn set_allow_draw_on_resize(&self, value: bool) {
-        self.imp().allowDrawOnResize.set(value);
+        self.imp().allow_draw_on_resize.set(value);
     }
 
     fn get_sender(&self) -> Sender<UniverseGridRequest> {
