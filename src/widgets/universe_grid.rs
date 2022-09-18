@@ -40,7 +40,7 @@ fn widget_area_point_to_universe_cell(
 
 #[derive(Debug)]
 pub enum UniverseGridRequest {
-        /// Freezes rendering process. Useful when moving windows and the likes.
+    /// Freezes rendering process. Useful when moving windows and the likes.
     Freeze,
 
     /// Restores normal rendering operations
@@ -76,23 +76,25 @@ mod imp {
         #[template_child]
         pub drawing_area: TemplateChild<gtk::DrawingArea>,
 
-        pub(crate) mode: Cell<UniverseGridMode>,
+        pub(super) mode: Cell<UniverseGridMode>,
 
-        pub(crate) frozen: Cell<bool>,
+        pub(super) frozen: Cell<bool>,
 
-        pub(crate) prefers_dark_mode: Cell<bool>,
+        pub(super) prefers_dark_mode: Cell<bool>,
 
-        pub(crate) universe: RefCell<Option<Universe>>,
+        pub(super) universe: RefCell<Option<Universe>>,
 
-        pub(crate) receiver: RefCell<Option<Receiver<UniverseGridRequest>>>,
+        pub(super) receiver: RefCell<Option<Receiver<UniverseGridRequest>>>,
 
-        pub(crate) sender: Option<Sender<UniverseGridRequest>>,
+        pub(super) sender: Option<Sender<UniverseGridRequest>>,
 
-        pub(crate) render_thread_stopper: RefCell<Option<std::sync::mpsc::Receiver<()>>>,
+        pub(super) render_thread_stopper: RefCell<Option<std::sync::mpsc::Receiver<()>>>,
 
-        pub(crate) fg_color: std::cell::Cell<Option<gtk::gdk::RGBA>>,
+        pub(super) allowDrawOnResize: std::cell::Cell<bool>,
 
-        pub(crate) bg_color: std::cell::Cell<Option<gtk::gdk::RGBA>>,
+        pub(super) fg_color: std::cell::Cell<Option<gtk::gdk::RGBA>>,
+
+        pub(super) bg_color: std::cell::Cell<Option<gtk::gdk::RGBA>>,
     }
 
     #[glib::object_subclass]
@@ -150,6 +152,7 @@ mod imp {
                         1,
                         ParamFlags::READWRITE,
                     ),
+                    ParamSpecBoolean::new("allow-draw-on-resize", "", "", false, ParamFlags::READWRITE),
                     ParamSpecBoolean::new("frozen", "", "", false, ParamFlags::READWRITE),
                     ParamSpecBoolean::new("is-running", "", "", false, ParamFlags::READABLE),
                     ParamSpecBoolean::new(
@@ -172,6 +175,9 @@ mod imp {
             pspec: &ParamSpec,
         ) {
             match pspec.name() {
+                "allow-draw-on-resize" => {
+                    obj.set_allow_draw_on_resize(value.get::<bool>().unwrap());
+                }
                 "mode" => {
                     obj.set_mode(value.get::<UniverseGridMode>().unwrap());
                 }
@@ -192,6 +198,7 @@ mod imp {
                 "mode" => self.mode.get().to_value(),
                 "frozen" => self.frozen.get().to_value(),
                 "prefers-dark-mode" => self.prefers_dark_mode.get().to_value(),
+                "allow-draw-on-resize" => self.allowDrawOnResize.get().to_value(),
                 "is-running" => obj.is_running().to_value(),
                 _ => unimplemented!(),
             }
@@ -234,11 +241,13 @@ impl GameOfLifeUniverseGrid {
 
         drawing_area.connect_resize(
             clone!(@strong self as this => move |_widget, _width, _height| {
-                this.set_frozen(true);
-                let sender = this.get_sender();
-                glib::timeout_add_once(std::time::Duration::from_millis(500), move || {
-                    sender.send(UniverseGridRequest::Unfreeze).expect("Could not unlock grid");
-                });
+                if !this.allow_draw_on_resize() {
+                    this.set_frozen(true);
+                    let sender = this.get_sender();
+                    glib::timeout_add_once(std::time::Duration::from_millis(500), move || {
+                        sender.send(UniverseGridRequest::Unfreeze).expect("Could not unlock grid");
+                    });
+                }
             }),
         );
 
@@ -289,30 +298,6 @@ impl GameOfLifeUniverseGrid {
                 self.redraw();
             }
         }
-    }
-
-    pub fn set_prefers_dark_mode(&self, prefers_dark_variant: bool) {
-        let imp = self.imp();
-        imp.prefers_dark_mode.replace(prefers_dark_variant);
-
-        match prefers_dark_variant {
-            true => {
-                imp.fg_color
-                    .set(Some(gtk::gdk::RGBA::from_str(FG_COLOR_DARK).unwrap()));
-                imp.bg_color
-                    .set(Some(gtk::gdk::RGBA::from_str(BG_COLOR_DARK).unwrap()));
-            }
-            false => {
-                imp.fg_color
-                    .set(Some(gtk::gdk::RGBA::from_str(FG_COLOR_LIGHT).unwrap()));
-                imp.bg_color
-                    .set(Some(gtk::gdk::RGBA::from_str(BG_COLOR_LIGHT).unwrap()));
-            }
-        }
-    }
-
-    pub fn prefers_dark_mode(&self) -> bool {
-        self.imp().prefers_dark_mode.get()
     }
 
     fn render(
@@ -405,7 +390,15 @@ impl GameOfLifeUniverseGrid {
         self.imp().frozen.get()
     }
 
-    pub fn get_sender(&self) -> Sender<UniverseGridRequest> {
+    pub fn allow_draw_on_resize(&self) -> bool {
+        self.imp().allowDrawOnResize.get()
+    }
+
+    pub fn set_allow_draw_on_resize(&self, value: bool) {
+        self.imp().allowDrawOnResize.set(value);
+    }
+
+    fn get_sender(&self) -> Sender<UniverseGridRequest> {
         self.imp().sender.as_ref().unwrap().clone()
     }
 
@@ -449,6 +442,14 @@ impl GameOfLifeUniverseGrid {
         self.notify("is-running");
     }
 
+    pub fn toggle_run(&self) {
+        if self.is_running() {
+            self.halt();
+        } else {
+            self.run();
+        }
+    }
+
     pub fn get_universe_snapshot(&self) -> UniverseSnapshot {
         let imp = self.imp();
         imp.universe.borrow().as_ref().unwrap().snapshot()
@@ -469,6 +470,30 @@ impl GameOfLifeUniverseGrid {
 
     pub fn redraw(&self) {
         self.imp().drawing_area.queue_draw();
+    }
+
+    pub fn set_prefers_dark_mode(&self, prefers_dark_variant: bool) {
+        let imp = self.imp();
+        imp.prefers_dark_mode.replace(prefers_dark_variant);
+
+        match prefers_dark_variant {
+            true => {
+                imp.fg_color
+                    .set(Some(gtk::gdk::RGBA::from_str(FG_COLOR_DARK).unwrap()));
+                imp.bg_color
+                    .set(Some(gtk::gdk::RGBA::from_str(BG_COLOR_DARK).unwrap()));
+            }
+            false => {
+                imp.fg_color
+                    .set(Some(gtk::gdk::RGBA::from_str(FG_COLOR_LIGHT).unwrap()));
+                imp.bg_color
+                    .set(Some(gtk::gdk::RGBA::from_str(BG_COLOR_LIGHT).unwrap()));
+            }
+        }
+    }
+
+    pub fn prefers_dark_mode(&self) -> bool {
+        self.imp().prefers_dark_mode.get()
     }
 }
 

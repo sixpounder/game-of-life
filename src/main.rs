@@ -3,6 +3,7 @@ mod config;
 mod window;
 mod widgets;
 mod models;
+mod services;
 
 use self::application::GameOfLifeApplication;
 use self::window::GameOfLifeWindow;

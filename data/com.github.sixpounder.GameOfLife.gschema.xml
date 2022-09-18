@@ -7,7 +7,7 @@
 	  <key name="bg-tint" type="s">
 	    <default>#e1e1e1</default>
 	  </key>
-	  <key name="evolution-speed" type="i">
+	  <key name="evolution-speed" type="ui">
 	    <default>10</default>
 	    <description>The number of generations per seconds that should be computed when a simulation is running</description>
 	  </key>

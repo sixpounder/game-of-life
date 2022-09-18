@@ -42,7 +42,10 @@ rust_sources = files(
   'widgets/universe_grid.rs',
   'widgets/universe_controls.rs',
   'models/mod.rs',
+  'models/prelude.rs',
   'models/universe.rs',
+  'services/mod.rs',
+  'services/settings.rs'
 )
 
 sources = [cargo_sources, rust_sources]

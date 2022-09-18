@@ -1,13 +1,14 @@
-use std::cell::RefCell;
-use crate::models::UniverseGridMode;
-use crate::widgets::UniverseGridRequest;
+use adw::prelude::AdwApplicationExt;
 use gtk::prelude::*;
 use gtk::subclass::prelude::*;
 use gtk::{gio, glib, glib::clone, CompositeTemplate};
-use adw::prelude::AdwApplicationExt;
 
-// use crate::application::GameOfLifeApplication;
-use crate::config::{APPLICATION_ID, APPLICATION_G_PATH};
+use crate::{
+    models::UniverseGridMode,
+    services::GameOfLifeSettings,
+    config::APPLICATION_G_PATH,
+    widgets::UniverseGridRequest,
+};
 
 mod imp {
     use super::*;
@@ -19,18 +20,18 @@ mod imp {
     pub struct GameOfLifeWindow {
         // Template widgets
         #[template_child]
-        pub header_bar: TemplateChild<gtk::HeaderBar>,
+        pub(super) header_bar: TemplateChild<gtk::HeaderBar>,
 
         #[template_child]
-        pub universe_grid: TemplateChild<crate::widgets::GameOfLifeUniverseGrid>,
+        pub(super) universe_grid: TemplateChild<crate::widgets::GameOfLifeUniverseGrid>,
 
         #[template_child]
-        pub controls: TemplateChild<crate::widgets::GameOfLifeUniverseControls>,
+        pub(super) controls: TemplateChild<crate::widgets::GameOfLifeUniverseControls>,
 
-        pub(crate) mode: std::cell::Cell<UniverseGridMode>,
+        pub(super) mode: std::cell::Cell<UniverseGridMode>,
 
-        pub(crate) provider: gtk::CssProvider,
-        // pub(crate) settings: gtk::gio::Settings,
+        pub(super) provider: gtk::CssProvider,
+        // pub(super) settings: GameOfLifeSettings,
     }
 
     #[glib::object_subclass]
@@ -46,10 +47,7 @@ mod imp {
                 controls: TemplateChild::default(),
                 mode: std::cell::Cell::default(),
                 provider: gtk::CssProvider::new(),
-                // settings: gtk::gio::Settings::with_path(
-                //     APPLICATION_ID,
-                //     format!("{}/", APPLICATION_G_PATH).as_str(),
-                // ),
+                // settings: GameOfLifeSettings::default(),
             }
         }
 
@@ -185,22 +183,17 @@ impl GameOfLifeWindow {
     }
 
     pub fn toggle_run(&self) {
-        let sender = self.imp().universe_grid.get_sender();
-        match self.is_running() {
-            false => sender.send(UniverseGridRequest::Run).unwrap(),
-            true => sender.send(UniverseGridRequest::Halt).unwrap(),
-        }
+        self.imp().universe_grid.toggle_run();
     }
 
     pub fn toggle_edit_mode(&self) {
-        let sender = self.imp().universe_grid.get_sender();
         let grid = self.imp().universe_grid.get();
         let next_mode = match grid.mode() {
             UniverseGridMode::Design => UniverseGridMode::Run,
             UniverseGridMode::Run => UniverseGridMode::Design,
         };
 
-        sender.send(UniverseGridRequest::Mode(next_mode)).unwrap();
+        grid.set_mode(next_mode);
 
         let controls = self.imp().controls.get();
         controls.set_mode(next_mode);
@@ -208,6 +201,7 @@ impl GameOfLifeWindow {
 
     fn make_and_save_snapshot(&self) {
         let snapshot = self.imp().universe_grid.get_universe_snapshot();
+        todo!()
     }
 
     fn seed_universe(&self) {

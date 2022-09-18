@@ -11,16 +11,16 @@ mod imp {
     #[template(resource = "/com/github/sixpounder/GameOfLife/universe_controls.ui")]
     pub struct GameOfLifeUniverseControls {
         #[template_child]
-        pub run_button: TemplateChild<gtk::Button>,
+        pub(super) run_button: TemplateChild<gtk::Button>,
 
         #[template_child]
-        pub save_snapshot_button: TemplateChild<gtk::Button>,
+        pub(super) save_snapshot_button: TemplateChild<gtk::Button>,
 
         #[template_child]
-        pub random_seed_button: TemplateChild<gtk::Button>,
+        pub(super) random_seed_button: TemplateChild<gtk::Button>,
 
-        pub playing: std::cell::Cell<bool>,
-        pub editing: std::cell::Cell<bool>,
+        pub(super) playing: std::cell::Cell<bool>,
+        pub(super) editing: std::cell::Cell<bool>,
     }
 
     #[glib::object_subclass]

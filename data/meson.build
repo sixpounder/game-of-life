@@ -33,10 +33,12 @@ install_data('com.github.sixpounder.GameOfLife.gschema.xml',
   install_dir: join_paths(get_option('datadir'), 'glib-2.0/schemas')
 )
 
+gnome.compile_schemas()
+
 compile_schemas = find_program('glib-compile-schemas', required: true)
 if compile_schemas.found()
   test('Validate and compile schema file', compile_schemas,
-    args: ['--strict', meson.current_source_dir()]
+    args: ['--strict', '--dry-run', meson.current_source_dir()]
   )
 endif
 

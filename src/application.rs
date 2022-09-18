@@ -10,14 +10,8 @@ use crate::GameOfLifeWindow;
 mod imp {
     use super::*;
 
-    #[derive(Debug)]
+    #[derive(Debug, Default)]
     pub struct GameOfLifeApplication {}
-
-    impl Default for GameOfLifeApplication {
-        fn default() -> Self {
-            Self {}
-        }
-    }
 
     #[glib::object_subclass]
     impl ObjectSubclass for GameOfLifeApplication {
