@@ -2,6 +2,7 @@ use crate::config::{APPLICATION_ID, G_LOG_DOMAIN};
 use crate::models::{
     Universe, UniverseGridMode, UniversePoint, UniversePointMatrix, UniverseSnapshot,
 };
+use crate::services::GameOfLifeSettings;
 use gtk::{
     gio, glib,
     glib::{clone, Receiver, Sender},
@@ -13,10 +14,10 @@ use gtk::{
 use std::cell::{Cell, RefCell};
 use std::str::FromStr;
 
-const FG_COLOR_LIGHT: &str = "#64baff";
-const BG_COLOR_LIGHT: &str = "#fafafa";
-const FG_COLOR_DARK: &str = "#C061CB";
-const BG_COLOR_DARK: &str = "#3D3846";
+// const FG_COLOR_LIGHT: &str = "#64baff";
+// const BG_COLOR_LIGHT: &str = "#fafafa";
+// const FG_COLOR_DARK: &str = "#C061CB";
+// const BG_COLOR_DARK: &str = "#3D3846";
 
 /// Maps a point on the widget area onto a cell in a given universe
 fn widget_area_point_to_universe_cell(
@@ -80,7 +81,7 @@ mod imp {
 
         pub(super) frozen: Cell<bool>,
 
-        pub(super) prefers_dark_mode: Cell<bool>,
+        // pub(super) prefers_dark_mode: Cell<bool>,
 
         pub(super) universe: RefCell<Option<Universe>>,
 
@@ -107,6 +108,8 @@ mod imp {
             let (sender, r) = glib::MainContext::channel(glib::PRIORITY_DEFAULT);
             let receiver = RefCell::new(Some(r));
 
+            let settings = GameOfLifeSettings::default();
+
             let mut this = Self::default();
 
             this.universe.replace(Some(Universe::new_random(200, 200)));
@@ -117,9 +120,9 @@ mod imp {
 
             // Defaults to light color scheme
             this.fg_color
-                .set(Some(gtk::gdk::RGBA::from_str(FG_COLOR_LIGHT).unwrap()));
+                .set(Some(gtk::gdk::RGBA::from_str(&settings.fg_color()).unwrap()));
             this.bg_color
-                .set(Some(gtk::gdk::RGBA::from_str(BG_COLOR_DARK).unwrap()));
+                .set(Some(gtk::gdk::RGBA::from_str(&settings.bg_color()).unwrap()));
 
             this
         }
@@ -161,13 +164,6 @@ mod imp {
                     ),
                     ParamSpecBoolean::new("frozen", "", "", false, ParamFlags::READWRITE),
                     ParamSpecBoolean::new("is-running", "", "", false, ParamFlags::READABLE),
-                    ParamSpecBoolean::new(
-                        "prefers-dark-mode",
-                        "",
-                        "",
-                        false,
-                        ParamFlags::READWRITE,
-                    ),
                 ]
             });
             PROPERTIES.as_ref()
@@ -190,11 +186,6 @@ mod imp {
                 "frozen" => {
                     obj.set_frozen(value.get::<bool>().unwrap());
                 }
-                "prefers-dark-mode" => {
-                    obj.imp()
-                        .prefers_dark_mode
-                        .replace(value.get::<bool>().unwrap());
-                }
                 _ => unimplemented!(),
             }
         }
@@ -203,7 +194,6 @@ mod imp {
             match pspec.name() {
                 "mode" => self.mode.get().to_value(),
                 "frozen" => self.frozen.get().to_value(),
-                "prefers-dark-mode" => self.prefers_dark_mode.get().to_value(),
                 "allow-draw-on-resize" => self.allow_draw_on_resize.get().to_value(),
                 "is-running" => obj.is_running().to_value(),
                 _ => unimplemented!(),
@@ -471,28 +461,14 @@ impl GameOfLifeUniverseGrid {
         self.imp().drawing_area.queue_draw();
     }
 
-    pub fn set_prefers_dark_mode(&self, prefers_dark_variant: bool) {
-        let imp = self.imp();
-        imp.prefers_dark_mode.replace(prefers_dark_variant);
-
-        match prefers_dark_variant {
-            true => {
-                imp.fg_color
-                    .set(Some(gtk::gdk::RGBA::from_str(FG_COLOR_DARK).unwrap()));
-                imp.bg_color
-                    .set(Some(gtk::gdk::RGBA::from_str(BG_COLOR_DARK).unwrap()));
-            }
-            false => {
-                imp.fg_color
-                    .set(Some(gtk::gdk::RGBA::from_str(FG_COLOR_LIGHT).unwrap()));
-                imp.bg_color
-                    .set(Some(gtk::gdk::RGBA::from_str(BG_COLOR_LIGHT).unwrap()));
-            }
-        }
+    pub fn set_cell_color(&self, color: Option<gtk::gdk::RGBA>) {
+        self.imp().fg_color.set(color);
+        self.redraw();
     }
 
-    pub fn prefers_dark_mode(&self) -> bool {
-        self.imp().prefers_dark_mode.get()
+    pub fn set_background_color(&self, color: Option<gtk::gdk::RGBA>) {
+        self.imp().bg_color.set(color);
+        self.redraw();
     }
 }
 

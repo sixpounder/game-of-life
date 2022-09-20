@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <schemalist gettext-domain="game-of-life">
 	<schema id="com.github.sixpounder.GameOfLife" path="/com/github/sixpounder/GameOfLife/">
-	  <key name="fg-tint" type="s">
+	  <key name="fg-color" type="s">
 	    <default>"#64BAFF"</default>
 	  </key>
-	  <key name="bg-tint" type="s">
+	  <key name="bg-color" type="s">
 	    <default>"#FAFAFA"</default>
 	  </key>
-	  <key name="fg-tint-dark" type="s">
+	  <key name="fg-color-dark" type="s">
 	    <default>"#C061CB"</default>
 	  </key>
-	  <key name="bg-tint-dark" type="s">
+	  <key name="bg-color-dark" type="s">
 	    <default>"#3D3846"</default>
 	  </key>
 	  <key name="evolution-speed" type="i">

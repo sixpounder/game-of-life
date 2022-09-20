@@ -1,3 +1,5 @@
+use std::str::FromStr;
+
 use adw::prelude::AdwApplicationExt;
 use gtk::prelude::*;
 use gtk::subclass::prelude::*;
@@ -11,7 +13,7 @@ use crate::{
 
 mod imp {
     use super::*;
-    use glib::{ParamFlags, ParamSpec, ParamSpecBoolean, ParamSpecString};
+    use glib::{ParamFlags, ParamSpec, ParamSpecBoolean, ParamSpecObject, ParamSpecString};
     use once_cell::sync::Lazy;
 
     #[derive(Debug, CompositeTemplate)]
@@ -30,6 +32,8 @@ mod imp {
         pub(super) mode: std::cell::Cell<UniverseGridMode>,
 
         pub(super) provider: gtk::CssProvider,
+
+        pub(super) settings: GameOfLifeSettings,
     }
 
     #[glib::object_subclass]
@@ -45,6 +49,7 @@ mod imp {
                 controls: TemplateChild::default(),
                 mode: std::cell::Cell::default(),
                 provider: gtk::CssProvider::new(),
+                settings: GameOfLifeSettings::default(),
             }
         }
 
@@ -218,7 +223,20 @@ impl GameOfLifeWindow {
     }
 
     fn update_prefers_dark_mode(&self, value: bool) {
-        self.imp().universe_grid.get().set_prefers_dark_mode(value);
+        // self.imp().universe_grid.get().set_prefers_dark_mode(value);
+        let grid = self.imp().universe_grid.get();
+        let (cell_color, background_color);
+
+        if value == true {
+            cell_color = self.imp().settings.fg_color_dark();
+            background_color = self.imp().settings.bg_color_dark();
+        } else {
+            cell_color = self.imp().settings.fg_color();
+            background_color = self.imp().settings.bg_color();
+        }
+
+        grid.set_cell_color(Some(gtk::gdk::RGBA::from_str(&cell_color).unwrap()));
+        grid.set_background_color(Some(gtk::gdk::RGBA::from_str(&background_color).unwrap()));
     }
 
     fn restore_window_state(&self) {

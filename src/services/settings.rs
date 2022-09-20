@@ -38,4 +38,20 @@ impl GameOfLifeSettings {
     pub fn set_window_height(&self, value: i32) {
         self.inner.set_int("window-height", value).expect("Could not store window width");
     }
+
+    pub fn fg_color(&self) -> String {
+        self.inner.string("fg-color").to_string()
+    }
+
+    pub fn bg_color(&self) -> String {
+        self.inner.string("bg-color").to_string()
+    }
+
+    pub fn fg_color_dark(&self) -> String {
+        self.inner.string("fg-color-dark").to_string()
+    }
+
+    pub fn bg_color_dark(&self) -> String {
+        self.inner.string("bg-color-dark").to_string()
+    }
 }
