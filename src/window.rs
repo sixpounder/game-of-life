@@ -4,9 +4,9 @@ use gtk::subclass::prelude::*;
 use gtk::{gio, glib, glib::clone, CompositeTemplate};
 
 use crate::{
+    config::{APPLICATION_G_PATH, G_LOG_DOMAIN},
     models::UniverseGridMode,
     services::GameOfLifeSettings,
-    config::APPLICATION_G_PATH
 };
 
 mod imp {
@@ -30,7 +30,6 @@ mod imp {
         pub(super) mode: std::cell::Cell<UniverseGridMode>,
 
         pub(super) provider: gtk::CssProvider,
-        pub(super) settings: GameOfLifeSettings,
     }
 
     #[glib::object_subclass]
@@ -46,7 +45,6 @@ mod imp {
                 controls: TemplateChild::default(),
                 mode: std::cell::Cell::default(),
                 provider: gtk::CssProvider::new(),
-                settings: GameOfLifeSettings::default(),
             }
         }
 
@@ -132,6 +130,7 @@ impl GameOfLifeWindow {
 
         win.setup_provider();
         win.update_prefers_dark_mode(style_manager.is_dark());
+        win.restore_window_state();
 
         style_manager.connect_dark_notify(glib::clone!(@strong win as this => move |sm| {
             this.update_prefers_dark_mode(sm.is_dark());
@@ -169,6 +168,16 @@ impl GameOfLifeWindow {
                 this.notify("is-stopped");
             }),
         );
+
+        self.connect_close_request(move |window| {
+            glib::debug!("Saving window state");
+            let width = window.default_size().0;
+            let height = window.default_size().1;
+            let settings = GameOfLifeSettings::default();
+            settings.set_window_width(width);
+            settings.set_window_height(height);
+            glib::signal::Inhibit(false)
+        });
     }
 
     pub fn is_running(&self) -> bool {
@@ -210,6 +219,11 @@ impl GameOfLifeWindow {
 
     fn update_prefers_dark_mode(&self, value: bool) {
         self.imp().universe_grid.get().set_prefers_dark_mode(value);
+    }
+
+    fn restore_window_state(&self) {
+        let settings = GameOfLifeSettings::default();
+        self.set_default_size(settings.window_width(), settings.window_height());
     }
 }
 

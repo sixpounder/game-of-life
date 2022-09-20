@@ -2,8 +2,8 @@
 <interface>
   <requires lib="gtk" version="4.0"/>
   <template class="GameOfLifeWindow" parent="GtkApplicationWindow">
-    <property name="default-width">850</property>
-    <property name="default-height">985</property>
+    <property name="default-width">600</property>
+    <property name="default-height">800</property>
     <child type="titlebar">
       <object class="GtkHeaderBar" id="header_bar">
         <child type="end">

@@ -2,14 +2,26 @@
 <schemalist gettext-domain="game-of-life">
 	<schema id="com.github.sixpounder.GameOfLife" path="/com/github/sixpounder/GameOfLife/">
 	  <key name="fg-tint" type="s">
-	    <default>#00adb6</default>
+	    <default>"#64BAFF"</default>
 	  </key>
 	  <key name="bg-tint" type="s">
-	    <default>#e1e1e1</default>
+	    <default>"#FAFAFA"</default>
 	  </key>
-	  <key name="evolution-speed" type="ui">
+	  <key name="fg-tint-dark" type="s">
+	    <default>"#C061CB"</default>
+	  </key>
+	  <key name="bg-tint-dark" type="s">
+	    <default>"#3D3846"</default>
+	  </key>
+	  <key name="evolution-speed" type="i">
 	    <default>10</default>
 	    <description>The number of generations per seconds that should be computed when a simulation is running</description>
+	  </key>
+	  <key name="window-width" type="i">
+	    <default>600</default>
+	  </key>
+	  <key name="window-height" type="i">
+	    <default>800</default>
 	  </key>
 	  <key name="universe-width" type="i">
 	    <default>200</default>

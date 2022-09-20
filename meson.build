@@ -1,13 +1,18 @@
 project('game-of-life', 'rust', 
           version: '0.1.0',
+          license: ['GPL-3.0'],
     meson_version: '>= 0.59.0',
   default_options: [ 'warning_level=2',
                      'werror=false',
                    ],
 )
 
+dependency('gtk4', version: '>= 4.6.0')
+dependency('libadwaita-1')
+
 i18n = import('i18n')
 gnome = import('gnome')
+fs = import('fs')
 
 add_global_arguments('-DGETTEXT_PACKAGE="@0@"'.format (meson.project_name()), language:'c')
 

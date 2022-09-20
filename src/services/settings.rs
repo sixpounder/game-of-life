@@ -18,7 +18,24 @@ impl GameOfLifeSettings {
     pub fn set_evolution_speed(&self, value: u32) {
         self.inner.set_uint("evolution-speed", value).expect("Could not set evolution speed");
     }
+
     pub fn evolution_speed(&self) -> u32 {
         self.inner.uint("evolution-speed")
+    }
+
+    pub fn window_width(&self) -> i32 {
+        self.inner.int("window-width")
+    }
+
+    pub fn set_window_width(&self, value: i32) {
+        self.inner.set_int("window-width", value).expect("Could not store window width");
+    }
+
+    pub fn window_height(&self) -> i32 {
+        self.inner.int("window-height")
+    }
+
+    pub fn set_window_height(&self, value: i32) {
+        self.inner.set_int("window-height", value).expect("Could not store window width");
     }
 }
