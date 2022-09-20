@@ -1,0 +1,6 @@
+# Common exclusions
+*.log
+tmp
+
+# Generated source files
+src/config.rs

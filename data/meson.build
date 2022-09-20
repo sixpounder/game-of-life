@@ -37,8 +37,10 @@ gnome.compile_schemas()
 
 compile_schemas = find_program('glib-compile-schemas', required: true)
 if compile_schemas.found()
-  test('Validate and compile schema file', compile_schemas,
-    args: ['--strict', '--dry-run', meson.current_source_dir()]
+  test('Validate and compile schema file',
+    compile_schemas,
+    args: ['--strict', '--dry-run', meson.current_source_dir()],
+    suite: ['lint']
   )
 endif
 

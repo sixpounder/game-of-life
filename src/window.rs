@@ -6,8 +6,7 @@ use gtk::{gio, glib, glib::clone, CompositeTemplate};
 use crate::{
     models::UniverseGridMode,
     services::GameOfLifeSettings,
-    config::APPLICATION_G_PATH,
-    widgets::UniverseGridRequest,
+    config::APPLICATION_G_PATH
 };
 
 mod imp {
@@ -31,7 +30,7 @@ mod imp {
         pub(super) mode: std::cell::Cell<UniverseGridMode>,
 
         pub(super) provider: gtk::CssProvider,
-        // pub(super) settings: GameOfLifeSettings,
+        pub(super) settings: GameOfLifeSettings,
     }
 
     #[glib::object_subclass]
@@ -47,7 +46,7 @@ mod imp {
                 controls: TemplateChild::default(),
                 mode: std::cell::Cell::default(),
                 provider: gtk::CssProvider::new(),
-                // settings: GameOfLifeSettings::default(),
+                settings: GameOfLifeSettings::default(),
             }
         }
 

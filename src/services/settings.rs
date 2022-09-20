@@ -1,5 +1,5 @@
 use gtk::gio::prelude::SettingsExt;
-use crate::config::{APPLICATION_ID, APPLICATION_G_PATH};
+use crate::config::APPLICATION_ID;
 
 #[derive(Debug)]
 pub struct GameOfLifeSettings {

@@ -2,3 +2,4 @@ data/com.github.sixpounder.GameOfLife.desktop.in
 data/com.github.sixpounder.GameOfLife.appdata.xml.in
 data/com.github.sixpounder.GameOfLife.gschema.xml
 src/window.ui
+src/widgets/universe_controls.ui

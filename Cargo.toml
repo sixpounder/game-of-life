@@ -19,5 +19,6 @@ package = "gtk4"
 version = "0.4.8"
 
 [dependencies.glib]
+version = "0.15.12"
 features = ["log_macros"]
 

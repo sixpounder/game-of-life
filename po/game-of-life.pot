@@ -1,0 +1,105 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the game-of-life package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: game-of-life\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2022-09-20 00:48+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: data/com.github.sixpounder.GameOfLife.desktop.in:3
+msgid "Game of Life"
+msgstr ""
+
+#: data/com.github.sixpounder.GameOfLife.desktop.in:4
+msgid "Game of Life Simulator"
+msgstr ""
+
+#: data/com.github.sixpounder.GameOfLife.appdata.xml.in:7
+msgid "A simulator of Conway's game of life"
+msgstr ""
+
+#: data/com.github.sixpounder.GameOfLife.appdata.xml.in:10
+msgid "Andrea Coronese"
+msgstr ""
+
+#: data/com.github.sixpounder.GameOfLife.gschema.xml:12
+msgid ""
+"The number of generations per seconds that should be computed when a "
+"simulation is running"
+msgstr ""
+
+#: data/com.github.sixpounder.GameOfLife.gschema.xml:16
+msgid "The width of the universe being generated, in cells number"
+msgstr ""
+
+#: data/com.github.sixpounder.GameOfLife.gschema.xml:20
+msgid "The height of the universe being generated, in cells number"
+msgstr ""
+
+#: src/window.ui:41
+msgid "_Preferences"
+msgstr ""
+
+#: src/window.ui:45
+msgid "_Keyboard Shortcuts"
+msgstr ""
+
+#: src/window.ui:49
+msgid "_About game-of-life"
+msgstr ""
+
+#: src/widgets/universe_controls.ui:24
+msgid "Toggle design mode"
+msgstr ""
+
+#: src/widgets/universe_controls.ui:30
+msgctxt "a11y"
+msgid "Toggle design mode"
+msgstr ""
+
+#: src/widgets/universe_controls.ui:50
+msgid "Universe evolution speed"
+msgstr ""
+
+#: src/widgets/universe_controls.ui:55
+msgctxt "a11y"
+msgid "Modify universe evolution speed"
+msgstr ""
+
+#: src/widgets/universe_controls.ui:62
+msgid "Toggle universe run"
+msgstr ""
+
+#: src/widgets/universe_controls.ui:71
+msgctxt "a11y"
+msgid "Toggle universe run"
+msgstr ""
+
+#: src/widgets/universe_controls.ui:84
+msgid "Save the current state snapshot"
+msgstr ""
+
+#: src/widgets/universe_controls.ui:94
+msgctxt "a11y"
+msgid "Save the current state snapshot"
+msgstr ""
+
+#: src/widgets/universe_controls.ui:101
+msgid "Randomly seed this universe"
+msgstr ""
+
+#: src/widgets/universe_controls.ui:111
+msgctxt "a11y"
+msgid "Randomly seed this universe"
+msgstr ""

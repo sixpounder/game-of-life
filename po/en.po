@@ -1,0 +1,107 @@
+# English translations for game-of-life package.
+# Copyright (C) 2022 THE game-of-life'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the game-of-life package.
+# Automatically generated, 2022.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: game-of-life\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2022-09-20 00:48+0200\n"
+"PO-Revision-Date: 2022-09-20 00:48+0200\n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: none\n"
+"Language: en\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: data/com.github.sixpounder.GameOfLife.desktop.in:3
+msgid "Game of Life"
+msgstr "Game of Life"
+
+#: data/com.github.sixpounder.GameOfLife.desktop.in:4
+msgid "Game of Life Simulator"
+msgstr "Game of Life Simulator"
+
+#: data/com.github.sixpounder.GameOfLife.appdata.xml.in:7
+msgid "A simulator of Conway's game of life"
+msgstr "A simulator of Conway's game of life"
+
+#: data/com.github.sixpounder.GameOfLife.appdata.xml.in:10
+msgid "Andrea Coronese"
+msgstr "Andrea Coronese"
+
+#: data/com.github.sixpounder.GameOfLife.gschema.xml:12
+msgid ""
+"The number of generations per seconds that should be computed when a "
+"simulation is running"
+msgstr ""
+"The number of generations per seconds that should be computed when a "
+"simulation is running"
+
+#: data/com.github.sixpounder.GameOfLife.gschema.xml:16
+msgid "The width of the universe being generated, in cells number"
+msgstr "The width of the universe being generated, in cells number"
+
+#: data/com.github.sixpounder.GameOfLife.gschema.xml:20
+msgid "The height of the universe being generated, in cells number"
+msgstr "The height of the universe being generated, in cells number"
+
+#: src/window.ui:41
+msgid "_Preferences"
+msgstr "_Preferences"
+
+#: src/window.ui:45
+msgid "_Keyboard Shortcuts"
+msgstr "_Keyboard Shortcuts"
+
+#: src/window.ui:49
+msgid "_About game-of-life"
+msgstr "_About game-of-life"
+
+#: src/widgets/universe_controls.ui:24
+msgid "Toggle design mode"
+msgstr "Toggle design mode"
+
+#: src/widgets/universe_controls.ui:30
+msgctxt "a11y"
+msgid "Toggle design mode"
+msgstr "Toggle design mode"
+
+#: src/widgets/universe_controls.ui:50
+msgid "Universe evolution speed"
+msgstr "Universe evolution speed"
+
+#: src/widgets/universe_controls.ui:55
+msgctxt "a11y"
+msgid "Modify universe evolution speed"
+msgstr "Modify universe evolution speed"
+
+#: src/widgets/universe_controls.ui:62
+msgid "Toggle universe run"
+msgstr "Toggle universe run"
+
+#: src/widgets/universe_controls.ui:71
+msgctxt "a11y"
+msgid "Toggle universe run"
+msgstr "Toggle universe run"
+
+#: src/widgets/universe_controls.ui:84
+msgid "Save the current state snapshot"
+msgstr "Save the current state snapshot"
+
+#: src/widgets/universe_controls.ui:94
+msgctxt "a11y"
+msgid "Save the current state snapshot"
+msgstr "Save the current state snapshot"
+
+#: src/widgets/universe_controls.ui:101
+msgid "Randomly seed this universe"
+msgstr "Randomly seed this universe"
+
+#: src/widgets/universe_controls.ui:111
+msgctxt "a11y"
+msgid "Randomly seed this universe"
+msgstr "Randomly seed this universe"

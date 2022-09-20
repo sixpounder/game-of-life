@@ -7,9 +7,11 @@ project('game-of-life', 'rust',
 )
 
 i18n = import('i18n')
-
 gnome = import('gnome')
 
+add_global_arguments('-DGETTEXT_PACKAGE="@0@"'.format (meson.project_name()), language:'c')
+
+cargo = find_program('cargo', required: true)
 
 cargo_sources = files(
   'Cargo.toml',
@@ -43,4 +45,19 @@ gnome.post_install(
   glib_compile_schemas: true,
   gtk_update_icon_cache: true,
   update_desktop_database: true,
+)
+
+summary({
+    'prefix': get_option('prefix'),
+    'libdir': get_option('libdir'),
+    'datadir': get_option('datadir'),
+    'bindir': get_option('bindir'),
+  },
+  section: 'Directories',
+)
+
+summary({
+    'Profile': get_option('profile'),
+  },
+  section: 'Build options',
 )
