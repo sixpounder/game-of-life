@@ -1,10 +1,10 @@
-use crate::config::{APPLICATION_ID, G_LOG_DOMAIN};
+use crate::config::G_LOG_DOMAIN;
 use crate::models::{
-    Universe, UniverseGridMode, UniversePoint, UniversePointMatrix, UniverseSnapshot,
+    Universe, UniverseCell, UniverseGridMode, UniversePoint, UniversePointMatrix, UniverseSnapshot,
 };
 use crate::services::GameOfLifeSettings;
 use gtk::{
-    gio, glib,
+    gio,
     glib::{clone, Receiver, Sender},
     prelude::*,
     subclass::prelude::*,
@@ -13,11 +13,6 @@ use gtk::{
 
 use std::cell::{Cell, RefCell};
 use std::str::FromStr;
-
-// const FG_COLOR_LIGHT: &str = "#64baff";
-// const BG_COLOR_LIGHT: &str = "#fafafa";
-// const FG_COLOR_DARK: &str = "#C061CB";
-// const BG_COLOR_DARK: &str = "#3D3846";
 
 /// Maps a point on the widget area onto a cell in a given universe
 fn widget_area_point_to_universe_cell(
@@ -41,27 +36,25 @@ fn widget_area_point_to_universe_cell(
 
 #[derive(Debug)]
 pub enum UniverseGridRequest {
-    /// Freezes rendering process. Useful when moving windows and the likes.
-    // Freeze,
-
     /// Restores normal rendering operations
     Unfreeze,
 
-    /// Sets the widget mode (run or design)
-    // Mode(UniverseGridMode),
-
-    /// Sets the color scheme for the grid
-    // DarkColorSchemePreference(bool),
-
-    /// Starts evolving the inner universe
-    // Run,
-
-    /// Halts the evolution of the inner universe
-    // Halt,
-
-    /// Requests the grid to redraw itself.If the value is Some(universe) the contained
+    /// Requests the grid to redraw itself. If the value is Some(universe) the contained
     /// value will replace the current model inside the widget
     Redraw(Option<Universe>),
+}
+
+#[derive(Debug, Clone, Copy, PartialEq)]
+#[repr(u8)]
+enum UniverseGridInteractionState {
+    Idle,
+    Ongoing,
+}
+
+impl Default for UniverseGridInteractionState {
+    fn default() -> Self {
+        Self::Idle
+    }
 }
 
 mod imp {
@@ -81,8 +74,6 @@ mod imp {
 
         pub(super) frozen: Cell<bool>,
 
-        // pub(super) prefers_dark_mode: Cell<bool>,
-
         pub(super) universe: RefCell<Option<Universe>>,
 
         pub(super) receiver: RefCell<Option<Receiver<UniverseGridRequest>>>,
@@ -96,6 +87,8 @@ mod imp {
         pub(super) fg_color: std::cell::Cell<Option<gtk::gdk::RGBA>>,
 
         pub(super) bg_color: std::cell::Cell<Option<gtk::gdk::RGBA>>,
+
+        pub(super) interaction_state: std::cell::Cell<UniverseGridInteractionState>,
     }
 
     #[glib::object_subclass]
@@ -116,13 +109,17 @@ mod imp {
 
             this.receiver = receiver;
             this.sender = Some(sender);
+
+            // Start universe in running mode
             this.mode.set(UniverseGridMode::Run);
 
             // Defaults to light color scheme
-            this.fg_color
-                .set(Some(gtk::gdk::RGBA::from_str(&settings.fg_color()).unwrap()));
-            this.bg_color
-                .set(Some(gtk::gdk::RGBA::from_str(&settings.bg_color()).unwrap()));
+            this.fg_color.set(Some(
+                gtk::gdk::RGBA::from_str(&settings.fg_color()).unwrap(),
+            ));
+            this.bg_color.set(Some(
+                gtk::gdk::RGBA::from_str(&settings.bg_color()).unwrap(),
+            ));
 
             this
         }
@@ -227,13 +224,37 @@ impl GameOfLifeUniverseGrid {
     fn setup_drawing_area(&self) {
         let drawing_area = self.imp().drawing_area.get();
 
-        let controller = gtk::GestureClick::new();
-        controller.connect_pressed(
+        let click_gesture_controller = gtk::GestureClick::new();
+        click_gesture_controller.connect_pressed(
             clone!(@strong self as this => move |gesture, n_press, x, y| {
                 this.on_drawing_area_clicked(gesture, n_press, x, y);
             }),
         );
-        drawing_area.add_controller(&controller);
+        click_gesture_controller.connect_released(
+            clone!(@strong self as this => move |gesture, n_press, x, y| {
+                this.on_drawing_area_click_released(gesture, n_press, x, y);
+            }),
+        );
+        click_gesture_controller.connect_unpaired_release(
+            clone!(@strong self as this => move |gesture, x, y, button, events| {
+                this.on_drawing_area_click_unpaired_released(gesture, x, y, button, events);
+            }),
+        );
+        drawing_area.add_controller(&click_gesture_controller);
+
+        let drag_gesture_controller = gtk::GestureDrag::new();
+        drag_gesture_controller.connect_begin(
+            clone!(@strong self as this => move |gesture, events| {
+                this.on_drawing_area_drag_begin(gesture, events)
+            }),
+        );
+
+        drag_gesture_controller.connect_update(
+            clone!(@strong self as this => move |gesture, events| {
+                this.on_drawing_area_drag_move(gesture, events)
+            }),
+        );
+        drawing_area.add_controller(&drag_gesture_controller);
 
         drawing_area.connect_resize(
             clone!(@strong self as this => move |_widget, _width, _height| {
@@ -268,24 +289,88 @@ impl GameOfLifeUniverseGrid {
 
     fn on_drawing_area_clicked(&self, _gesture: &gtk::GestureClick, _n_press: i32, x: f64, y: f64) {
         if self.mode() == UniverseGridMode::Design {
-            let universe_borrow = self.imp().universe.borrow();
-            if let Some(universe_point) = widget_area_point_to_universe_cell(
-                &self.imp().drawing_area,
-                universe_borrow.as_ref(),
-                x,
-                y,
-            ) {
-                // If a point is found, invert its cell value
-                drop(universe_borrow);
-                let mut universe_mut_borrow = self.imp().universe.borrow_mut();
-                let mut_borrow = universe_mut_borrow.as_mut().unwrap();
-                mut_borrow.set_cell(
-                    universe_point.row(),
-                    universe_point.column(),
-                    !(*universe_point.cell()),
-                );
-                self.redraw();
+            self.imp()
+                .interaction_state
+                .set(UniverseGridInteractionState::Ongoing);
+            self.alter_universe_point(x, y, None);
+        }
+    }
+
+    fn on_drawing_area_click_released(
+        &self,
+        _gesture: &gtk::GestureClick,
+        _n_press: i32,
+        _x: f64,
+        _y: f64,
+    ) {
+        self.imp()
+            .interaction_state
+            .set(UniverseGridInteractionState::Idle);
+    }
+
+    fn on_drawing_area_click_unpaired_released(
+        &self,
+        _gesture: &gtk::GestureClick,
+        _x: f64,
+        _y: f64,
+        _button: u32,
+        _events: Option<&gtk::gdk::EventSequence>,
+    ) {
+        self.imp()
+            .interaction_state
+            .set(UniverseGridInteractionState::Idle);
+    }
+
+    fn on_drawing_area_drag_begin(
+        &self,
+        gesture: &gtk::GestureDrag,
+        _events: Option<&gtk::gdk::EventSequence>,
+    ) {
+        if self.imp().interaction_state.get() == UniverseGridInteractionState::Ongoing {
+            if let Some(point) = gesture.start_point() {
+                self.alter_universe_point(point.0, point.1, Some(UniverseCell::Alive));
             }
+        }
+    }
+
+    fn on_drawing_area_drag_move(
+        &self,
+        gesture: &gtk::GestureDrag,
+        _events: Option<&gtk::gdk::EventSequence>,
+    ) {
+        if self.imp().interaction_state.get() == UniverseGridInteractionState::Ongoing {
+            if let Some(point) = gesture.offset() {
+                let origin = gesture.start_point().unwrap();
+                self.alter_universe_point(
+                    origin.0 + point.0,
+                    origin.1 + point.1,
+                    Some(UniverseCell::Alive),
+                );
+            }
+        }
+    }
+
+    /// Alters the universe cell visually located at `x` and `y` coordinates. If `Some(value)`
+    /// is provided it will be used as the new cell value, else the opposite value of the current
+    /// one will be set
+    fn alter_universe_point(&self, x: f64, y: f64, value: Option<UniverseCell>) {
+        let drawing_area = self.imp().drawing_area.get();
+        let universe_borrow = self.imp().universe.borrow();
+
+        if let Some(universe_point) =
+            widget_area_point_to_universe_cell(&drawing_area, universe_borrow.as_ref(), x, y)
+        {
+            // If a point is found, invert its cell value
+            drop(universe_borrow);
+            let mut universe_mut_borrow = self.imp().universe.borrow_mut();
+            let mut_borrow = universe_mut_borrow.as_mut().unwrap();
+            let next_value = match value {
+                Some(v) => v,
+                None => !(*universe_point.cell()),
+            };
+
+            mut_borrow.set_cell(universe_point.row(), universe_point.column(), next_value);
+            self.redraw();
         }
     }
 
