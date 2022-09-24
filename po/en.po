@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: game-of-life\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-09-20 00:48+0200\n"
+"POT-Creation-Date: 2022-09-25 00:19+0200\n"
 "PO-Revision-Date: 2022-09-20 00:48+0200\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -33,7 +33,7 @@ msgstr "A simulator of Conway's game of life"
 msgid "Andrea Coronese"
 msgstr "Andrea Coronese"
 
-#: data/com.github.sixpounder.GameOfLife.gschema.xml:12
+#: data/com.github.sixpounder.GameOfLife.gschema.xml:18
 msgid ""
 "The number of generations per seconds that should be computed when a "
 "simulation is running"
@@ -41,23 +41,44 @@ msgstr ""
 "The number of generations per seconds that should be computed when a "
 "simulation is running"
 
-#: data/com.github.sixpounder.GameOfLife.gschema.xml:16
+#: data/com.github.sixpounder.GameOfLife.gschema.xml:28
 msgid "The width of the universe being generated, in cells number"
 msgstr "The width of the universe being generated, in cells number"
 
-#: data/com.github.sixpounder.GameOfLife.gschema.xml:20
+#: data/com.github.sixpounder.GameOfLife.gschema.xml:32
 msgid "The height of the universe being generated, in cells number"
 msgstr "The height of the universe being generated, in cells number"
 
-#: src/window.ui:41
+#: src/window.rs:232
+msgid "_Save"
+msgstr ""
+
+#: src/window.rs:233
+msgid "_Cancel"
+msgstr ""
+
+#: src/window.rs:235
+#, fuzzy
+msgid "Save universe snapshot"
+msgstr "Save the current state snapshot"
+
+#: src/window.rs:256
+msgid "Unable to write to file"
+msgstr ""
+
+#: src/window.rs:262
+msgid "Unable to serialize snapshot"
+msgstr ""
+
+#: src/window.ui:45
 msgid "_Preferences"
 msgstr "_Preferences"
 
-#: src/window.ui:45
+#: src/window.ui:49
 msgid "_Keyboard Shortcuts"
 msgstr "_Keyboard Shortcuts"
 
-#: src/window.ui:49
+#: src/window.ui:53
 msgid "_About game-of-life"
 msgstr "_About game-of-life"
 

@@ -1,5 +1,6 @@
 use std::str::FromStr;
 
+use crate::i18n::i18n;
 use adw::prelude::AdwApplicationExt;
 use gtk::prelude::*;
 use gtk::subclass::prelude::*;
@@ -20,6 +21,9 @@ mod imp {
     #[template(resource = "/com/github/sixpounder/GameOfLife/window.ui")]
     pub struct GameOfLifeWindow {
         // Template widgets
+        #[template_child]
+        pub toast_overlay: TemplateChild<adw::ToastOverlay>,
+
         #[template_child]
         pub(super) header_bar: TemplateChild<gtk::HeaderBar>,
 
@@ -44,6 +48,7 @@ mod imp {
 
         fn new() -> Self {
             Self {
+                toast_overlay: TemplateChild::default(),
                 header_bar: TemplateChild::default(),
                 universe_grid: TemplateChild::default(),
                 controls: TemplateChild::default(),
@@ -213,8 +218,59 @@ impl GameOfLifeWindow {
     }
 
     fn make_and_save_snapshot(&self) {
-        let snapshot = self.imp().universe_grid.get_universe_snapshot();
-        todo!()
+        let app = gio::Application::default()
+            .expect("Failed to retrieve application singleton")
+            .downcast::<gtk::Application>()
+            .unwrap();
+        let win = app
+            .active_window()
+            .unwrap()
+            .downcast::<gtk::Window>()
+            .unwrap();
+
+        let dialog = gtk::FileChooserNative::builder()
+            .accept_label(&i18n("_Save"))
+            .cancel_label(&i18n("_Cancel"))
+            .modal(true)
+            .title(&i18n("Save universe snapshot"))
+            .transient_for(&win)
+            .select_multiple(false)
+            .action(gtk::FileChooserAction::Save)
+            .build();
+
+        dialog.connect_response(
+            clone!(@strong dialog, @weak self as win => move |_, response| {
+                if response == gtk::ResponseType::Accept {
+                    match dialog.file().as_ref() {
+                        Some(file) => {
+                            let snapshot = win.imp().universe_grid.get_universe_snapshot();
+                            match bincode::serialize(&snapshot) {
+                                Ok(serialized) => {
+                                    let file_io_stream = file.create_readwrite(gtk::gio::FileCreateFlags::PRIVATE, gtk::gio::Cancellable::NONE).unwrap();
+                                    let write_result = file_io_stream.output_stream().write_all(serialized.as_slice(), gtk::gio::Cancellable::NONE);
+                                    match write_result {
+                                        Ok((bytes_written, _)) => {
+                                            glib::info!("Written {} bytes", bytes_written);
+                                        },
+                                        Err(error) => {
+                                            win.add_toast(i18n("Unable to write to file"));
+                                            glib::error!("Unable to write to file: {}", error);
+                                        }
+                                    }
+                                },
+                                Err(error) => {
+                                    win.add_toast(i18n("Unable to serialize snapshot"));
+                                    glib::error!("Unable to serialize universe snapshot: {}", error);
+                                }
+                            }
+                        },
+                        None => {}
+                    }
+                }
+            })
+        );
+
+        dialog.show();
     }
 
     fn seed_universe(&self) {
@@ -223,7 +279,6 @@ impl GameOfLifeWindow {
     }
 
     fn update_prefers_dark_mode(&self, value: bool) {
-        // self.imp().universe_grid.get().set_prefers_dark_mode(value);
         let grid = self.imp().universe_grid.get();
         let (cell_color, background_color);
 
@@ -242,6 +297,11 @@ impl GameOfLifeWindow {
     fn restore_window_state(&self) {
         let settings = GameOfLifeSettings::default();
         self.set_default_size(settings.window_width(), settings.window_height());
+    }
+
+    fn add_toast(&self, msg: String) {
+        let toast = adw::Toast::new(&msg);
+        self.imp().toast_overlay.add_toast(&toast);
     }
 }
 

@@ -29,6 +29,10 @@ mod imp {
             self.parent_constructed(obj);
             obj.setup_gactions();
             obj.set_accels_for_action("app.quit", &["<primary>q"]);
+            obj.set_accels_for_action("win.play", &["p"]);
+            obj.set_accels_for_action("win.snapshot", &["<ctrl>s"]);
+            obj.set_accels_for_action("win.toggle-design-mode", &["e"]);
+            obj.set_accels_for_action("win.random-seed", &["<ctrl>n"]);
         }
     }
 

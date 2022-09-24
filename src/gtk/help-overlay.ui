@@ -23,6 +23,35 @@
             </child>
           </object>
         </child>
+        <child>
+          <object class="GtkShortcutsGroup">
+            <property name="title" translatable="yes" context="shortcut window">Universe control</property>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="title" translatable="yes" context="shortcut window">Toggle design mode</property>
+                <property name="action-name">win.toggle-design-mode</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="title" translatable="yes" context="shortcut window">Seed universe</property>
+                <property name="action-name">win.seed-universe</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="title" translatable="yes" context="shortcut window">Toggle evolution</property>
+                <property name="action-name">win.play</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="title" translatable="yes" context="shortcut window">Save snapshot</property>
+                <property name="action-name">win.snapshot</property>
+              </object>
+            </child>
+          </object>
+        </child>
       </object>
     </child>
   </object>

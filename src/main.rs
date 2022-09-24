@@ -4,6 +4,7 @@ mod window;
 mod widgets;
 mod models;
 mod services;
+mod i18n;
 
 use self::application::GameOfLifeApplication;
 use self::window::GameOfLifeWindow;
