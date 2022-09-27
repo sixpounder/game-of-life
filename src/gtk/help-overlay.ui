@@ -50,6 +50,12 @@
                 <property name="action-name">win.snapshot</property>
               </object>
             </child>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="title" translatable="yes" context="shortcut window">Open snapshot</property>
+                <property name="action-name">win.open-snapshot</property>
+              </object>
+            </child>
           </object>
         </child>
       </object>

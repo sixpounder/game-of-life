@@ -31,8 +31,11 @@ mod imp {
             obj.set_accels_for_action("app.quit", &["<primary>q"]);
             obj.set_accels_for_action("win.play", &["p"]);
             obj.set_accels_for_action("win.snapshot", &["<ctrl>s"]);
+            obj.set_accels_for_action("win.open-snapshot", &["<ctrl>o"]);
             obj.set_accels_for_action("win.toggle-design-mode", &["e"]);
-            obj.set_accels_for_action("win.random-seed", &["<ctrl>n"]);
+            obj.set_accels_for_action("win.new", &["<ctrl>n"]);
+            obj.set_accels_for_action("win.new-empty", &["<ctrl>e"]);
+            obj.set_accels_for_action("win.random-seed", &["<ctrl>r"]);
         }
     }
 

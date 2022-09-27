@@ -49,6 +49,10 @@ impl Universe {
         universe
     }
 
+    pub fn new_empty(rows: usize, columns: usize) -> Universe {
+        Self::create(rows, columns)
+    }
+
     fn create(rows: usize, columns: usize) -> Universe {
         let s: usize = (rows * columns) as usize;
         let mut cells: Vec<UniverseCell> = Vec::with_capacity(s);

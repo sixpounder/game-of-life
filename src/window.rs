@@ -7,14 +7,15 @@ use gtk::subclass::prelude::*;
 use gtk::{gio, glib, glib::clone, CompositeTemplate};
 
 use crate::{
+    widgets::{GameOfLifeNewUniverseView, NewUniverseType},
     config::{APPLICATION_G_PATH, G_LOG_DOMAIN},
-    models::UniverseGridMode,
+    models::{Universe, UniverseGridMode, UniverseSnapshot},
     services::GameOfLifeSettings,
 };
 
 mod imp {
     use super::*;
-    use glib::{ParamFlags, ParamSpec, ParamSpecBoolean, ParamSpecObject, ParamSpecString};
+    use glib::{ParamFlags, ParamSpec, ParamSpecBoolean, ParamSpecString};
     use once_cell::sync::Lazy;
 
     #[derive(Debug, CompositeTemplate)]
@@ -61,16 +62,28 @@ mod imp {
         fn class_init(klass: &mut Self::Class) {
             Self::bind_template(klass);
 
-            klass.install_action("win.play", None, move |win, _, _| {
-                win.toggle_run();
+            klass.install_action("win.new", None, move |win, _, _| {
+                win.new_universe_dialog();
+            });
+
+            klass.install_action("win.new-empty", None, move |win, _, _| {
+                // win.new_empty();
             });
 
             klass.install_action("win.random-seed", None, move |win, _, _| {
                 win.seed_universe();
             });
 
+            klass.install_action("win.play", None, move |win, _, _| {
+                win.toggle_run();
+            });
+
             klass.install_action("win.snapshot", None, move |win, _, _| {
                 win.make_and_save_snapshot();
+            });
+
+            klass.install_action("win.open-snapshot", None, move |win, _, _| {
+                win.select_and_load_snapshot();
             });
 
             klass.install_action("win.toggle-design-mode", None, move |win, _, _| {
@@ -246,7 +259,13 @@ impl GameOfLifeWindow {
                             let snapshot = win.imp().universe_grid.get_universe_snapshot();
                             match bincode::serialize(&snapshot) {
                                 Ok(serialized) => {
-                                    let file_io_stream = file.create_readwrite(gtk::gio::FileCreateFlags::PRIVATE, gtk::gio::Cancellable::NONE).unwrap();
+                                    let file_io_stream;
+                                    if file.query_exists(gtk::gio::Cancellable::NONE) {
+                                        file_io_stream = file.open_readwrite(gtk::gio::Cancellable::NONE).unwrap();
+                                    } else {
+                                        file_io_stream = file.create_readwrite(gtk::gio::FileCreateFlags::PRIVATE | gtk::gio::FileCreateFlags::REPLACE_DESTINATION, gtk::gio::Cancellable::NONE).unwrap();
+                                    }
+
                                     let write_result = file_io_stream.output_stream().write_all(serialized.as_slice(), gtk::gio::Cancellable::NONE);
                                     match write_result {
                                         Ok((bytes_written, _)) => {
@@ -254,13 +273,13 @@ impl GameOfLifeWindow {
                                         },
                                         Err(error) => {
                                             win.add_toast(i18n("Unable to write to file"));
-                                            glib::error!("Unable to write to file: {}", error);
+                                             glib::g_critical!(G_LOG_DOMAIN, "Unable to write to file: {}", error);
                                         }
                                     }
                                 },
                                 Err(error) => {
                                     win.add_toast(i18n("Unable to serialize snapshot"));
-                                    glib::error!("Unable to serialize universe snapshot: {}", error);
+                                     glib::g_critical!(G_LOG_DOMAIN, "Unable to serialize universe snapshot: {}", error);
                                 }
                             }
                         },
@@ -273,9 +292,111 @@ impl GameOfLifeWindow {
         dialog.show();
     }
 
+    fn select_and_load_snapshot(&self) {
+        let app = gio::Application::default()
+            .expect("Failed to retrieve application singleton")
+            .downcast::<gtk::Application>()
+            .unwrap();
+        let win = app
+            .active_window()
+            .unwrap()
+            .downcast::<gtk::Window>()
+            .unwrap();
+
+        let dialog = gtk::FileChooserNative::builder()
+            .accept_label(&i18n("_Open"))
+            .cancel_label(&i18n("_Cancel"))
+            .modal(true)
+            .title(&i18n("Open universe snapshot"))
+            .transient_for(&win)
+            .select_multiple(false)
+            .action(gtk::FileChooserAction::Open)
+            .build();
+
+        dialog.connect_response(
+            clone!(@strong dialog, @weak self as win => move |_, response| {
+                let file = dialog.file();
+                if response == gtk::ResponseType::Accept {
+                    match file.as_ref() {
+                        Some(file) => {
+                            if file.query_exists(gtk::gio::Cancellable::NONE) {
+                                let mut buffer: Vec<u8> = vec![];
+
+                                let file_io_stream = dialog.file().unwrap();
+                                let file_io_stream = file_io_stream.open_readwrite(gtk::gio::Cancellable::NONE).unwrap();
+                                file_io_stream.input_stream().read_all(&mut buffer, gtk::gio::Cancellable::NONE).unwrap();
+
+                                match bincode::deserialize::<UniverseSnapshot>(&buffer) {
+                                    Ok(snapshot) => {
+                                        win.seed_from_snapshot(snapshot);
+                                    },
+                                    Err(error) => {
+                                        glib::g_critical!(G_LOG_DOMAIN, "Unreadable file: {}", error);
+                                        win.add_toast(i18n("Unreadable file"));
+                                    }
+                                }
+                            }
+                        },
+                        None => ()
+                    }
+                }
+            })
+        );
+
+        dialog.show();
+    }
+
+    fn new_universe_dialog(&self) {
+        let app = gio::Application::default()
+            .expect("Failed to retrieve application singleton")
+            .downcast::<gtk::Application>()
+            .unwrap();
+        let win = app
+            .active_window()
+            .unwrap()
+            .downcast::<gtk::Window>()
+            .unwrap();
+        let dialog = GameOfLifeNewUniverseView::new(Some(&win));
+
+        dialog.connect_response(
+            clone!(@strong dialog, @weak self as win => move |_, response| {
+                match response {
+                    gtk::ResponseType::Ok => {
+                        let (target_w, target_h) = dialog.size();
+                        match dialog.option() {
+                            NewUniverseType::Empty => win.new_empty(target_w as usize, target_h as usize),
+                            NewUniverseType::Random => win.new_random(target_w as usize, target_h as usize),
+
+                            // TODO: actually manage templates
+                            NewUniverseType::Template(_template_name) => win.new_random(target_w as usize, target_h as usize),
+                        }
+                    }
+                    _ => ()
+                }
+                dialog.close();
+            })
+        );
+        dialog.show();
+    }
+
+    fn new_empty(&self, rows: usize, columns: usize) {
+        let universe_grid = self.imp().universe_grid.get();
+        universe_grid.set_universe(Universe::new_empty(rows, columns));
+    }
+
+    fn new_random(&self, rows: usize, columns: usize) {
+        let universe_grid = self.imp().universe_grid.get();
+        universe_grid.set_universe(Universe::new_random(rows, columns));
+    }
+
     fn seed_universe(&self) {
         let universe_grid = self.imp().universe_grid.get();
         universe_grid.random_seed();
+    }
+
+    fn seed_from_snapshot(&self, snapshot: UniverseSnapshot) {
+        let universe_grid = self.imp().universe_grid.get();
+        universe_grid.set_universe(snapshot.into());
     }
 
     fn update_prefers_dark_mode(&self, value: bool) {

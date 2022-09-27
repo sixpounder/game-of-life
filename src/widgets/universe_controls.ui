@@ -80,6 +80,7 @@
             <property name="orientation">horizontal</property>
             <child>
               <object class="GtkButton" id="save_snapshot_button">
+                <property name="visible">false</property>
                 <property name="icon-name">snapshots-alt-symbolic</property>
                 <property name="tooltip-text" translatable="yes">Save the current state snapshot</property>
                 <property name="sensitive" bind-property="stopped" bind-source="GameOfLifeUniverseControls" bind-flags="default|sync-create">

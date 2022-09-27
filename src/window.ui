@@ -42,6 +42,20 @@
   <menu id="primary_menu">
     <section>
       <item>
+        <attribute name="label" translatable="yes">_New universe</attribute>
+        <attribute name="action">win.new</attribute>
+      </item>
+      <item>
+        <attribute name="label" translatable="yes">_Open snapshot</attribute>
+        <attribute name="action">win.open-snapshot</attribute>
+      </item>
+      <item>
+        <attribute name="label" translatable="yes">_Save snapshot</attribute>
+        <attribute name="action">win.snapshot</attribute>
+      </item>
+    </section>
+    <section>
+      <item>
         <attribute name="label" translatable="yes">_Preferences</attribute>
         <attribute name="action">app.preferences</attribute>
       </item>

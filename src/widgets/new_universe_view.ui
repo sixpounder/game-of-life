@@ -1,0 +1,100 @@
+<interface>
+  <requires lib="gtk" version="4.0"/>
+  <template class="GameOfLifeNewUniverseView" parent="GtkDialog">
+    <property name="title" translatable="yes">New universe</property>
+    <property name="width-request">400</property>
+    <child internal-child="action_area">
+      <object class="GtkBox">
+        <property name="margin-top">12</property>
+        <property name="halign">center</property>
+      </object>
+    </child>
+    <child internal-child="content_area">
+      <object class="GtkBox">
+        <property name="width-request">280</property>
+        <property name="halign">center</property>
+        <property name="margin-top">12</property>
+        <property name="margin-bottom">12</property>
+        <property name="spacing">6</property>
+        <child>
+          <object class="GtkSpinButton" id="rows_entry">
+            <property name="numeric">true</property>
+            <property name="snap-to-ticks">true</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkSpinButton" id="columns_entry">
+            <property name="numeric">true</property>
+            <property name="snap-to-ticks">true</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkCheckButton" id="empty_check">
+            <property name="margin-top">12</property>
+            <property name="label" translatable="yes">Empty universe</property>
+            <property name="active">true</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkCheckButton" id="random_check">
+            <property name="label" translatable="yes">Random seed</property>
+            <property name="active">false</property>
+            <property name="group">empty_check</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkBox">
+            <property name="orientation">horizontal</property>
+            <property name="spacing">12</property>
+            <child>
+              <object class="GtkCheckButton" id="template_check">
+                <property name="label" translatable="yes">Template</property>
+                <property name="active">false</property>
+                <property name="group">empty_check</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkDropDown" id="template_list_dropdown">
+                <property name="show-arrow">true</property>
+                <property name="model">
+                  <object class="GtkStringList">
+                    <items>
+                      <item translatable="yes">Glider</item>
+                      <item translatable="yes">Pulsar</item>
+                      <item translatable="yes">Quadpole</item>
+                      <item translatable="yes">Spaceship</item>
+                      <item translatable="yes">Circle of fire</item>
+                    </items>
+                  </object>
+                </property>
+              </object>
+            </child>
+          </object>
+        </child>
+      </object>
+    </child>
+    <child type="action">
+      <object class="GtkButton" id="cancel_button">
+        <property name="label" translatable="yes">Cancel</property>
+        <style>
+          <class name="pill"/>
+          <class name="raised"/>
+        </style>
+      </object>
+    </child>
+    <child type="action">
+      <object class="GtkButton" id="accept_button">
+        <property name="label" translatable="yes">Create</property>
+        <style>
+          <class name="suggested-action"/>
+          <class name="pill"/>
+        </style>
+      </object>
+    </child>
+    <action-widgets>
+      <action-widget response="ok" default="true">accept_button</action-widget>
+      <action-widget response="cancel">cancel_button</action-widget>
+    </action-widgets>
+  </template>
+</interface>
+

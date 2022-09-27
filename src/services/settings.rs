@@ -1,7 +1,7 @@
 use gtk::gio::prelude::SettingsExt;
 use crate::config::APPLICATION_ID;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct GameOfLifeSettings {
     inner: gtk::gio::Settings
 }
@@ -53,5 +53,21 @@ impl GameOfLifeSettings {
 
     pub fn bg_color_dark(&self) -> String {
         self.inner.string("bg-color-dark").to_string()
+    }
+
+    pub fn universe_width(&self) -> i32 {
+        self.inner.int("universe-width")
+    }
+
+    pub fn set_universe_width(&self, value: i32) {
+        self.inner.set_int("universe-width", value).expect("Could not store default universe width");
+    }
+
+    pub fn universe_height(&self) -> i32 {
+        self.inner.int("universe-height")
+    }
+
+    pub fn set_universe_height(&self, value: i32) {
+        self.inner.set_int("universe-height", value).expect("Could not store default universe height");
     }
 }

@@ -105,7 +105,10 @@ mod imp {
 
             let mut this = Self::default();
 
-            this.universe.replace(Some(Universe::new_random(200, 200)));
+            this.universe.replace(Some(Universe::new_random(
+                settings.universe_width() as usize,
+                settings.universe_height() as usize,
+            )));
 
             this.receiver = receiver;
             this.sender = Some(sender);
@@ -117,6 +120,7 @@ mod imp {
             this.fg_color.set(Some(
                 gtk::gdk::RGBA::from_str(&settings.fg_color()).unwrap(),
             ));
+
             this.bg_color.set(Some(
                 gtk::gdk::RGBA::from_str(&settings.bg_color()).unwrap(),
             ));
@@ -497,7 +501,7 @@ impl GameOfLifeUniverseGrid {
                     Err(_) => break,
                 };
 
-                std::thread::sleep(std::time::Duration::from_millis(50));
+                std::thread::sleep(std::time::Duration::from_millis(200));
                 thread_universe.tick();
                 local_sender
                     .send(UniverseGridRequest::Redraw(Some(thread_universe.clone())))
@@ -542,6 +546,11 @@ impl GameOfLifeUniverseGrid {
         self.process_action(UniverseGridRequest::Redraw(Some(new_universe)));
     }
 
+    pub fn set_universe(&self, universe: Universe) {
+        self.imp().universe.replace(Some(universe));
+        self.redraw();
+    }
+
     pub fn redraw(&self) {
         self.imp().drawing_area.queue_draw();
     }
@@ -555,6 +564,12 @@ impl GameOfLifeUniverseGrid {
         self.imp().bg_color.set(color);
         self.redraw();
     }
+
+    pub fn rows(&self) -> usize {
+        self.imp().universe.borrow().as_ref().unwrap().rows()
+    }
+
+    pub fn columns(&self) -> usize {
+        self.imp().universe.borrow().as_ref().unwrap().columns()
+    }
 }
-
-
