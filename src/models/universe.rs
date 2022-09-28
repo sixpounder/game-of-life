@@ -334,8 +334,8 @@ pub enum SnapshotError {}
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct UniverseSnapshot {
-    columns: usize,
     rows: usize,
+    columns: usize,
     cells: Vec<UniverseCell>,
 }
 

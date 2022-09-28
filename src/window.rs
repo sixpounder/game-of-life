@@ -1,4 +1,7 @@
-use std::str::FromStr;
+use std::{
+    str::FromStr,
+    io::prelude::*
+};
 
 use crate::i18n::i18n;
 use adw::prelude::AdwApplicationExt;
@@ -323,18 +326,34 @@ impl GameOfLifeWindow {
                                 let mut buffer: Vec<u8> = vec![];
 
                                 let file_io_stream = dialog.file().unwrap();
-                                let file_io_stream = file_io_stream.open_readwrite(gtk::gio::Cancellable::NONE).unwrap();
-                                file_io_stream.input_stream().read_all(&mut buffer, gtk::gio::Cancellable::NONE).unwrap();
+                                let file_name = file_io_stream.path().unwrap();
+                                let file_name = file_name.to_str().unwrap();
 
-                                match bincode::deserialize::<UniverseSnapshot>(&buffer) {
-                                    Ok(snapshot) => {
-                                        win.seed_from_snapshot(snapshot);
-                                    },
-                                    Err(error) => {
-                                        glib::g_critical!(G_LOG_DOMAIN, "Unreadable file: {}", error);
+                                if let Ok(file) = std::fs::File::open(file_name) {
+                                    let mut file = std::io::BufReader::new(file);
+                                    if let Ok(bytes_read) = file.read_to_end(&mut buffer) {
+                                        glib::debug!("Opening snapshot (read {} bytes)", bytes_read);
+
+                                        match bincode::deserialize::<UniverseSnapshot>(&buffer) {
+                                            Ok(snapshot) => {
+                                                win.seed_from_snapshot(snapshot);
+                                            },
+                                            Err(error) => {
+                                                glib::g_critical!(G_LOG_DOMAIN, "Unreadable file: {}", error);
+                                                win.add_toast(i18n("Unreadable file"));
+                                            }
+                                        }
+                                    } else {
+                                        // Failed to read file
+                                        glib::g_critical!(G_LOG_DOMAIN, "Unreadable file",);
                                         win.add_toast(i18n("Unreadable file"));
                                     }
+                                } else {
+                                    // File not accessible
+                                    glib::g_critical!(G_LOG_DOMAIN, "File not accessible",);
+                                    win.add_toast(i18n("File not existing or not accessible"));
                                 }
+
                             }
                         },
                         None => ()
