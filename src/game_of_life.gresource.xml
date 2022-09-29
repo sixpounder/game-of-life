@@ -12,4 +12,11 @@
     <file preprocess="xml-stripblanks" alias="dice3-symbolic.svg">assets/icons/dice3-symbolic.svg</file>
     <file preprocess="xml-stripblanks" alias="snapshots-alt-symbolic.svg">assets/icons/snapshots-alt-symbolic.svg</file>
   </gresource>
+  <gresource prefix="/com/github/sixpounder/GameOfLife/templates/">
+    <file alias="glider">assets/templates/glider.univ</file>
+    <file alias="pulsar">assets/templates/pulsar.univ</file>
+    <file alias="spaceship">assets/templates/spaceship.univ</file>
+    <file alias="quadpole">assets/templates/quadpole.univ</file>
+    <file alias="circle_of_fire">assets/templates/circle_of_fire.univ</file>
+  </gresource>
 </gresources>

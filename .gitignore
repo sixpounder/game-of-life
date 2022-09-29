@@ -5,4 +5,4 @@ tmp
 # Generated source files
 src/config.rs
 
-./target
+target

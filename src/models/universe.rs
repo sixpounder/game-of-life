@@ -330,8 +330,6 @@ impl Drop for Universe {
     }
 }
 
-pub enum SnapshotError {}
-
 #[derive(Serialize, Deserialize, Debug)]
 pub struct UniverseSnapshot {
     rows: usize,
@@ -352,6 +350,10 @@ impl From<&Universe> for UniverseSnapshot {
 impl UniverseSnapshot {
     fn get_index(&self, row: usize, column: usize) -> usize {
         ((row * self.columns) + column) as usize
+    }
+
+    pub fn serialize(&self) -> Result<Vec<u8>, bincode::Error> {
+        bincode::serialize(self)
     }
 }
 
@@ -380,6 +382,21 @@ impl UniversePointMatrix for UniverseSnapshot {
         value: UniverseCell,
     ) -> Result<UniversePoint, Self::SetCellError> {
         Err("UniverseSnapshot is readonly")
+    }
+}
+
+#[derive(Debug)]
+pub enum SnapshotError {
+    Invalid
+}
+
+impl<'a> TryFrom<&Vec<u8>> for UniverseSnapshot {
+    type Error = SnapshotError;
+    fn try_from(value: &Vec<u8>) -> Result<Self, Self::Error> {
+        match bincode::deserialize::<Self>(value.as_ref()) {
+            Ok(snapshot) => Ok(snapshot),
+            Err(error) => Err(SnapshotError::Invalid)
+        }
     }
 }
 

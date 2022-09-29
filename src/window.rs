@@ -260,7 +260,7 @@ impl GameOfLifeWindow {
                     match dialog.file().as_ref() {
                         Some(file) => {
                             let snapshot = win.imp().universe_grid.get_universe_snapshot();
-                            match bincode::serialize(&snapshot) {
+                            match snapshot.serialize() {
                                 Ok(serialized) => {
                                     let file_io_stream;
                                     if file.query_exists(gtk::gio::Cancellable::NONE) {
@@ -322,7 +322,7 @@ impl GameOfLifeWindow {
                 if response == gtk::ResponseType::Accept {
                     match file.as_ref() {
                         Some(file) => {
-                            if file.query_exists(gtk::gio::Cancellable::NONE) {
+                            if file.query_exists(gio::Cancellable::NONE) {
                                 let mut buffer: Vec<u8> = vec![];
 
                                 let file_io_stream = dialog.file().unwrap();
@@ -334,12 +334,12 @@ impl GameOfLifeWindow {
                                     if let Ok(bytes_read) = file.read_to_end(&mut buffer) {
                                         glib::debug!("Opening snapshot (read {} bytes)", bytes_read);
 
-                                        match bincode::deserialize::<UniverseSnapshot>(&buffer) {
+                                        match UniverseSnapshot::try_from(&buffer) {
                                             Ok(snapshot) => {
                                                 win.seed_from_snapshot(snapshot);
                                             },
                                             Err(error) => {
-                                                glib::g_critical!(G_LOG_DOMAIN, "Unreadable file: {}", error);
+                                                glib::g_critical!(G_LOG_DOMAIN, "Unreadable file: {:?}", error);
                                                 win.add_toast(i18n("Unreadable file"));
                                             }
                                         }
@@ -385,9 +385,38 @@ impl GameOfLifeWindow {
                         match dialog.option() {
                             NewUniverseType::Empty => win.new_empty(target_w as usize, target_h as usize),
                             NewUniverseType::Random => win.new_random(target_w as usize, target_h as usize),
-
-                            // TODO: actually manage templates
-                            NewUniverseType::Template(_template_name) => win.new_random(target_w as usize, target_h as usize),
+                            NewUniverseType::Template(template_name) => {
+                                glib::debug!("Seeding from {} template", template_name);
+                                let resource_path = format!("/com/github/sixpounder/GameOfLife/templates/{template_name}");
+                                match gio::resources_open_stream(resource_path.as_str(), gio::ResourceLookupFlags::NONE) {
+                                    Ok(stream) => {
+                                        glib::debug!("Template stream opened");
+                                        let mut buffer = vec![];
+                                        match stream.read_all(&mut buffer, gio::Cancellable::NONE) {
+                                            Ok(read) => {
+                                                glib::debug!("Read {} bytes from template", read.0);
+                                                match UniverseSnapshot::try_from(&buffer) {
+                                                    Ok(snapshot) => {
+                                                        win.seed_from_snapshot(snapshot);
+                                                    },
+                                                    Err(error) => {
+                                                        glib::g_critical!(G_LOG_DOMAIN, "Unreadable template: {:?}", error);
+                                                        win.add_toast(i18n("Unreadable template"));
+                                                    }
+                                                }
+                                            },
+                                            Err(error) => {
+                                                glib::g_critical!(G_LOG_DOMAIN, "Could not load template buffer: {}", error);
+                                                win.add_toast(i18n("Could not load this template"));
+                                            }
+                                        }
+                                    },
+                                    Err(error) => {
+                                        glib::g_critical!(G_LOG_DOMAIN, "Could not load template: {}", error);
+                                        win.add_toast(i18n("Could not load this template"));
+                                    }
+                                }
+                            },
                         }
                     }
                     _ => ()
