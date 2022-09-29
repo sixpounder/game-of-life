@@ -228,37 +228,87 @@ impl GameOfLifeUniverseGrid {
     fn setup_drawing_area(&self) {
         let drawing_area = self.imp().drawing_area.get();
 
-        let click_gesture_controller = gtk::GestureClick::new();
-        click_gesture_controller.connect_pressed(
+        let left_click_gesture_controller = gtk::GestureClick::new();
+        left_click_gesture_controller.set_button(gtk::gdk::ffi::GDK_BUTTON_PRIMARY as u32);
+        left_click_gesture_controller.connect_pressed(
             clone!(@strong self as this => move |gesture, n_press, x, y| {
-                this.on_drawing_area_clicked(gesture, n_press, x, y);
+                let gesture_button = gesture.button() as i32;
+                this.on_drawing_area_clicked(
+                    gesture,
+                    n_press,
+                    x,
+                    y,
+                    Some(UniverseCell::Alive)
+                );
             }),
         );
-        click_gesture_controller.connect_released(
+        left_click_gesture_controller.connect_released(
             clone!(@strong self as this => move |gesture, n_press, x, y| {
                 this.on_drawing_area_click_released(gesture, n_press, x, y);
             }),
         );
-        click_gesture_controller.connect_unpaired_release(
+        left_click_gesture_controller.connect_unpaired_release(
             clone!(@strong self as this => move |gesture, x, y, button, events| {
                 this.on_drawing_area_click_unpaired_released(gesture, x, y, button, events);
             }),
         );
-        drawing_area.add_controller(&click_gesture_controller);
+        drawing_area.add_controller(&left_click_gesture_controller);
 
-        let drag_gesture_controller = gtk::GestureDrag::new();
-        drag_gesture_controller.connect_begin(
+        let right_click_gesture_controller = gtk::GestureClick::new();
+        right_click_gesture_controller.set_button(gtk::gdk::ffi::GDK_BUTTON_SECONDARY as u32);
+        right_click_gesture_controller.connect_pressed(
+            clone!(@strong self as this => move |gesture, n_press, x, y| {
+                let gesture_button = gesture.button() as i32;
+                this.on_drawing_area_clicked(
+                    gesture,
+                    n_press,
+                    x,
+                    y,
+                    Some(UniverseCell::Dead)
+                );
+            }),
+        );
+        right_click_gesture_controller.connect_released(
+            clone!(@strong self as this => move |gesture, n_press, x, y| {
+                this.on_drawing_area_click_released(gesture, n_press, x, y);
+            }),
+        );
+        right_click_gesture_controller.connect_unpaired_release(
+            clone!(@strong self as this => move |gesture, x, y, button, events| {
+                this.on_drawing_area_click_unpaired_released(gesture, x, y, button, events);
+            }),
+        );
+        drawing_area.add_controller(&right_click_gesture_controller);
+
+        let left_drag_gesture_controller = gtk::GestureDrag::new();
+        left_drag_gesture_controller.set_button(gtk::gdk::ffi::GDK_BUTTON_PRIMARY as u32);
+        left_drag_gesture_controller.connect_begin(
             clone!(@strong self as this => move |gesture, events| {
-                this.on_drawing_area_drag_begin(gesture, events)
+                this.on_drawing_area_drag_begin(gesture, events, Some(UniverseCell::Alive))
             }),
         );
 
-        drag_gesture_controller.connect_update(
+        left_drag_gesture_controller.connect_update(
             clone!(@strong self as this => move |gesture, events| {
-                this.on_drawing_area_drag_move(gesture, events)
+                this.on_drawing_area_drag_move(gesture, events, Some(UniverseCell::Alive))
             }),
         );
-        drawing_area.add_controller(&drag_gesture_controller);
+        drawing_area.add_controller(&left_drag_gesture_controller);
+
+        let right_drag_gesture_controller = gtk::GestureDrag::new();
+        right_drag_gesture_controller.set_button(gtk::gdk::ffi::GDK_BUTTON_SECONDARY as u32);
+        right_drag_gesture_controller.connect_begin(
+            clone!(@strong self as this => move |gesture, events| {
+                this.on_drawing_area_drag_begin(gesture, events, Some(UniverseCell::Dead))
+            }),
+        );
+
+        right_drag_gesture_controller.connect_update(
+            clone!(@strong self as this => move |gesture, events| {
+                this.on_drawing_area_drag_move(gesture, events, Some(UniverseCell::Dead))
+            }),
+        );
+        drawing_area.add_controller(&right_drag_gesture_controller);
 
         drawing_area.connect_resize(
             clone!(@strong self as this => move |_widget, _width, _height| {
@@ -291,12 +341,12 @@ impl GameOfLifeUniverseGrid {
         glib::Continue(true)
     }
 
-    fn on_drawing_area_clicked(&self, _gesture: &gtk::GestureClick, _n_press: i32, x: f64, y: f64) {
+    fn on_drawing_area_clicked(&self, _gesture: &gtk::GestureClick, _n_press: i32, x: f64, y: f64, alter_state: Option<UniverseCell>) {
         if self.mode() == UniverseGridMode::Design {
             self.imp()
                 .interaction_state
                 .set(UniverseGridInteractionState::Ongoing);
-            self.alter_universe_point(x, y, None);
+            self.alter_universe_point(x, y, alter_state);
         }
     }
 
@@ -329,10 +379,11 @@ impl GameOfLifeUniverseGrid {
         &self,
         gesture: &gtk::GestureDrag,
         _events: Option<&gtk::gdk::EventSequence>,
+        alter_state: Option<UniverseCell>
     ) {
         if self.imp().interaction_state.get() == UniverseGridInteractionState::Ongoing {
             if let Some(point) = gesture.start_point() {
-                self.alter_universe_point(point.0, point.1, Some(UniverseCell::Alive));
+                self.alter_universe_point(point.0, point.1, alter_state);
             }
         }
     }
@@ -341,6 +392,7 @@ impl GameOfLifeUniverseGrid {
         &self,
         gesture: &gtk::GestureDrag,
         _events: Option<&gtk::gdk::EventSequence>,
+        alter_state: Option<UniverseCell>,
     ) {
         if self.imp().interaction_state.get() == UniverseGridInteractionState::Ongoing {
             if let Some(point) = gesture.offset() {
@@ -348,7 +400,7 @@ impl GameOfLifeUniverseGrid {
                 self.alter_universe_point(
                     origin.0 + point.0,
                     origin.1 + point.1,
-                    Some(UniverseCell::Alive),
+                    alter_state
                 );
             }
         }
