@@ -60,7 +60,7 @@ impl Default for UniverseGridInteractionState {
 mod imp {
     use super::*;
     use glib::{
-        types::StaticType, ParamFlags, ParamSpec, ParamSpecBoolean, ParamSpecEnum, ParamSpecObject,
+        types::StaticType, ParamFlags, ParamSpec, ParamSpecBoolean, ParamSpecEnum, ParamSpecUInt,
     };
     use once_cell::sync::Lazy;
 
@@ -68,7 +68,9 @@ mod imp {
     #[template(resource = "/com/github/sixpounder/GameOfLife/universe_grid.ui")]
     pub struct GameOfLifeUniverseGrid {
         #[template_child]
-        pub drawing_area: TemplateChild<gtk::DrawingArea>,
+        pub(super) drawing_area: TemplateChild<gtk::DrawingArea>,
+
+        pub(super) settings: GameOfLifeSettings,
 
         pub(super) mode: Cell<UniverseGridMode>,
 
@@ -88,6 +90,12 @@ mod imp {
 
         pub(super) bg_color: std::cell::Cell<Option<gtk::gdk::RGBA>>,
 
+        pub(super) point_under_pointing_device: std::cell::Cell<Option<UniversePoint>>,
+
+        pub(super) evolution_speed: std::cell::Cell<u32>,
+
+        pub(super) draw_cells_outline: std::cell::Cell<bool>,
+
         pub(super) interaction_state: std::cell::Cell<UniverseGridInteractionState>,
     }
 
@@ -101,13 +109,11 @@ mod imp {
             let (sender, r) = glib::MainContext::channel(glib::PRIORITY_DEFAULT);
             let receiver = RefCell::new(Some(r));
 
-            let settings = GameOfLifeSettings::default();
-
             let mut this = Self::default();
 
             this.universe.replace(Some(Universe::new_random(
-                settings.universe_width() as usize,
-                settings.universe_height() as usize,
+                this.settings.universe_width() as usize,
+                this.settings.universe_height() as usize,
             )));
 
             this.receiver = receiver;
@@ -118,11 +124,11 @@ mod imp {
 
             // Defaults to light color scheme
             this.fg_color.set(Some(
-                gtk::gdk::RGBA::from_str(&settings.fg_color()).unwrap(),
+                gtk::gdk::RGBA::from_str(&this.settings.fg_color()).unwrap(),
             ));
 
             this.bg_color.set(Some(
-                gtk::gdk::RGBA::from_str(&settings.bg_color()).unwrap(),
+                gtk::gdk::RGBA::from_str(&this.settings.bg_color()).unwrap(),
             ));
 
             this
@@ -163,8 +169,24 @@ mod imp {
                         false,
                         ParamFlags::READWRITE,
                     ),
+                    ParamSpecBoolean::new(
+                        "draw-cells-outline",
+                        "",
+                        "",
+                        false,
+                        ParamFlags::READWRITE,
+                    ),
                     ParamSpecBoolean::new("frozen", "", "", false, ParamFlags::READWRITE),
                     ParamSpecBoolean::new("is-running", "", "", false, ParamFlags::READABLE),
+                    ParamSpecUInt::new(
+                        "evolution-speed",
+                        "",
+                        "",
+                        1,
+                        100,
+                        5,
+                        ParamFlags::READWRITE,
+                    ),
                 ]
             });
             PROPERTIES.as_ref()
@@ -187,6 +209,12 @@ mod imp {
                 "frozen" => {
                     obj.set_frozen(value.get::<bool>().unwrap());
                 }
+                "draw-cells-outline" => {
+                    obj.set_draw_cells_outline(value.get::<bool>().unwrap());
+                },
+                "evolution-speed" => {
+                    obj.set_evolution_speed(value.get::<u32>().unwrap_or(5));
+                },
                 _ => unimplemented!(),
             }
         }
@@ -196,6 +224,8 @@ mod imp {
                 "mode" => self.mode.get().to_value(),
                 "frozen" => self.frozen.get().to_value(),
                 "allow-draw-on-resize" => self.allow_draw_on_resize.get().to_value(),
+                "draw-cells-outline" => obj.draw_cells_outline().to_value(),
+                "evolution-speed" => obj.evolution_speed().to_value(),
                 "is-running" => obj.is_running().to_value(),
                 _ => unimplemented!(),
             }
@@ -232,7 +262,6 @@ impl GameOfLifeUniverseGrid {
         left_click_gesture_controller.set_button(gtk::gdk::ffi::GDK_BUTTON_PRIMARY as u32);
         left_click_gesture_controller.connect_pressed(
             clone!(@strong self as this => move |gesture, n_press, x, y| {
-                let gesture_button = gesture.button() as i32;
                 this.on_drawing_area_clicked(
                     gesture,
                     n_press,
@@ -258,7 +287,6 @@ impl GameOfLifeUniverseGrid {
         right_click_gesture_controller.set_button(gtk::gdk::ffi::GDK_BUTTON_SECONDARY as u32);
         right_click_gesture_controller.connect_pressed(
             clone!(@strong self as this => move |gesture, n_press, x, y| {
-                let gesture_button = gesture.button() as i32;
                 this.on_drawing_area_clicked(
                     gesture,
                     n_press,
@@ -309,6 +337,27 @@ impl GameOfLifeUniverseGrid {
             }),
         );
         drawing_area.add_controller(&right_drag_gesture_controller);
+
+        let motion_controller = gtk::EventControllerMotion::new();
+        motion_controller.connect_enter(
+            clone!(@strong self as this => move |controller, x, y| {
+                this.on_drawing_area_mouse_position(controller, x, y);
+            })
+        );
+
+        motion_controller.connect_leave(
+            clone!(@strong self as this => move |controller| {
+                this.on_drawing_area_mouse_leave(controller);
+            })
+        );
+
+        motion_controller.connect_motion(
+            clone!(@strong self as this => move |controller, x, y| {
+                this.on_drawing_area_mouse_position(controller, x, y);
+            })
+        );
+
+        drawing_area.add_controller(&motion_controller);
 
         drawing_area.connect_resize(
             clone!(@strong self as this => move |_widget, _width, _height| {
@@ -406,6 +455,16 @@ impl GameOfLifeUniverseGrid {
         }
     }
 
+    fn on_drawing_area_mouse_position(&self, controller: &gtk::EventControllerMotion, x: f64, y: f64) {
+        self.imp().point_under_pointing_device.set(
+            widget_area_point_to_universe_cell(&self.imp().drawing_area.get(), self.imp().universe.borrow().as_ref(), x, y)
+        );
+    }
+
+    fn on_drawing_area_mouse_leave(&self, _controller: &gtk::EventControllerMotion) {
+        self.imp().point_under_pointing_device.set(None);
+    }
+
     /// Alters the universe cell visually located at `x` and `y` coordinates. If `Some(value)`
     /// is provided it will be used as the new cell value, else the opposite value of the current
     /// one will be set
@@ -416,10 +475,12 @@ impl GameOfLifeUniverseGrid {
         if let Some(universe_point) =
             widget_area_point_to_universe_cell(&drawing_area, universe_borrow.as_ref(), x, y)
         {
-            // If a point is found, invert its cell value
+            // If a point is found, set its cell value
             drop(universe_borrow);
             let mut universe_mut_borrow = self.imp().universe.borrow_mut();
             let mut_borrow = universe_mut_borrow.as_mut().unwrap();
+
+            // NONE value means invert the cell value, SOME value sets it
             let next_value = match value {
                 Some(v) => v,
                 None => !(*universe_point.cell()),
@@ -443,6 +504,12 @@ impl GameOfLifeUniverseGrid {
             // Determine colors
             let fg_color = imp.fg_color.get().unwrap();
             let bg_color = imp.bg_color.get().unwrap();
+            let wants_outlines = self.draw_cells_outline();
+
+            let mut outline_color = bg_color.clone();
+            outline_color.set_red(outline_color.red() + 0.1);
+            outline_color.set_green(outline_color.green() + 0.1);
+            outline_color.set_blue(outline_color.blue() + 0.1);
 
             context.set_source_rgba(
                 bg_color.red() as f64,
@@ -461,20 +528,30 @@ impl GameOfLifeUniverseGrid {
                     height as f64 / universe.rows() as f64,
                 );
 
-                context.set_source_rgba(
-                    fg_color.red() as f64,
-                    fg_color.green() as f64,
-                    fg_color.blue() as f64,
-                    fg_color.alpha() as f64,
-                );
-
                 for el in universe.iter_cells() {
-                    if el.cell().is_alive() {
-                        let w = el.row();
-                        let h = el.column();
-                        let coords: (f64, f64) = ((w as f64) * width, (h as f64) * height);
+                    let w = el.row();
+                    let h = el.column();
+                    let coords: (f64, f64) = ((w as f64) * width, (h as f64) * height);
 
+                    if wants_outlines {
                         context.rectangle(coords.0, coords.1, width, height);
+                        context.set_line_width(1.0);
+                        context.set_source_rgba(
+                            outline_color.red() as f64,
+                            outline_color.green() as f64,
+                            outline_color.blue() as f64,
+                            outline_color.alpha() as f64,
+                        );
+                        context.stroke().unwrap();
+                    }
+                    if el.cell().is_alive() {
+                        context.rectangle(coords.0, coords.1, width, height);
+                        context.set_source_rgba(
+                            fg_color.red() as f64,
+                            fg_color.green() as f64,
+                            fg_color.blue() as f64,
+                            fg_color.alpha() as f64,
+                        );
                         context.fill().unwrap();
                     }
                 }
@@ -547,13 +624,14 @@ impl GameOfLifeUniverseGrid {
         let thread_universe = self.imp().universe.borrow();
         if let Some(universe) = thread_universe.as_ref() {
             let mut thread_universe = universe.clone();
+            let wait: u64 = 1000 / u64::from(self.evolution_speed());
             std::thread::spawn(move || loop {
                 match thread_render_stopper_sender.send(()) {
                     Ok(_) => (),
                     Err(_) => break,
                 };
 
-                std::thread::sleep(std::time::Duration::from_millis(200));
+                std::thread::sleep(std::time::Duration::from_millis(wait));
                 thread_universe.tick();
                 local_sender
                     .send(UniverseGridRequest::Redraw(Some(thread_universe.clone())))
@@ -623,5 +701,26 @@ impl GameOfLifeUniverseGrid {
 
     pub fn columns(&self) -> usize {
         self.imp().universe.borrow().as_ref().unwrap().columns()
+    }
+
+    pub fn draw_cells_outline(&self) -> bool {
+        self.imp().draw_cells_outline.get()
+    }
+
+    pub fn set_draw_cells_outline(&self, value: bool) {
+        let current = self.imp().draw_cells_outline.get();
+        if value != current {
+            self.imp().draw_cells_outline.set(value);
+            self.redraw();
+        }
+    }
+
+    pub fn evolution_speed(&self) -> u32 {
+        self.imp().evolution_speed.get()
+    }
+
+    pub fn set_evolution_speed(&self, value: u32) {
+        println!("{}", value);
+        self.imp().evolution_speed.set(value);
     }
 }

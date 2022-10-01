@@ -102,6 +102,9 @@ mod imp {
     impl ObjectImpl for GameOfLifeWindow {
         fn constructed(&self, obj: &Self::Type) {
             self.parent_constructed(obj);
+            obj.setup_provider();
+            obj.setup_widgets();
+            obj.restore_window_state();
             obj.connect_events();
         }
 
@@ -154,9 +157,7 @@ impl GameOfLifeWindow {
 
         let style_manager = application.style_manager();
 
-        win.setup_provider();
         win.update_prefers_dark_mode(style_manager.is_dark());
-        win.restore_window_state();
 
         style_manager.connect_dark_notify(glib::clone!(@strong win as this => move |sm| {
             this.update_prefers_dark_mode(sm.is_dark());
@@ -173,6 +174,13 @@ impl GameOfLifeWindow {
         self.imp().mode.set(value);
     }
 
+    fn setup_widgets(&self) {
+        let settings = GameOfLifeSettings::default();
+        let grid = self.imp().universe_grid.get();
+        grid.set_evolution_speed(settings.evolution_speed());
+        grid.set_draw_cells_outline(settings.draw_cells_outline());
+    }
+
     fn setup_provider(&self) {
         let imp = self.imp();
         imp.provider
@@ -184,6 +192,7 @@ impl GameOfLifeWindow {
 
     fn connect_events(&self) {
         let imp = self.imp();
+        let settings = GameOfLifeSettings::default();
 
         // Updates buttons and other stuff when UniverseGrid running state changes
         imp.universe_grid.connect_notify_local(
@@ -193,6 +202,18 @@ impl GameOfLifeWindow {
                 this.notify("is-running");
                 this.notify("is-stopped");
             }),
+        );
+
+        settings.connect_changed("draw-cells-outline",
+            clone!(@strong self as this, @strong settings as s => move |_,_| {
+                this.imp().universe_grid.set_draw_cells_outline(s.draw_cells_outline())
+            })
+        );
+
+        settings.connect_changed("evolution-speed",
+            clone!(@strong self as this, @strong settings as s => move |_,_| {
+                this.imp().universe_grid.set_evolution_speed(s.evolution_speed())
+            })
         );
 
         self.connect_close_request(move |window| {
@@ -221,12 +242,20 @@ impl GameOfLifeWindow {
     }
 
     pub fn toggle_edit_mode(&self) {
+        let settings = GameOfLifeSettings::default();
         let grid = self.imp().universe_grid.get();
         let next_mode = match grid.mode() {
             UniverseGridMode::Design => UniverseGridMode::Run,
             UniverseGridMode::Run => UniverseGridMode::Design,
         };
 
+        if next_mode == UniverseGridMode::Design && settings.show_design_hint() {
+            let msg = i18n("Left click to make a cell alive, right click to make it dead");
+            let toast = adw::Toast::new(&msg);
+            toast.set_action_name(Some("app.disable-design-hint"));
+            toast.set_button_label(Some(i18n("Do not show again").as_str()));
+            self.imp().toast_overlay.add_toast(&toast);
+        }
         grid.set_mode(next_mode);
 
         let controls = self.imp().controls.get();

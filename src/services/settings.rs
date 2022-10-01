@@ -1,5 +1,5 @@
 use gtk::gio::prelude::SettingsExt;
-use crate::config::APPLICATION_ID;
+use crate::config::{APPLICATION_ID, G_LOG_DOMAIN};
 
 #[derive(Debug, Clone)]
 pub struct GameOfLifeSettings {
@@ -69,5 +69,31 @@ impl GameOfLifeSettings {
 
     pub fn set_universe_height(&self, value: i32) {
         self.inner.set_int("universe-height", value).expect("Could not store default universe height");
+    }
+
+    pub fn draw_cells_outline(&self) -> bool {
+        self.inner.boolean("draw-cells-outline")
+    }
+
+    pub fn set_draw_cells_outline(&self, value: bool) {
+        self.inner.set_boolean("draw-cells-outline", value).expect("Could not store cells outline preference")
+    }
+
+    pub fn show_design_hint(&self) -> bool {
+        self.inner.boolean("show-design-hint")
+    }
+
+    pub fn set_show_design_hint(&self, value: bool) {
+        self.inner.set_boolean("show-design-hint", value).expect("Could not store design hint preference")
+    }
+
+    pub fn connect_changed<F>(&self, key: &str, f: F)
+    where
+        F: Fn(&gtk::gio::Settings, &str) + 'static
+    {
+        self.inner.connect_changed(Some(key), move |settings, key| {
+            glib::info!("GSettings:{} changed", key);
+            f(settings, key);
+        });
     }
 }

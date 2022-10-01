@@ -1,0 +1,81 @@
+<interface>
+  <requires lib="gtk" version="4.0"/>
+  <template class="GameOfLifePreferencesWindow" parent="AdwPreferencesWindow">
+    <child>
+      <object class="AdwPreferencesPage">
+        <property name="title" translatable="yes">General</property>
+        <property name="icon-name">applications-system-symbolic</property>
+        <child>
+          <object class="AdwPreferencesGroup">
+            <property name="title" translatable="yes">Feedbacks</property>
+            <property name="description" translatable="yes">Various application feedbacks settings</property>
+            <child>
+              <object class="AdwActionRow">
+                <property name="title" translatable="yes">Design hint</property>
+                <property name="title-selectable">false</property>
+                <property name="subtitle" translatable="yes">Show a toast describing interaction modes during design mode</property>
+                <property name="activatable">true</property>
+                <property name="activatable-widget">show_design_hint</property>
+                <child>
+                  <object class="GtkSwitch" id="show_design_hint">
+                    <property name="valign">center</property>
+                  </object>
+                </child>
+              </object>
+            </child>
+          </object>
+        </child>
+      </object>
+    </child>
+    <child>
+      <object class="AdwPreferencesPage">
+        <property name="title" translatable="yes">Universe</property>
+        <property name="icon-name">input-dialpad-symbolic</property>
+        <child>
+          <object class="AdwPreferencesGroup">
+            <property name="title" translatable="yes">Appearance</property>
+            <child>
+              <object class="AdwActionRow">
+                <property name="title" translatable="yes">Draw cells outline</property>
+                <property name="title-selectable">false</property>
+                <property name="activatable">true</property>
+                <property name="activatable-widget">draw_cells_outline</property>
+                <child>
+                  <object class="GtkSwitch" id="draw_cells_outline">
+                    <property name="valign">center</property>
+                  </object>
+                </child>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="AdwPreferencesGroup">
+            <property name="title" translatable="yes">Evolution</property>
+            <child>
+              <object class="AdwActionRow">
+                <property name="title" translatable="yes">Evolutions speed</property>
+                <property name="title-selectable">false</property>
+                <property name="subtitle" translatable="yes">The number of generations to be computed per second during an evolution</property>
+                <property name="activatable">true</property>
+                <property name="activatable-widget">evolution_speed</property>
+                <child>
+                  <object class="GtkSpinButton" id="evolution_speed">
+                    <property name="valign">center</property>
+                    <property name="adjustment">evolution_speed_adjustment</property>
+                  </object>
+                </child>
+              </object>
+            </child>
+          </object>
+        </child>
+      </object>
+    </child>
+  </template>
+  <object class="GtkAdjustment" id="evolution_speed_adjustment">
+    <property name="lower">1</property>
+    <property name="upper">100</property>
+    <property name="step-increment">1</property>
+  </object>
+</interface>
+

@@ -42,6 +42,7 @@ rust_sources = files(
   'widgets/universe_grid.rs',
   'widgets/universe_controls.rs',
   'widgets/new_universe_view.rs',
+  'widgets/preferences_window.rs',
   'models/mod.rs',
   'models/prelude.rs',
   'models/universe.rs',

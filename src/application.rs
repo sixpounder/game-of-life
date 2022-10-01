@@ -5,7 +5,11 @@ use gtk::{gio, glib};
 use adw::subclass::prelude::*;
 
 use crate::config::VERSION;
-use crate::GameOfLifeWindow;
+use crate::{
+    GameOfLifeWindow,
+    widgets::GameOfLifePreferencesWindow,
+    services::GameOfLifeSettings
+};
 
 mod imp {
     use super::*;
@@ -29,6 +33,7 @@ mod imp {
             self.parent_constructed(obj);
             obj.setup_gactions();
             obj.set_accels_for_action("app.quit", &["<primary>q"]);
+            obj.set_accels_for_action("app.preferences", &["<ctrl>comma"]);
             obj.set_accels_for_action("win.play", &["p"]);
             obj.set_accels_for_action("win.snapshot", &["<ctrl>s"]);
             obj.set_accels_for_action("win.open-snapshot", &["<ctrl>o"]);
@@ -86,6 +91,19 @@ impl GameOfLifeApplication {
             app.show_about();
         }));
         self.add_action(&about_action);
+
+        let preferences_action = gio::SimpleAction::new("preferences", None);
+        preferences_action.connect_activate(clone!(@weak self as app => move |_, _| {
+            let preferences_window = GameOfLifePreferencesWindow::new(app.active_window().as_ref());
+            preferences_window.show();
+        }));
+        self.add_action(&preferences_action);
+
+        let disable_design_hint_action = gio::SimpleAction::new("disable-design-hint", None);
+        disable_design_hint_action.connect_activate(clone!(@weak self as app => move |_, _| {
+            GameOfLifeSettings::default().set_show_design_hint(false);
+        }));
+        self.add_action(&disable_design_hint_action);
     }
 
     fn show_about(&self) {

@@ -53,7 +53,7 @@ impl fmt::Display for UniverseCell {
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Copy)]
 pub struct UniversePoint {
     row: usize,
     column: usize,
