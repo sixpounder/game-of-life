@@ -69,9 +69,9 @@ mod imp {
                 win.new_universe_dialog();
             });
 
-            klass.install_action("win.new-empty", None, move |win, _, _| {
+            // klass.install_action("win.new-empty", None, move |_win, _, _| {
                 // win.new_empty();
-            });
+            // });
 
             klass.install_action("win.random-seed", None, move |win, _, _| {
                 win.seed_universe();
@@ -295,7 +295,7 @@ impl GameOfLifeWindow {
                                     if file.query_exists(gtk::gio::Cancellable::NONE) {
                                         file_io_stream = file.open_readwrite(gtk::gio::Cancellable::NONE).unwrap();
                                     } else {
-                                        file_io_stream = file.create_readwrite(gtk::gio::FileCreateFlags::PRIVATE | gtk::gio::FileCreateFlags::REPLACE_DESTINATION, gtk::gio::Cancellable::NONE).unwrap();
+                                        file_io_stream = file.create_readwrite(gtk::gio::FileCreateFlags::NONE | gtk::gio::FileCreateFlags::REPLACE_DESTINATION, gtk::gio::Cancellable::NONE).unwrap();
                                     }
 
                                     let write_result = file_io_stream.output_stream().write_all(serialized.as_slice(), gtk::gio::Cancellable::NONE);
@@ -404,7 +404,9 @@ impl GameOfLifeWindow {
             .unwrap()
             .downcast::<gtk::Window>()
             .unwrap();
-        let dialog = GameOfLifeNewUniverseView::new(Some(&win));
+        let dialog = GameOfLifeNewUniverseView::new();
+        dialog.set_modal(true);
+        dialog.set_transient_for(Some(&win));
 
         dialog.connect_response(
             clone!(@strong dialog, @weak self as win => move |_, response| {
@@ -416,33 +418,34 @@ impl GameOfLifeWindow {
                             NewUniverseType::Random => win.new_random(target_w as usize, target_h as usize),
                             NewUniverseType::Template(template_name) => {
                                 glib::debug!("Seeding from {} template", template_name);
-                                let resource_path = format!("/com/github/sixpounder/GameOfLife/templates/{template_name}");
+                                let resource_path = format!("/com/github/sixpounder/GameOfLife/templates/{}.univ", template_name);
+                                glib::g_debug!(G_LOG_DOMAIN, "Template reource path: {}", resource_path);
                                 match gio::resources_open_stream(resource_path.as_str(), gio::ResourceLookupFlags::NONE) {
                                     Ok(stream) => {
-                                        glib::debug!("Template stream opened");
+                                        glib::g_debug!(G_LOG_DOMAIN, "Template stream opened");
                                         let mut buffer = vec![];
                                         match stream.read_all(&mut buffer, gio::Cancellable::NONE) {
                                             Ok(read) => {
-                                                glib::debug!("Read {} bytes from template", read.0);
+                                                glib::g_debug!(G_LOG_DOMAIN, "Read {} bytes from template", read.0);
                                                 match UniverseSnapshot::try_from(&buffer) {
                                                     Ok(snapshot) => {
                                                         win.seed_from_snapshot(snapshot);
                                                     },
                                                     Err(error) => {
                                                         glib::g_critical!(G_LOG_DOMAIN, "Unreadable template: {:?}", error);
-                                                        win.add_toast(i18n("Unreadable template"));
+                                                        win.add_toast(i18n("Bad template data"));
                                                     }
                                                 }
                                             },
                                             Err(error) => {
                                                 glib::g_critical!(G_LOG_DOMAIN, "Could not load template buffer: {}", error);
-                                                win.add_toast(i18n("Could not load this template"));
+                                                win.add_toast(i18n("Could not read template content"));
                                             }
                                         }
                                     },
                                     Err(error) => {
                                         glib::g_critical!(G_LOG_DOMAIN, "Could not load template: {}", error);
-                                        win.add_toast(i18n("Could not load this template"));
+                                        win.add_toast(i18n("Template not found"));
                                     }
                                 }
                             },
@@ -473,7 +476,8 @@ impl GameOfLifeWindow {
 
     fn seed_from_snapshot(&self, snapshot: UniverseSnapshot) {
         let universe_grid = self.imp().universe_grid.get();
-        universe_grid.set_universe(snapshot.into());
+        let universe = snapshot.into();
+        universe_grid.set_universe(universe);
     }
 
     fn update_prefers_dark_mode(&self, value: bool) {

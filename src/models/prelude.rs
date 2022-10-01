@@ -92,7 +92,7 @@ pub trait UniversePointMatrix {
     fn rows(&self) -> usize;
 
     /// Gets a point at `row` and `column`
-    fn get(&self, row: usize, column: usize) -> UniversePoint;
+    fn get(&self, row: usize, column: usize) -> Option<UniversePoint>;
 
     /// Sets the cell state at `row` and `column` and, if successfull,
     /// returns the the altered point

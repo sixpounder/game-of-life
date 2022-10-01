@@ -20,12 +20,14 @@
           <object class="GtkSpinButton" id="rows_entry">
             <property name="numeric">true</property>
             <property name="snap-to-ticks">true</property>
+            <!-- <property name="sensitive" bind-property="dimensions-editable" bind-source="GameOfLifeNewUniverseView" bind-flags="default|sync-create"></property> -->
           </object>
         </child>
         <child>
           <object class="GtkSpinButton" id="columns_entry">
             <property name="numeric">true</property>
             <property name="snap-to-ticks">true</property>
+            <!-- <property name="sensitive" bind-property="dimensions-editable" bind-source="GameOfLifeNewUniverseView" bind-flags="default|sync-create"></property> -->
           </object>
         </child>
         <child>

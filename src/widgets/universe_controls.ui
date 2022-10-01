@@ -12,6 +12,51 @@
           <object class="GtkBox">
             <property name="orientation">horizontal</property>
             <property name="spacing">24</property>
+            <!-- <child> -->
+            <!--   <object class="GtkToggleButton"> -->
+            <!--     <property name="icon-name">document-edit-symbolic</property> -->
+            <!--     <property name="valign">center</property> -->
+            <!--     <property name="halign">center</property> -->
+            <!--     <property name="active" bind-property="editing" bind-source="GameOfLifeUniverseControls" bind-flags="default|sync-create"> -->
+            <!--     </property> -->
+            <!--     <property name="sensitive" bind-property="stopped" bind-source="GameOfLifeUniverseControls" bind-flags="default|sync-create"> -->
+            <!--     </property> -->
+            <!--     <property name="tooltip-text" translatable="yes">Toggle design mode</property> -->
+            <!--     <property name="action-name">win.toggle-design-mode</property> -->
+            <!--     <style> -->
+            <!--       <class name="circular" /> -->
+            <!--     </style> -->
+            <!--     <accessibility> -->
+            <!--       <property name="label" translatable="yes" context="a11y">Toggle design mode</property> -->
+            <!--     </accessibility> -->
+            <!--   </object> -->
+            <!-- </child> -->
+          </object>
+        </child>
+        <child type="center">
+          <object class="GtkBox">
+            <property name="orientation">horizontal</property>
+            <property name="hexpand">true</property>
+            <property name="halign">center</property>
+            <property name="homogeneous">false</property>
+            <property name="spacing">24</property>
+            <!-- <child> -->
+            <!--   <object class="GtkMenuButton"> -->
+            <!--     <property name="visible">false</property> -->
+            <!--     <property name="icon-name">speedometer-symbolic</property> -->
+            <!--     <property name="valign">center</property> -->
+            <!--     <property name="halign">center</property> -->
+            <!--     <property name="sensitive" bind-property="stopped" bind-source="GameOfLifeUniverseControls" bind-flags="default|sync-create"> -->
+            <!--     </property> -->
+            <!--     <property name="tooltip-text" translatable="yes">Universe evolution speed</property> -->
+            <!--     <style> -->
+            <!--       <class name="circular" /> -->
+            <!--     </style> -->
+            <!--     <accessibility> -->
+            <!--       <property name="label" translatable="yes" context="a11y">Modify universe evolution speed</property> -->
+            <!--     </accessibility> -->
+            <!--   </object> -->
+            <!-- </child> -->
             <child>
               <object class="GtkToggleButton">
                 <property name="icon-name">document-edit-symbolic</property>
@@ -31,31 +76,6 @@
                 </accessibility>
               </object>
             </child>
-          </object>
-        </child>
-        <child type="center">
-          <object class="GtkBox">
-            <property name="orientation">horizontal</property>
-            <property name="hexpand">true</property>
-            <property name="halign">center</property>
-            <property name="homogeneous">false</property>
-            <property name="spacing">24</property>
-            <child>
-              <object class="GtkMenuButton">
-                <property name="icon-name">speedometer-symbolic</property>
-                <property name="valign">center</property>
-                <property name="halign">center</property>
-                <property name="sensitive" bind-property="stopped" bind-source="GameOfLifeUniverseControls" bind-flags="default|sync-create">
-                </property>
-                <property name="tooltip-text" translatable="yes">Universe evolution speed</property>
-                <style>
-                  <class name="circular" />
-                </style>
-                <accessibility>
-                  <property name="label" translatable="yes" context="a11y">Modify universe evolution speed</property>
-                </accessibility>
-              </object>
-            </child>
             <child>
               <object class="GtkButton" id="run_button">
                 <property name="icon-name" bind-property="run-button-icon-name" bind-source="GameOfLifeUniverseControls" bind-flags="default|sync-create"/>
@@ -69,6 +89,23 @@
                 </style>
                 <accessibility>
                   <property name="label" translatable="yes" context="a11y">Toggle universe run</property>
+                </accessibility>
+              </object>
+            </child>
+            <child>
+              <object class="GtkButton" id="random_seed_button">
+                <property name="icon-name">dice3-symbolic</property>
+                <property name="tooltip-text" translatable="yes">Randomly seed this universe</property>
+                <property name="sensitive" bind-property="stopped" bind-source="GameOfLifeUniverseControls" bind-flags="default|sync-create">
+                </property>
+                <property name="action-name">win.random-seed</property>
+                <property name="valign">center</property>
+                <property name="halign">center</property>
+                <style>
+                  <class name="circular"/>
+                </style>
+                <accessibility>
+                  <property name="label" translatable="yes" context="a11y">Randomly seed this universe</property>
                 </accessibility>
               </object>
             </child>
@@ -96,23 +133,23 @@
                 </accessibility>
               </object>
             </child>
-            <child>
-              <object class="GtkButton" id="random_seed_button">
-                <property name="icon-name">dice3-symbolic</property>
-                <property name="tooltip-text" translatable="yes">Randomly seed this universe</property>
-                <property name="sensitive" bind-property="stopped" bind-source="GameOfLifeUniverseControls" bind-flags="default|sync-create">
-                </property>
-                <property name="action-name">win.random-seed</property>
-                <property name="valign">center</property>
-                <property name="halign">center</property>
-                <style>
-                  <class name="circular"/>
-                </style>
-                <accessibility>
-                  <property name="label" translatable="yes" context="a11y">Randomly seed this universe</property>
-                </accessibility>
-              </object>
-            </child>
+            <!-- <child> -->
+            <!--   <object class="GtkButton" id="random_seed_button"> -->
+            <!--     <property name="icon-name">dice3-symbolic</property> -->
+            <!--     <property name="tooltip-text" translatable="yes">Randomly seed this universe</property> -->
+            <!--     <property name="sensitive" bind-property="stopped" bind-source="GameOfLifeUniverseControls" bind-flags="default|sync-create"> -->
+            <!--     </property> -->
+            <!--     <property name="action-name">win.random-seed</property> -->
+            <!--     <property name="valign">center</property> -->
+            <!--     <property name="halign">center</property> -->
+            <!--     <style> -->
+            <!--       <class name="circular"/> -->
+            <!--     </style> -->
+            <!--     <accessibility> -->
+            <!--       <property name="label" translatable="yes" context="a11y">Randomly seed this universe</property> -->
+            <!--     </accessibility> -->
+            <!--   </object> -->
+            <!-- </child> -->
           </object>
         </child>
       </object>

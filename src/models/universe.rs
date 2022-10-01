@@ -75,8 +75,8 @@ impl Universe {
     /// Seeds this universe with random values
     fn random_seed(&mut self) {
         let mut rng = rand::thread_rng();
-        for i in 0..self.rows - 1 {
-            for j in 0..self.columns - 1 {
+        for i in 0..self.rows {
+            for j in 0..self.columns {
                 let y: f64 = rng.gen();
                 if y >= UNIVERSE_RANDOM_ALIVE_PROBABILITY {
                     self.set_cell(i, j, UniverseCell::Alive);
@@ -87,6 +87,7 @@ impl Universe {
         }
     }
 
+    #[allow(dead_code)]
     fn clear_delta(&mut self) {
         self.last_delta = None;
     }
@@ -238,10 +239,10 @@ impl UniversePointMatrix for Universe {
         self.columns
     }
 
-    fn get(&self, row: usize, column: usize) -> UniversePoint {
+    fn get(&self, row: usize, column: usize) -> Option<UniversePoint> {
         match self.cells.get(self.get_index(row, column)) {
-            Some(cell) => UniversePoint::new(row, column, *cell),
-            None => panic!("Could not get cell at row {} column {}", row, column),
+            Some(cell) => Some(UniversePoint::new(row, column, *cell)),
+            None => None
         }
     }
 
@@ -252,7 +253,7 @@ impl UniversePointMatrix for Universe {
         value: UniverseCell,
     ) -> Result<UniversePoint, Self::SetCellError> {
         self.set_cell(row, column, value);
-        Ok(self.get(row, column))
+        Ok(self.get(row, column).unwrap())
     }
 }
 
@@ -368,18 +369,18 @@ impl UniversePointMatrix for UniverseSnapshot {
         self.columns
     }
 
-    fn get(&self, row: usize, column: usize) -> UniversePoint {
+    fn get(&self, row: usize, column: usize) -> Option<UniversePoint> {
         match self.cells.get(self.get_index(row, column)) {
-            Some(cell) => UniversePoint::new(row, column, *cell),
-            None => panic!("Could not get cell at row {} column {}", row, column),
+            Some(cell) => Some(UniversePoint::new(row, column, *cell)),
+            None => None
         }
     }
 
     fn set(
         &mut self,
-        row: usize,
-        column: usize,
-        value: UniverseCell,
+        _row: usize,
+        _column: usize,
+        _value: UniverseCell,
     ) -> Result<UniversePoint, Self::SetCellError> {
         Err("UniverseSnapshot is readonly")
     }
@@ -395,7 +396,10 @@ impl<'a> TryFrom<&Vec<u8>> for UniverseSnapshot {
     fn try_from(value: &Vec<u8>) -> Result<Self, Self::Error> {
         match bincode::deserialize::<Self>(value.as_ref()) {
             Ok(snapshot) => Ok(snapshot),
-            Err(error) => Err(SnapshotError::Invalid)
+            Err(error) => {
+                println!("{}", error);
+                Err(SnapshotError::Invalid)
+            }
         }
     }
 }

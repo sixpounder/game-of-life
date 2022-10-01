@@ -28,7 +28,7 @@ fn widget_area_point_to_universe_cell(
         let universe_row = ((x.round() as i32) * universe_width as i32) / widget_width as i32;
         let universe_column = ((y.round() as i32) * universe_height as i32) / widget_height as i32;
 
-        Some(universe.get(universe_row as usize, universe_column as usize))
+        universe.get(universe_row as usize, universe_column as usize)
     } else {
         None
     }
@@ -455,7 +455,7 @@ impl GameOfLifeUniverseGrid {
         }
     }
 
-    fn on_drawing_area_mouse_position(&self, controller: &gtk::EventControllerMotion, x: f64, y: f64) {
+    fn on_drawing_area_mouse_position(&self, _controller: &gtk::EventControllerMotion, x: f64, y: f64) {
         self.imp().point_under_pointing_device.set(
             widget_area_point_to_universe_cell(&self.imp().drawing_area.get(), self.imp().universe.borrow().as_ref(), x, y)
         );
@@ -720,7 +720,6 @@ impl GameOfLifeUniverseGrid {
     }
 
     pub fn set_evolution_speed(&self, value: u32) {
-        println!("{}", value);
         self.imp().evolution_speed.set(value);
     }
 }

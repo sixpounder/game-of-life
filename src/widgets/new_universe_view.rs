@@ -1,6 +1,9 @@
 use gtk::{gio, glib, glib::clone};
 use gtk::{prelude::*, subclass::prelude::*, CompositeTemplate};
-use crate::services::GameOfLifeSettings;
+use crate::{
+    services::GameOfLifeSettings,
+    config::G_LOG_DOMAIN
+};
 
 #[derive(Debug, Clone, Copy)]
 #[repr(u8)]
@@ -18,8 +21,8 @@ impl Default for NewUniverseType {
 
 mod imp {
     use super::*;
-    // use glib::{ParamFlags, ParamSpec, ParamSpecBoolean, ParamSpecString};
-    // use once_cell::sync::Lazy;
+    use glib::{ParamFlags, ParamSpec, ParamSpecBoolean};
+    use once_cell::sync::Lazy;
 
     #[derive(Debug, Default, CompositeTemplate)]
     #[template(resource = "/com/github/sixpounder/GameOfLife/new_universe_view.ui")]
@@ -36,8 +39,6 @@ mod imp {
         pub(super) template_check: TemplateChild<gtk::CheckButton>,
         #[template_child]
         pub(super) template_list_dropdown: TemplateChild<gtk::DropDown>,
-
-        pub(super) option: std::cell::Cell<NewUniverseType>,
     }
 
     #[glib::object_subclass]
@@ -61,6 +62,27 @@ mod imp {
             obj.setup_widgets();
             obj.connect_events();
         }
+
+        fn properties() -> &'static [ParamSpec] {
+            static PROPERTIES: Lazy<Vec<ParamSpec>> = Lazy::new(|| {
+                vec![
+                    ParamSpecBoolean::new("dimensions-editable", "", "", false, ParamFlags::READABLE),
+                ]
+            });
+            PROPERTIES.as_ref()
+        }
+
+        fn property(&self, obj: &Self::Type, _id: usize, pspec: &ParamSpec) -> glib::Value {
+            match pspec.name() {
+                "dimensions-editable" => {
+                    match obj.option() {
+                        NewUniverseType::Template(_) => false,
+                        _ => true
+                    }.to_value()
+                }
+                _ => unimplemented!(),
+            }
+        }
     }
 
     impl WidgetImpl for GameOfLifeNewUniverseView {}
@@ -75,14 +97,8 @@ glib::wrapper! {
 }
 
 impl GameOfLifeNewUniverseView {
-    pub fn new(parent: Option<&gtk::Window>) -> Self {
-        let this: Self = glib::Object::new(&[])
-            .expect("Failed to create GameOfLifeNewUniverseView");
-
-        this.set_transient_for(parent);
-        this.set_modal(true);
-
-        this
+    pub fn new() -> Self {
+        glib::Object::new(&[]).expect("Failed to create GameOfLifeNewUniverseView")
     }
 
     fn setup_widgets(&self) {
@@ -126,55 +142,36 @@ impl GameOfLifeNewUniverseView {
     }
 
     fn connect_events(&self) {
-        self.imp().empty_check.connect_toggled(
-            clone!(@strong self as this => move |widget| {
-                if widget.is_active() {
-                    this.set_option(NewUniverseType::Empty);
-                }
-            })
-        );
-
-        self.imp().random_check.connect_toggled(
-            clone!(@strong self as this => move |widget| {
-                if widget.is_active() {
-                    this.set_option(NewUniverseType::Random);
-                }
-            })
-        );
-
         self.imp().template_check.connect_toggled(
             clone!(@strong self as this => move |widget| {
-                if widget.is_active() {
-                    let selected_template_object = this.imp().template_list_dropdown
-                        .selected_item()
-                        .expect("How?")
-                        .downcast::<gtk::StringObject>()
-                        .expect("How?")
-                        .to_string();
-
-                    match selected_template_object.as_str() {
-                        "Glider" => { this.set_option(NewUniverseType::Template("glider")) },
-                        "Pulsar" => { this.set_option(NewUniverseType::Template("pulsar")) },
-                        "Circle of fire" => { this.set_option(NewUniverseType::Template("circle_of_fire")) },
-                        "Quadpole" => { this.set_option(NewUniverseType::Template("quadpole")) },
-                        "Spaceship" => { this.set_option(NewUniverseType::Template("spaceship")) },
-                        _ => ()
-                    }
-
-                    this.imp().template_list_dropdown.set_sensitive(true);
-                } else {
-                    this.imp().template_list_dropdown.set_sensitive(false);
-                }
+                this.imp().template_list_dropdown.set_sensitive(widget.is_active());
+                this.notify("dimensions-editable");
             })
         );
     }
 
     pub fn option(&self) -> NewUniverseType {
-        self.imp().option.get()
-    }
-
-    fn set_option(&self, value: NewUniverseType) {
-        self.imp().option.set(value);
+        if self.imp().empty_check.is_active() {
+            NewUniverseType::Empty
+        } else if self.imp().random_check.is_active() {
+            NewUniverseType::Random
+        } else {
+            let selected_template_object = self.imp().template_list_dropdown
+                .selected_item()
+                .expect("How?")
+                .downcast::<gtk::StringObject>()
+                .expect("How?")
+                .string();
+            glib::g_debug!(G_LOG_DOMAIN, "Selected {} template", selected_template_object.as_str());
+            match selected_template_object.as_str() {
+                "Glider" => NewUniverseType::Template("glider"),
+                "Pulsar" => NewUniverseType::Template("pulsar"),
+                "Circle of fire" => NewUniverseType::Template("circle_of_fire"),
+                "Quadpole" => NewUniverseType::Template("quadpole"),
+                "Spaceship" => NewUniverseType::Template("spaceship"),
+                _ => unreachable!("This should not happen")
+            }
+        }
     }
 
     pub fn size(&self) -> (f64, f64) {

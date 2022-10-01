@@ -1,4 +1,4 @@
-use crate::{GameOfLifeWindow, models::UniverseGridMode};
+use crate::models::UniverseGridMode;
 use gtk::{gio, glib};
 use gtk::{prelude::*, subclass::prelude::*, CompositeTemplate};
 
@@ -84,10 +84,20 @@ mod imp {
         ) {
             match pspec.name() {
                 "playing" => {
-                    obj.imp().playing.set(value.get::<bool>().unwrap());
-                    obj.notify("run-button-icon-name");
-                    obj.notify("stopped");
-                    obj.notify("unfrozen");
+                    let now_playing = value.get::<bool>().unwrap();
+                    let was_playing = self.playing.get();
+
+                    if now_playing != was_playing {
+                        self.playing.set(now_playing);
+
+                        if now_playing {
+                            obj.set_mode(UniverseGridMode::Run);
+                        }
+
+                        obj.notify("run-button-icon-name");
+                        obj.notify("stopped");
+                        obj.notify("unfrozen");
+                    }
                 },
                 "editing" => {
                     obj.imp().editing.set(value.get::<bool>().unwrap());
@@ -114,7 +124,8 @@ impl GameOfLifeUniverseControls {
     }
 
     pub fn set_mode(&self, mode: UniverseGridMode) {
-        self.set_property("editing", mode == UniverseGridMode::Design);
+        self.imp().editing.set(mode == UniverseGridMode::Design);
+        self.notify("editing");
     }
 }
 

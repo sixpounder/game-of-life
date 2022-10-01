@@ -1,4 +1,4 @@
-use gtk::{gio, glib, glib::clone};
+use gtk::{gio, glib};
 use adw::{
     PreferencesWindow,
     subclass::{
