@@ -487,20 +487,20 @@ impl GameOfLifeWindow {
     }
 
     fn update_widgets(&self) {
-        let style_manager = &self.imp().style_manager;
+        // let style_manager = &self.imp().style_manager;
         let grid = self.imp().universe_grid.get();
-        let (cell_color, background_color);
+        // let (cell_color, background_color);
 
-        if style_manager.is_dark() == true {
-            cell_color = self.imp().settings.fg_color_dark();
-            background_color = self.imp().settings.bg_color_dark();
-        } else {
-            cell_color = self.imp().settings.fg_color();
-            background_color = self.imp().settings.bg_color();
-        }
+        // if style_manager.is_dark() == true {
+        //     cell_color = self.imp().settings.fg_color_dark();
+        //     background_color = self.imp().settings.bg_color_dark();
+        // } else {
+        //     cell_color = self.imp().settings.fg_color();
+        //     background_color = self.imp().settings.bg_color();
+        // }
 
-        grid.set_cell_color(Some(gtk::gdk::RGBA::from_str(&cell_color).unwrap()));
-        grid.set_background_color(Some(gtk::gdk::RGBA::from_str(&background_color).unwrap()));
+        grid.set_cell_color(Some(self.imp().settings.fg_color_rgba()));
+        grid.set_background_color(Some(self.imp().settings.bg_color_rgba()));
     }
 
     fn restore_window_state(&self) {
