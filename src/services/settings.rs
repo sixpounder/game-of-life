@@ -1,5 +1,6 @@
 use gtk::gio::prelude::{SettingsExt, SettingsExtManual};
 use gtk::glib::IsA;
+use gtk::gdk;
 use crate::config::{APPLICATION_ID, G_LOG_DOMAIN};
 
 #[derive(Debug, Clone)]
@@ -45,16 +46,40 @@ impl GameOfLifeSettings {
         self.inner.string("fg-color").to_string()
     }
 
+    pub fn fg_color_rgba(&self) -> gdk::RGBA {
+        gdk::RGBA::parse(self.fg_color().as_str()).expect("Cannot parse RGBA")
+    }
+
+    pub fn set_fg_color(&self, value: String) {
+        self.inner.set_string("fg-color", value.as_str()).expect("Could not store fg-color preference");
+    }
+
     pub fn bg_color(&self) -> String {
         self.inner.string("bg-color").to_string()
+    }
+
+    pub fn bg_color_rgba(&self) -> gdk::RGBA {
+        gdk::RGBA::parse(self.bg_color().as_str()).expect("Cannot parse RGBA")
+    }
+
+    pub fn set_bg_color(&self, value: String) {
+        self.inner.set_string("bg-color", value.as_str()).expect("Could not store bg-color preference");
     }
 
     pub fn fg_color_dark(&self) -> String {
         self.inner.string("fg-color-dark").to_string()
     }
 
+    pub fn set_fg_color_dark(&self, value: String) {
+        self.inner.set_string("fg-color-dark", value.as_str()).expect("Could not store fg-color-dark preference");
+    }
+
     pub fn bg_color_dark(&self) -> String {
         self.inner.string("bg-color-dark").to_string()
+    }
+
+    pub fn set_bg_color_dark(&self, value: String) {
+        self.inner.set_string("bg-color-dark", value.as_str()).expect("Could not store bg-color-dark preference");
     }
 
     pub fn universe_width(&self) -> i32 {

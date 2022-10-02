@@ -41,6 +41,8 @@ mod imp {
 
         pub(super) provider: gtk::CssProvider,
 
+        pub(super) style_manager: adw::StyleManager,
+
         pub(super) settings: GameOfLifeSettings,
     }
 
@@ -59,6 +61,7 @@ mod imp {
                 mode: std::cell::Cell::default(),
                 provider: gtk::CssProvider::new(),
                 settings: GameOfLifeSettings::default(),
+                style_manager: adw::StyleManager::default(),
             }
         }
 
@@ -68,10 +71,6 @@ mod imp {
             klass.install_action("win.new", None, move |win, _, _| {
                 win.new_universe_dialog();
             });
-
-            // klass.install_action("win.new-empty", None, move |_win, _, _| {
-                // win.new_empty();
-            // });
 
             klass.install_action("win.random-seed", None, move |win, _, _| {
                 win.seed_universe();
@@ -136,7 +135,7 @@ mod imp {
                 .to_value(),
                 "is-running" => obj.is_running().to_value(),
                 "is-stopped" => (!obj.is_running()).to_value(),
-                "allow-render-on-resize" => GameOfLifeSettings::default().allow_render_during_resize().to_value(),
+                "allow-render-on-resize" => self.settings.allow_render_during_resize().to_value(),
                 _ => unimplemented!(),
             }
         }
@@ -159,10 +158,10 @@ impl GameOfLifeWindow {
 
         let style_manager = application.style_manager();
 
-        win.update_prefers_dark_mode(style_manager.is_dark());
+        win.update_widgets();
 
-        style_manager.connect_dark_notify(glib::clone!(@strong win as this => move |sm| {
-            this.update_prefers_dark_mode(sm.is_dark());
+        style_manager.connect_dark_notify(glib::clone!(@strong win as this => move |_sm| {
+            this.update_widgets();
         }));
 
         win
@@ -177,7 +176,7 @@ impl GameOfLifeWindow {
     }
 
     fn setup_widgets(&self) {
-        let settings = GameOfLifeSettings::default();
+        let settings = &self.imp().settings;
         let grid = self.imp().universe_grid.get();
         grid.set_evolution_speed(settings.evolution_speed());
         grid.set_draw_cells_outline(settings.draw_cells_outline());
@@ -194,7 +193,7 @@ impl GameOfLifeWindow {
 
     fn connect_events(&self) {
         let imp = self.imp();
-        let settings = GameOfLifeSettings::default();
+        let settings = &imp.settings;
 
         // Updates buttons and other stuff when UniverseGrid running state changes
         imp.universe_grid.connect_notify_local(
@@ -224,6 +223,18 @@ impl GameOfLifeWindow {
             })
         );
 
+        settings.connect_changed("fg-color",
+            clone!(@strong self as this, @strong settings as s => move |_, _| {
+                this.update_widgets();
+            })
+        );
+
+        settings.connect_changed("bg-color",
+            clone!(@strong self as this, @strong settings as s => move |_, _| {
+                this.update_widgets();
+            })
+        );
+
         self.connect_close_request(move |window| {
             glib::debug!("Saving window state");
             let width = window.default_size().0;
@@ -250,7 +261,7 @@ impl GameOfLifeWindow {
     }
 
     pub fn toggle_edit_mode(&self) {
-        let settings = GameOfLifeSettings::default();
+        let settings = &self.imp().settings;
         let grid = self.imp().universe_grid.get();
         let next_mode = match grid.mode() {
             UniverseGridMode::Design => UniverseGridMode::Run,
@@ -475,11 +486,12 @@ impl GameOfLifeWindow {
         universe_grid.set_universe(universe);
     }
 
-    fn update_prefers_dark_mode(&self, value: bool) {
+    fn update_widgets(&self) {
+        let style_manager = &self.imp().style_manager;
         let grid = self.imp().universe_grid.get();
         let (cell_color, background_color);
 
-        if value == true {
+        if style_manager.is_dark() == true {
             cell_color = self.imp().settings.fg_color_dark();
             background_color = self.imp().settings.bg_color_dark();
         } else {
@@ -492,7 +504,7 @@ impl GameOfLifeWindow {
     }
 
     fn restore_window_state(&self) {
-        let settings = GameOfLifeSettings::default();
+        let settings = &self.imp().settings;
         self.set_default_size(settings.window_width(), settings.window_height());
     }
 

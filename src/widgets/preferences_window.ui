@@ -36,6 +36,32 @@
             <property name="title" translatable="yes">Appearance</property>
             <child>
               <object class="AdwActionRow">
+                <property name="title" translatable="yes">Cell color</property>
+                <property name="title-selectable">false</property>
+                <property name="activatable">true</property>
+                <property name="activatable-widget">cell_color_picker</property>
+                <child>
+                  <object class="GtkColorButton" id="cell_color_picker">
+                    <property name="valign">center</property>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="AdwActionRow">
+                <property name="title" translatable="yes">Background color</property>
+                <property name="title-selectable">false</property>
+                <property name="activatable">true</property>
+                <property name="activatable-widget">background_color_picker</property>
+                <child>
+                  <object class="GtkColorButton" id="background_color_picker">
+                    <property name="valign">center</property>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="AdwActionRow">
                 <property name="title" translatable="yes">Draw cells outline</property>
                 <property name="title-selectable">false</property>
                 <property name="activatable">true</property>

@@ -94,7 +94,9 @@ impl GameOfLifeApplication {
 
         let preferences_action = gio::SimpleAction::new("preferences", None);
         preferences_action.connect_activate(clone!(@weak self as app => move |_, _| {
-            let preferences_window = GameOfLifePreferencesWindow::new(app.active_window().as_ref());
+            let preferences_window = GameOfLifePreferencesWindow::new();
+            preferences_window.set_transient_for(app.active_window().as_ref());
+            preferences_window.set_modal(false);
             preferences_window.show();
         }));
         self.add_action(&preferences_action);
