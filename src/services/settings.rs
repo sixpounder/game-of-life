@@ -1,4 +1,5 @@
-use gtk::gio::prelude::SettingsExt;
+use gtk::gio::prelude::{SettingsExt, SettingsExtManual};
+use gtk::glib::IsA;
 use crate::config::{APPLICATION_ID, G_LOG_DOMAIN};
 
 #[derive(Debug, Clone)]
@@ -14,6 +15,7 @@ impl Default for GameOfLifeSettings {
     }
 }
 
+#[allow(dead_code)]
 impl GameOfLifeSettings {
     pub fn set_evolution_speed(&self, value: u32) {
         self.inner.set_uint("evolution-speed", value).expect("Could not set evolution speed");
@@ -87,6 +89,14 @@ impl GameOfLifeSettings {
         self.inner.set_boolean("show-design-hint", value).expect("Could not store design hint preference")
     }
 
+    pub fn allow_render_during_resize(&self) -> bool {
+        self.inner.boolean("allow-render-during-resize")
+    }
+
+    pub fn set_allow_render_during_resize(&self, value: bool) {
+        self.inner.set_boolean("allow-render-during-resize", value).expect("Coult not store allow render during resize preference")
+    }
+
     pub fn connect_changed<F>(&self, key: &str, f: F)
     where
         F: Fn(&gtk::gio::Settings, &str) + 'static
@@ -95,5 +105,12 @@ impl GameOfLifeSettings {
             glib::info!("GSettings:{} changed", key);
             f(settings, key);
         });
+    }
+
+    pub fn bind<P>(&self, key: &str, object: P, property: &str)
+    where
+        P: IsA<glib::Object>
+    {
+        self.inner.bind(key, &object, property).build();
     }
 }

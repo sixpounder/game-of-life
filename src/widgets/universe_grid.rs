@@ -162,13 +162,7 @@ mod imp {
                         1,
                         ParamFlags::READWRITE,
                     ),
-                    ParamSpecBoolean::new(
-                        "allow-draw-on-resize",
-                        "",
-                        "",
-                        false,
-                        ParamFlags::READWRITE,
-                    ),
+                    ParamSpecBoolean::new("allow-render-on-resize", "", "", false, ParamFlags::READWRITE),
                     ParamSpecBoolean::new(
                         "draw-cells-outline",
                         "",
@@ -200,8 +194,8 @@ mod imp {
             pspec: &ParamSpec,
         ) {
             match pspec.name() {
-                "allow-draw-on-resize" => {
-                    obj.set_allow_draw_on_resize(value.get::<bool>().unwrap());
+                "allow-render-on-resize" => {
+                    obj.set_allow_render_on_resize(value.get::<bool>().unwrap());
                 }
                 "mode" => {
                     obj.set_mode(value.get::<UniverseGridMode>().unwrap());
@@ -223,7 +217,7 @@ mod imp {
             match pspec.name() {
                 "mode" => self.mode.get().to_value(),
                 "frozen" => self.frozen.get().to_value(),
-                "allow-draw-on-resize" => self.allow_draw_on_resize.get().to_value(),
+                "allow-render-on-resize" => self.allow_draw_on_resize.get().to_value(),
                 "draw-cells-outline" => obj.draw_cells_outline().to_value(),
                 "evolution-speed" => obj.evolution_speed().to_value(),
                 "is-running" => obj.is_running().to_value(),
@@ -601,7 +595,7 @@ impl GameOfLifeUniverseGrid {
         self.imp().allow_draw_on_resize.get()
     }
 
-    pub fn set_allow_draw_on_resize(&self, value: bool) {
+    pub fn set_allow_render_on_resize(&self, value: bool) {
         self.imp().allow_draw_on_resize.set(value);
     }
 

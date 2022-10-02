@@ -6,7 +6,7 @@ use adw::{
         window::AdwWindowImpl
     }
 };
-use gtk::{prelude::*, subclass::prelude::*, CompositeTemplate};
+use gtk::{prelude::*, subclass::prelude::*, CompositeTemplate, glib::IsA};
 use crate::services::GameOfLifeSettings;
 
 mod imp {
@@ -20,6 +20,9 @@ mod imp {
 
         #[template_child]
         pub(super) draw_cells_outline: TemplateChild<gtk::Switch>,
+
+        #[template_child]
+        pub(super) allow_render_on_resize: TemplateChild<gtk::Switch>,
 
         #[template_child]
         pub(super) evolution_speed_adjustment: TemplateChild<gtk::Adjustment>,
@@ -46,8 +49,7 @@ mod imp {
     impl ObjectImpl for GameOfLifePreferencesWindow {
         fn constructed(&self, obj: &Self::Type) {
             self.parent_constructed(obj);
-            obj.setup_widgets();
-            obj.connect_events();
+            obj.setup_bindings();
         }
     }
 
@@ -73,37 +75,14 @@ impl GameOfLifePreferencesWindow {
         this
     }
 
-    fn setup_widgets(&self) {
+    fn setup_bindings(&self) {
         let settings = GameOfLifeSettings::default();
-        self.imp().show_design_hint.set_active(settings.show_design_hint());
-        self.imp().evolution_speed.set_value(f64::from(settings.evolution_speed()));
-        self.imp().draw_cells_outline.set_active(settings.draw_cells_outline());
-    }
+        let imp = self.imp();
 
-    fn connect_events(&self) {
-        self.imp().evolution_speed_adjustment.connect_notify_local(
-            Some("value"),
-            |adjustment, _| {
-                let settings = GameOfLifeSettings::default();
-                settings.set_evolution_speed(adjustment.value() as u32);
-            }
-        );
-
-        self.imp().draw_cells_outline.connect_notify_local(
-            Some("active"),
-            |check, _| {
-                let settings = GameOfLifeSettings::default();
-                settings.set_draw_cells_outline(check.is_active());
-            }
-        );
-
-        self.imp().show_design_hint.connect_notify_local(
-            Some("active"),
-            |check, _| {
-                let settings = GameOfLifeSettings::default();
-                settings.set_show_design_hint(check.is_active());
-            }
-        );
+        settings.bind("draw-cells-outline", imp.draw_cells_outline.get(), "active");
+        settings.bind("allow-render-during-resize", imp.allow_render_on_resize.get(), "active");
+        settings.bind("show-design-hint", imp.show_design_hint.get(), "active");
+        settings.bind("evolution-speed", imp.evolution_speed_adjustment.get(), "value");
     }
 }
 

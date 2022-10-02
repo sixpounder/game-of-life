@@ -4,16 +4,10 @@
 	  <key name="fg-color" type="s">
 	    <default>"#64BAFF"</default>
 	  </key>
-	  <key name="ghost-color" type="s">
-	    <default>"#64BAFF"</default>
-	  </key>
 	  <key name="bg-color" type="s">
 	    <default>"#FAFAFA"</default>
 	  </key>
 	  <key name="fg-color-dark" type="s">
-	    <default>"#C061CB"</default>
-	  </key>
-	  <key name="ghost-color-dark" type="s">
 	    <default>"#C061CB"</default>
 	  </key>
 	  <key name="bg-color-dark" type="s">
@@ -40,6 +34,10 @@
 	  <key name="draw-cells-outline" type="b">
 	    <default>true</default>
 	    <description>Wheter to draw cells outline in universe grid</description>
+	  </key>
+	  <key name="allow-render-during-resize" type="b">
+	    <default>false</default>
+	    <description>Wheter to allow universe rendering when the application window is resizing</description>
 	  </key>
 	  <key name="show-design-hint" type="b">
 	    <default>true</default>

@@ -14,7 +14,7 @@
     <file preprocess="xml-stripblanks" alias="snapshots-alt-symbolic.svg">assets/icons/snapshots-alt-symbolic.svg</file>
   </gresource>
   <gresource prefix="/com/github/sixpounder/GameOfLife/templates">
-    <file alias="glider.univ" compressed="true">assets/templates/glider.univ</file>
+    <file alias="glider.univ">assets/templates/glider.univ</file>
     <file alias="pulsar.univ">assets/templates/pulsar.univ</file>
     <file alias="spaceship.univ">assets/templates/spaceship.univ</file>
     <file alias="quadpole.univ">assets/templates/quadpole.univ</file>

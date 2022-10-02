@@ -27,6 +27,7 @@
                 <property name="halign">fill</property>
                 <property name="vexpand">True</property>
                 <property name="mode">Run</property>
+                <property name="allow-render-on-resize" bind-property="allow-render-on-resize" bind-source="GameOfLifeWindow" bind-flags="default|sync-create"></property>
               </object>
             </child>
             <child>

@@ -1,4 +1,5 @@
 use super::{UniverseCell, UniversePoint, UniversePointMatrix};
+use crate::config::G_LOG_DOMAIN;
 use rand::Rng;
 use serde::{Deserialize, Serialize};
 use std::fmt;
@@ -62,8 +63,8 @@ impl Universe {
         }
 
         let universe = Universe {
-            rows: rows,
-            columns: columns,
+            rows,
+            columns,
             cells,
             generations: 0,
             last_delta: None,
@@ -397,7 +398,7 @@ impl<'a> TryFrom<&Vec<u8>> for UniverseSnapshot {
         match bincode::deserialize::<Self>(value.as_ref()) {
             Ok(snapshot) => Ok(snapshot),
             Err(error) => {
-                println!("{}", error);
+                glib::g_critical!(G_LOG_DOMAIN, "{}", error);
                 Err(SnapshotError::Invalid)
             }
         }

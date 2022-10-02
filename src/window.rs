@@ -13,7 +13,7 @@ use crate::{
     widgets::{GameOfLifeNewUniverseView, NewUniverseType},
     config::{APPLICATION_G_PATH, G_LOG_DOMAIN},
     models::{Universe, UniverseGridMode, UniverseSnapshot},
-    services::GameOfLifeSettings,
+    services::{GameOfLifeSettings, Template}
 };
 
 mod imp {
@@ -120,6 +120,7 @@ mod imp {
                     ),
                     ParamSpecBoolean::new("is-running", "", "", false, ParamFlags::READABLE),
                     ParamSpecBoolean::new("is-stopped", "", "", true, ParamFlags::READABLE),
+                    ParamSpecBoolean::new("allow-render-on-resize", "", "", false, ParamFlags::READABLE)
                 ]
             });
 
@@ -135,6 +136,7 @@ mod imp {
                 .to_value(),
                 "is-running" => obj.is_running().to_value(),
                 "is-stopped" => (!obj.is_running()).to_value(),
+                "allow-render-on-resize" => GameOfLifeSettings::default().allow_render_during_resize().to_value(),
                 _ => unimplemented!(),
             }
         }
@@ -213,6 +215,12 @@ impl GameOfLifeWindow {
         settings.connect_changed("evolution-speed",
             clone!(@strong self as this, @strong settings as s => move |_,_| {
                 this.imp().universe_grid.set_evolution_speed(s.evolution_speed())
+            })
+        );
+
+        settings.connect_changed("allow-render-during-resize",
+            clone!(@strong self as this, @strong settings as s => move |_,_| {
+                this.imp().universe_grid.set_property("allow-render-on-resize", s.allow_render_during_resize())
             })
         );
 
@@ -418,28 +426,15 @@ impl GameOfLifeWindow {
                             NewUniverseType::Random => win.new_random(target_w as usize, target_h as usize),
                             NewUniverseType::Template(template_name) => {
                                 glib::debug!("Seeding from {} template", template_name);
-                                let resource_path = format!("/com/github/sixpounder/GameOfLife/templates/{}.univ", template_name);
-                                glib::g_debug!(G_LOG_DOMAIN, "Template reource path: {}", resource_path);
-                                match gio::resources_open_stream(resource_path.as_str(), gio::ResourceLookupFlags::NONE) {
-                                    Ok(stream) => {
-                                        glib::g_debug!(G_LOG_DOMAIN, "Template stream opened");
-                                        let mut buffer = vec![];
-                                        match stream.read_all(&mut buffer, gio::Cancellable::NONE) {
-                                            Ok(read) => {
-                                                glib::g_debug!(G_LOG_DOMAIN, "Read {} bytes from template", read.0);
-                                                match UniverseSnapshot::try_from(&buffer) {
-                                                    Ok(snapshot) => {
-                                                        win.seed_from_snapshot(snapshot);
-                                                    },
-                                                    Err(error) => {
-                                                        glib::g_critical!(G_LOG_DOMAIN, "Unreadable template: {:?}", error);
-                                                        win.add_toast(i18n("Bad template data"));
-                                                    }
-                                                }
+                                match Template::read_template(template_name) {
+                                    Ok(read) => {
+                                        match UniverseSnapshot::try_from(&read) {
+                                            Ok(snapshot) => {
+                                                win.seed_from_snapshot(snapshot);
                                             },
                                             Err(error) => {
-                                                glib::g_critical!(G_LOG_DOMAIN, "Could not load template buffer: {}", error);
-                                                win.add_toast(i18n("Could not read template content"));
+                                                glib::g_critical!(G_LOG_DOMAIN, "Unreadable template: {:?}", error);
+                                                win.add_toast(i18n("Bad template data"));
                                             }
                                         }
                                     },
