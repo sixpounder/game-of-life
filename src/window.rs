@@ -1,7 +1,4 @@
-use std::{
-    str::FromStr,
-    io::prelude::*
-};
+use std::{io::prelude::*, str::FromStr};
 
 use crate::i18n::i18n;
 use adw::prelude::AdwApplicationExt;
@@ -10,10 +7,10 @@ use gtk::subclass::prelude::*;
 use gtk::{gio, glib, glib::clone, CompositeTemplate};
 
 use crate::{
-    widgets::{GameOfLifeNewUniverseView, NewUniverseType},
     config::{APPLICATION_G_PATH, G_LOG_DOMAIN},
     models::{Universe, UniverseGridMode, UniverseSnapshot},
-    services::{GameOfLifeSettings, Template}
+    services::{GameOfLifeSettings, Template},
+    widgets::{GameOfLifeNewUniverseView, NewUniverseType},
 };
 
 mod imp {
@@ -117,9 +114,15 @@ mod imp {
                         Some("media-playback-start-symbolic"),
                         ParamFlags::READABLE,
                     ),
-                    ParamSpecBoolean::new("is-running", "", "", false, ParamFlags::READABLE),
-                    ParamSpecBoolean::new("is-stopped", "", "", true, ParamFlags::READABLE),
-                    ParamSpecBoolean::new("allow-render-on-resize", "", "", false, ParamFlags::READABLE)
+                    ParamSpecBoolean::new("running", "", "", false, ParamFlags::READABLE),
+                    ParamSpecBoolean::new("stopped", "", "", true, ParamFlags::READABLE),
+                    ParamSpecBoolean::new(
+                        "allow-render-on-resize",
+                        "",
+                        "",
+                        false,
+                        ParamFlags::READABLE,
+                    ),
                 ]
             });
 
@@ -133,8 +136,8 @@ mod imp {
                     false => "media-playback-start-symbolic",
                 }
                 .to_value(),
-                "is-running" => obj.is_running().to_value(),
-                "is-stopped" => (!obj.is_running()).to_value(),
+                "running" => obj.is_running().to_value(),
+                "stopped" => (!obj.is_running()).to_value(),
                 "allow-render-on-resize" => self.settings.allow_render_during_resize().to_value(),
                 _ => unimplemented!(),
             }
@@ -197,24 +200,26 @@ impl GameOfLifeWindow {
 
         // Updates buttons and other stuff when UniverseGrid running state changes
         imp.universe_grid.connect_notify_local(
-            Some("is-running"),
+            Some("running"),
             clone!(@strong self as this => move |_widget, _param| {
                 this.notify("run-button-icon-name");
-                this.notify("is-running");
-                this.notify("is-stopped");
+                this.notify("running");
+                this.notify("stopped");
             }),
         );
 
-        settings.connect_changed("draw-cells-outline",
+        settings.connect_changed(
+            "draw-cells-outline",
             clone!(@strong self as this, @strong settings as s => move |_,_| {
                 this.imp().universe_grid.set_draw_cells_outline(s.draw_cells_outline())
-            })
+            }),
         );
 
-        settings.connect_changed("evolution-speed",
+        settings.connect_changed(
+            "evolution-speed",
             clone!(@strong self as this, @strong settings as s => move |_,_| {
                 this.imp().universe_grid.set_evolution_speed(s.evolution_speed())
-            })
+            }),
         );
 
         settings.connect_changed("allow-render-during-resize",
@@ -223,32 +228,36 @@ impl GameOfLifeWindow {
             })
         );
 
-        settings.connect_changed("fg-color",
+        settings.connect_changed(
+            "fg-color",
             clone!(@strong self as this, @strong settings as s => move |_, _| {
                 this.update_widgets();
-            })
+            }),
         );
 
-        settings.connect_changed("bg-color",
+        settings.connect_changed(
+            "bg-color",
             clone!(@strong self as this, @strong settings as s => move |_, _| {
                 this.update_widgets();
-            })
+            }),
         );
 
-        settings.connect_changed("fg-color-dark",
+        settings.connect_changed(
+            "fg-color-dark",
             clone!(@strong self as this, @strong settings as s => move |_, _| {
                 this.update_widgets();
-            })
+            }),
         );
 
-        settings.connect_changed("bg-color-dark",
+        settings.connect_changed(
+            "bg-color-dark",
             clone!(@strong self as this, @strong settings as s => move |_, _| {
                 this.update_widgets();
-            })
+            }),
         );
 
         self.connect_close_request(move |window| {
-            glib::debug!("Saving window state");
+            glib::g_debug!(G_LOG_DOMAIN, "Saving window state");
             let width = window.default_size().0;
             let height = window.default_size().1;
             let settings = GameOfLifeSettings::default();
@@ -526,5 +535,4 @@ impl GameOfLifeWindow {
         self.imp().toast_overlay.add_toast(&toast);
     }
 }
-
 

@@ -1,16 +1,13 @@
+use crate::{config::G_LOG_DOMAIN, services::GameOfLifeSettings};
 use gtk::{gio, glib, glib::clone};
 use gtk::{prelude::*, subclass::prelude::*, CompositeTemplate};
-use crate::{
-    services::GameOfLifeSettings,
-    config::G_LOG_DOMAIN
-};
 
 #[derive(Debug, Clone, Copy)]
 #[repr(u8)]
 pub enum NewUniverseType {
     Empty,
     Random,
-    Template(&'static str)
+    Template(&'static str),
 }
 
 impl Default for NewUniverseType {
@@ -65,21 +62,24 @@ mod imp {
 
         fn properties() -> &'static [ParamSpec] {
             static PROPERTIES: Lazy<Vec<ParamSpec>> = Lazy::new(|| {
-                vec![
-                    ParamSpecBoolean::new("dimensions-editable", "", "", false, ParamFlags::READABLE),
-                ]
+                vec![ParamSpecBoolean::new(
+                    "dimensions-editable",
+                    "",
+                    "",
+                    false,
+                    ParamFlags::READABLE,
+                )]
             });
             PROPERTIES.as_ref()
         }
 
         fn property(&self, obj: &Self::Type, _id: usize, pspec: &ParamSpec) -> glib::Value {
             match pspec.name() {
-                "dimensions-editable" => {
-                    match obj.option() {
-                        NewUniverseType::Template(_) => false,
-                        _ => true
-                    }.to_value()
+                "dimensions-editable" => match obj.option() {
+                    NewUniverseType::Template(_) => false,
+                    _ => true,
                 }
+                .to_value(),
                 _ => unimplemented!(),
             }
         }
@@ -124,30 +124,30 @@ impl GameOfLifeNewUniverseView {
             Some("value"),
             clone!(@strong settings => move |adj, _| {
                 settings.set_universe_width(adj.value() as i32);
-            })
+            }),
         );
 
         column_adjust.connect_notify_local(
             Some("value"),
             clone!(@strong settings => move |adj, _| {
                 settings.set_universe_height(adj.value() as i32);
-            })
+            }),
         );
         self.imp().rows_entry.set_adjustment(&row_adjust);
         self.imp().columns_entry.set_adjustment(&column_adjust);
 
-        self.imp().template_list_dropdown.set_sensitive(
-            self.imp().template_check.is_active()
-        );
+        self.imp()
+            .template_list_dropdown
+            .set_sensitive(self.imp().template_check.is_active());
     }
 
     fn connect_events(&self) {
-        self.imp().template_check.connect_toggled(
-            clone!(@strong self as this => move |widget| {
+        self.imp()
+            .template_check
+            .connect_toggled(clone!(@strong self as this => move |widget| {
                 this.imp().template_list_dropdown.set_sensitive(widget.is_active());
                 this.notify("dimensions-editable");
-            })
-        );
+            }));
     }
 
     pub fn option(&self) -> NewUniverseType {
@@ -156,26 +156,35 @@ impl GameOfLifeNewUniverseView {
         } else if self.imp().random_check.is_active() {
             NewUniverseType::Random
         } else {
-            let selected_template_object = self.imp().template_list_dropdown
+            let selected_template_object = self
+                .imp()
+                .template_list_dropdown
                 .selected_item()
                 .expect("How?")
                 .downcast::<gtk::StringObject>()
                 .expect("How?")
                 .string();
-            glib::g_debug!(G_LOG_DOMAIN, "Selected {} template", selected_template_object.as_str());
+            glib::g_debug!(
+                G_LOG_DOMAIN,
+                "Selected {} template",
+                selected_template_object.as_str()
+            );
             match selected_template_object.as_str() {
                 "Glider" => NewUniverseType::Template("glider"),
                 "Pulsar" => NewUniverseType::Template("pulsar"),
                 "Circle of fire" => NewUniverseType::Template("circle_of_fire"),
                 "Quadpole" => NewUniverseType::Template("quadpole"),
                 "Spaceship" => NewUniverseType::Template("spaceship"),
-                _ => unreachable!("This should not happen")
+                _ => unreachable!("This should not happen"),
             }
         }
     }
 
     pub fn size(&self) -> (f64, f64) {
-        (self.imp().rows_entry.value(), self.imp().columns_entry.value())
+        (
+            self.imp().rows_entry.value(),
+            self.imp().columns_entry.value(),
+        )
     }
 }
 

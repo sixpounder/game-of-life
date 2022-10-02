@@ -1,15 +1,11 @@
+use adw::subclass::prelude::*;
 use glib::clone;
 use gtk::prelude::*;
 use gtk::subclass::prelude::*;
 use gtk::{gio, glib};
-use adw::subclass::prelude::*;
 
 use crate::config::VERSION;
-use crate::{
-    GameOfLifeWindow,
-    widgets::GameOfLifePreferencesWindow,
-    services::GameOfLifeSettings
-};
+use crate::{services::GameOfLifeSettings, widgets::GameOfLifePreferencesWindow, GameOfLifeWindow};
 
 mod imp {
     use super::*;

@@ -162,7 +162,13 @@ mod imp {
                         1,
                         ParamFlags::READWRITE,
                     ),
-                    ParamSpecBoolean::new("allow-render-on-resize", "", "", false, ParamFlags::READWRITE),
+                    ParamSpecBoolean::new(
+                        "allow-render-on-resize",
+                        "",
+                        "",
+                        false,
+                        ParamFlags::READWRITE,
+                    ),
                     ParamSpecBoolean::new(
                         "draw-cells-outline",
                         "",
@@ -171,16 +177,8 @@ mod imp {
                         ParamFlags::READWRITE,
                     ),
                     ParamSpecBoolean::new("frozen", "", "", false, ParamFlags::READWRITE),
-                    ParamSpecBoolean::new("is-running", "", "", false, ParamFlags::READABLE),
-                    ParamSpecUInt::new(
-                        "evolution-speed",
-                        "",
-                        "",
-                        1,
-                        100,
-                        5,
-                        ParamFlags::READWRITE,
-                    ),
+                    ParamSpecBoolean::new("running", "", "", false, ParamFlags::READABLE),
+                    ParamSpecUInt::new("evolution-speed", "", "", 1, 100, 5, ParamFlags::READWRITE),
                 ]
             });
             PROPERTIES.as_ref()
@@ -205,10 +203,10 @@ mod imp {
                 }
                 "draw-cells-outline" => {
                     obj.set_draw_cells_outline(value.get::<bool>().unwrap());
-                },
+                }
                 "evolution-speed" => {
                     obj.set_evolution_speed(value.get::<u32>().unwrap_or(5));
-                },
+                }
                 _ => unimplemented!(),
             }
         }
@@ -220,7 +218,7 @@ mod imp {
                 "allow-render-on-resize" => self.allow_draw_on_resize.get().to_value(),
                 "draw-cells-outline" => obj.draw_cells_outline().to_value(),
                 "evolution-speed" => obj.evolution_speed().to_value(),
-                "is-running" => obj.is_running().to_value(),
+                "running" => obj.is_running().to_value(),
                 _ => unimplemented!(),
             }
         }
@@ -333,23 +331,17 @@ impl GameOfLifeUniverseGrid {
         drawing_area.add_controller(&right_drag_gesture_controller);
 
         let motion_controller = gtk::EventControllerMotion::new();
-        motion_controller.connect_enter(
-            clone!(@strong self as this => move |controller, x, y| {
-                this.on_drawing_area_mouse_position(controller, x, y);
-            })
-        );
+        motion_controller.connect_enter(clone!(@strong self as this => move |controller, x, y| {
+            this.on_drawing_area_mouse_position(controller, x, y);
+        }));
 
-        motion_controller.connect_leave(
-            clone!(@strong self as this => move |controller| {
-                this.on_drawing_area_mouse_leave(controller);
-            })
-        );
+        motion_controller.connect_leave(clone!(@strong self as this => move |controller| {
+            this.on_drawing_area_mouse_leave(controller);
+        }));
 
-        motion_controller.connect_motion(
-            clone!(@strong self as this => move |controller, x, y| {
-                this.on_drawing_area_mouse_position(controller, x, y);
-            })
-        );
+        motion_controller.connect_motion(clone!(@strong self as this => move |controller, x, y| {
+            this.on_drawing_area_mouse_position(controller, x, y);
+        }));
 
         drawing_area.add_controller(&motion_controller);
 
@@ -384,7 +376,14 @@ impl GameOfLifeUniverseGrid {
         glib::Continue(true)
     }
 
-    fn on_drawing_area_clicked(&self, _gesture: &gtk::GestureClick, _n_press: i32, x: f64, y: f64, alter_state: Option<UniverseCell>) {
+    fn on_drawing_area_clicked(
+        &self,
+        _gesture: &gtk::GestureClick,
+        _n_press: i32,
+        x: f64,
+        y: f64,
+        alter_state: Option<UniverseCell>,
+    ) {
         if self.mode() == UniverseGridMode::Design {
             self.imp()
                 .interaction_state
@@ -422,7 +421,7 @@ impl GameOfLifeUniverseGrid {
         &self,
         gesture: &gtk::GestureDrag,
         _events: Option<&gtk::gdk::EventSequence>,
-        alter_state: Option<UniverseCell>
+        alter_state: Option<UniverseCell>,
     ) {
         if self.imp().interaction_state.get() == UniverseGridInteractionState::Ongoing {
             if let Some(point) = gesture.start_point() {
@@ -440,19 +439,25 @@ impl GameOfLifeUniverseGrid {
         if self.imp().interaction_state.get() == UniverseGridInteractionState::Ongoing {
             if let Some(point) = gesture.offset() {
                 let origin = gesture.start_point().unwrap();
-                self.alter_universe_point(
-                    origin.0 + point.0,
-                    origin.1 + point.1,
-                    alter_state
-                );
+                self.alter_universe_point(origin.0 + point.0, origin.1 + point.1, alter_state);
             }
         }
     }
 
-    fn on_drawing_area_mouse_position(&self, _controller: &gtk::EventControllerMotion, x: f64, y: f64) {
-        self.imp().point_under_pointing_device.set(
-            widget_area_point_to_universe_cell(&self.imp().drawing_area.get(), self.imp().universe.borrow().as_ref(), x, y)
-        );
+    fn on_drawing_area_mouse_position(
+        &self,
+        _controller: &gtk::EventControllerMotion,
+        x: f64,
+        y: f64,
+    ) {
+        self.imp()
+            .point_under_pointing_device
+            .set(widget_area_point_to_universe_cell(
+                &self.imp().drawing_area.get(),
+                self.imp().universe.borrow().as_ref(),
+                x,
+                y,
+            ));
     }
 
     fn on_drawing_area_mouse_leave(&self, _controller: &gtk::EventControllerMotion) {
@@ -632,7 +637,7 @@ impl GameOfLifeUniverseGrid {
                     .unwrap();
             });
 
-            self.notify("is-running");
+            self.notify("running");
         } else {
             glib::warn!("No universe to run");
         }
@@ -641,7 +646,7 @@ impl GameOfLifeUniverseGrid {
     pub fn halt(&self) {
         let inner = self.imp().render_thread_stopper.take();
         drop(inner);
-        self.notify("is-running");
+        self.notify("running");
     }
 
     pub fn toggle_run(&self) {
@@ -717,3 +722,4 @@ impl GameOfLifeUniverseGrid {
         self.imp().evolution_speed.set(value);
     }
 }
+

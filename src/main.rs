@@ -1,10 +1,10 @@
 mod application;
 mod config;
-mod window;
-mod widgets;
+mod i18n;
 mod models;
 mod services;
-mod i18n;
+mod widgets;
+mod window;
 
 use self::application::GameOfLifeApplication;
 use self::window::GameOfLifeWindow;
@@ -32,7 +32,10 @@ fn main() {
     // Create a new GtkApplication. The application manages our main loop,
     // application windows, integration with the window manager/compositor, and
     // desktop features such as file opening and single-instance applications.
-    let app = GameOfLifeApplication::new("com.github.sixpounder.GameOfLife", &gio::ApplicationFlags::empty());
+    let app = GameOfLifeApplication::new(
+        "com.github.sixpounder.GameOfLife",
+        &gio::ApplicationFlags::empty(),
+    );
 
     // Run the application. This function will block until the application
     // exits. Upon return, we have our exit code to return to the shell. (This
@@ -40,3 +43,4 @@ fn main() {
     // terminal.
     std::process::exit(app.run());
 }
+

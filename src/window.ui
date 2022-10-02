@@ -32,7 +32,7 @@
             </child>
             <child>
               <object class="GameOfLifeUniverseControls" id="controls">
-                <property name="playing" bind-property="is-running" bind-source="GameOfLifeWindow" bind-flags="default|sync-create"/>
+                <property name="playing" bind-property="running" bind-source="GameOfLifeWindow" bind-flags="default|sync-create"/>
               </object>
             </child>
           </object>

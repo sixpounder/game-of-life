@@ -1,12 +1,9 @@
-use gtk::{gio, glib, gdk::RGBA, prelude::*, subclass::prelude::*, CompositeTemplate};
-use adw::{
-    PreferencesWindow,
-    subclass::{
-        preferences_window::PreferencesWindowImpl,
-        window::AdwWindowImpl
-    }
-};
 use crate::services::GameOfLifeSettings;
+use adw::{
+    subclass::{preferences_window::PreferencesWindowImpl, window::AdwWindowImpl},
+    PreferencesWindow,
+};
+use gtk::{gdk::RGBA, gio, glib, prelude::*, subclass::prelude::*, CompositeTemplate};
 
 mod imp {
     use super::*;
@@ -68,10 +65,34 @@ mod imp {
         fn properties() -> &'static [glib::ParamSpec] {
             static PROPERTIES: Lazy<Vec<ParamSpec>> = Lazy::new(|| {
                 vec![
-                    ParamSpecString::new("universe-cell-color", "", "", None, ParamFlags::READWRITE),
-                    ParamSpecString::new("universe-background-color", "", "", None, ParamFlags::READWRITE),
-                    ParamSpecString::new("universe-cell-color-dark", "", "", None, ParamFlags::READWRITE),
-                    ParamSpecString::new("universe-background-color-dark", "", "", None, ParamFlags::READWRITE)
+                    ParamSpecString::new(
+                        "universe-cell-color",
+                        "",
+                        "",
+                        None,
+                        ParamFlags::READWRITE,
+                    ),
+                    ParamSpecString::new(
+                        "universe-background-color",
+                        "",
+                        "",
+                        None,
+                        ParamFlags::READWRITE,
+                    ),
+                    ParamSpecString::new(
+                        "universe-cell-color-dark",
+                        "",
+                        "",
+                        None,
+                        ParamFlags::READWRITE,
+                    ),
+                    ParamSpecString::new(
+                        "universe-background-color-dark",
+                        "",
+                        "",
+                        None,
+                        ParamFlags::READWRITE,
+                    ),
                 ]
             });
             PROPERTIES.as_ref()
@@ -115,18 +136,18 @@ mod imp {
 
         fn property(&self, _obj: &Self::Type, _id: usize, pspec: &ParamSpec) -> glib::Value {
             match pspec.name() {
-                "universe-cell-color" => {
-                    self.cell_color_picker.rgba().to_string().to_value()
-                }
+                "universe-cell-color" => self.cell_color_picker.rgba().to_string().to_value(),
                 "universe-background-color" => {
                     self.background_color_picker.rgba().to_string().to_value()
-                },
+                }
                 "universe-cell-color-dark" => {
                     self.cell_color_dark_picker.rgba().to_string().to_value()
                 }
-                "universe-background-color-dark" => {
-                    self.background_color_dark_picker.rgba().to_string().to_value()
-                },
+                "universe-background-color-dark" => self
+                    .background_color_dark_picker
+                    .rgba()
+                    .to_string()
+                    .to_value(),
                 _ => unimplemented!(),
             }
         }
@@ -146,8 +167,7 @@ glib::wrapper! {
 
 impl GameOfLifePreferencesWindow {
     pub fn new() -> Self {
-        glib::Object::new(&[])
-            .expect("Failed to create GameOfLifeNewUniverseView")
+        glib::Object::new(&[]).expect("Failed to create GameOfLifeNewUniverseView")
     }
 
     fn setup_bindings(&self) {
@@ -155,22 +175,42 @@ impl GameOfLifePreferencesWindow {
         let imp = self.imp();
 
         settings.bind("draw-cells-outline", imp.draw_cells_outline.get(), "active");
-        settings.bind("allow-render-during-resize", imp.allow_render_on_resize.get(), "active");
+        settings.bind(
+            "allow-render-during-resize",
+            imp.allow_render_on_resize.get(),
+            "active",
+        );
         settings.bind("show-design-hint", imp.show_design_hint.get(), "active");
-        settings.bind("evolution-speed", imp.evolution_speed_adjustment.get(), "value");
+        settings.bind(
+            "evolution-speed",
+            imp.evolution_speed_adjustment.get(),
+            "value",
+        );
 
         // Proxy colors to this widget, to convert from RGBA to string
         settings.bind("fg-color", self.imp().instance(), "universe-cell-color");
-        settings.bind("bg-color", self.imp().instance(), "universe-background-color");
-        settings.bind("fg-color-dark", self.imp().instance(), "universe-cell-color-dark");
-        settings.bind("bg-color-dark", self.imp().instance(), "universe-background-color-dark");
+        settings.bind(
+            "bg-color",
+            self.imp().instance(),
+            "universe-background-color",
+        );
+        settings.bind(
+            "fg-color-dark",
+            self.imp().instance(),
+            "universe-cell-color-dark",
+        );
+        settings.bind(
+            "bg-color-dark",
+            self.imp().instance(),
+            "universe-background-color-dark",
+        );
 
         // Listen for color pickers
 
         imp.cell_color_picker.connect_color_set(
             glib::clone!(@strong self as this => move |picker| {
                 this.set_property("universe-cell-color", picker.rgba().to_string().to_value());
-            })
+            }),
         );
 
         imp.background_color_picker.connect_color_set(
@@ -182,7 +222,7 @@ impl GameOfLifePreferencesWindow {
         imp.cell_color_dark_picker.connect_color_set(
             glib::clone!(@strong self as this => move |picker| {
                 this.set_property("universe-cell-color-dark", picker.rgba().to_string().to_value());
-            })
+            }),
         );
 
         imp.background_color_dark_picker.connect_color_set(

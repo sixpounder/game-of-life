@@ -98,7 +98,7 @@ mod imp {
                         obj.notify("stopped");
                         obj.notify("unfrozen");
                     }
-                },
+                }
                 "editing" => {
                     obj.imp().editing.set(value.get::<bool>().unwrap());
                     obj.notify("unfrozen");
@@ -128,5 +128,4 @@ impl GameOfLifeUniverseControls {
         self.notify("editing");
     }
 }
-
 
