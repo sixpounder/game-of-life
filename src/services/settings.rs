@@ -66,21 +66,21 @@ impl GameOfLifeSettings {
         self.inner.set_string("bg-color", value.as_str()).expect("Could not store bg-color preference");
     }
 
-    // pub fn fg_color_dark(&self) -> String {
-    //     self.inner.string("fg-color-dark").to_string()
-    // }
+    pub fn fg_color_dark(&self) -> String {
+        self.inner.string("fg-color-dark").to_string()
+    }
 
-    // pub fn set_fg_color_dark(&self, value: String) {
-    //     self.inner.set_string("fg-color-dark", value.as_str()).expect("Could not store fg-color-dark preference");
-    // }
+    pub fn set_fg_color_dark(&self, value: String) {
+        self.inner.set_string("fg-color-dark", value.as_str()).expect("Could not store fg-color-dark preference");
+    }
 
-    // pub fn bg_color_dark(&self) -> String {
-    //     self.inner.string("bg-color-dark").to_string()
-    // }
+    pub fn bg_color_dark(&self) -> String {
+        self.inner.string("bg-color-dark").to_string()
+    }
 
-    // pub fn set_bg_color_dark(&self, value: String) {
-    //     self.inner.set_string("bg-color-dark", value.as_str()).expect("Could not store bg-color-dark preference");
-    // }
+    pub fn set_bg_color_dark(&self, value: String) {
+        self.inner.set_string("bg-color-dark", value.as_str()).expect("Could not store bg-color-dark preference");
+    }
 
     pub fn universe_width(&self) -> i32 {
         self.inner.int("universe-width")

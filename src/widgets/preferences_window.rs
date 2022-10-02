@@ -26,6 +26,12 @@ mod imp {
         pub(super) background_color_picker: TemplateChild<gtk::ColorButton>,
 
         #[template_child]
+        pub(super) cell_color_dark_picker: TemplateChild<gtk::ColorButton>,
+
+        #[template_child]
+        pub(super) background_color_dark_picker: TemplateChild<gtk::ColorButton>,
+
+        #[template_child]
         pub(super) draw_cells_outline: TemplateChild<gtk::Switch>,
 
         #[template_child]
@@ -63,7 +69,9 @@ mod imp {
             static PROPERTIES: Lazy<Vec<ParamSpec>> = Lazy::new(|| {
                 vec![
                     ParamSpecString::new("universe-cell-color", "", "", None, ParamFlags::READWRITE),
-                    ParamSpecString::new("universe-background-color", "", "", None, ParamFlags::READWRITE)
+                    ParamSpecString::new("universe-background-color", "", "", None, ParamFlags::READWRITE),
+                    ParamSpecString::new("universe-cell-color-dark", "", "", None, ParamFlags::READWRITE),
+                    ParamSpecString::new("universe-background-color-dark", "", "", None, ParamFlags::READWRITE)
                 ]
             });
             PROPERTIES.as_ref()
@@ -89,6 +97,18 @@ mod imp {
                     self.background_color_picker.set_rgba(&rgba_value);
                     // self.settings.set_fg_color(rgba_value.to_string());
                 }
+                "universe-cell-color-dark" => {
+                    let str_value = value.get::<String>().unwrap();
+                    let rgba_value = RGBA::parse(str_value.as_str()).unwrap();
+                    self.cell_color_dark_picker.set_rgba(&rgba_value);
+                    // self.settings.set_fg_color(rgba_value.to_string());
+                }
+                "universe-background-color-dark" => {
+                    let str_value = value.get::<String>().unwrap();
+                    let rgba_value = RGBA::parse(str_value.as_str()).unwrap();
+                    self.background_color_dark_picker.set_rgba(&rgba_value);
+                    // self.settings.set_fg_color(rgba_value.to_string());
+                }
                 _ => unimplemented!(),
             }
         }
@@ -96,12 +116,16 @@ mod imp {
         fn property(&self, _obj: &Self::Type, _id: usize, pspec: &ParamSpec) -> glib::Value {
             match pspec.name() {
                 "universe-cell-color" => {
-                    // RGBA::parse(&self.settings.fg_color()).expect("Cannot parse RGBA").to_value()
                     self.cell_color_picker.rgba().to_string().to_value()
                 }
                 "universe-background-color" => {
-                    // RGBA::parse(&self.settings.bg_color()).expect("Cannot parse RGBA").to_value()
                     self.background_color_picker.rgba().to_string().to_value()
+                },
+                "universe-cell-color-dark" => {
+                    self.cell_color_dark_picker.rgba().to_string().to_value()
+                }
+                "universe-background-color-dark" => {
+                    self.background_color_dark_picker.rgba().to_string().to_value()
                 },
                 _ => unimplemented!(),
             }
@@ -138,6 +162,8 @@ impl GameOfLifePreferencesWindow {
         // Proxy colors to this widget, to convert from RGBA to string
         settings.bind("fg-color", self.imp().instance(), "universe-cell-color");
         settings.bind("bg-color", self.imp().instance(), "universe-background-color");
+        settings.bind("fg-color-dark", self.imp().instance(), "universe-cell-color-dark");
+        settings.bind("bg-color-dark", self.imp().instance(), "universe-background-color-dark");
 
         // Listen for color pickers
 
@@ -150,6 +176,18 @@ impl GameOfLifePreferencesWindow {
         imp.background_color_picker.connect_color_set(
             glib::clone!(@strong self as this => move |picker| {
                 this.set_property("universe-background-color", picker.rgba().to_string().to_value());
+            })
+        );
+
+        imp.cell_color_dark_picker.connect_color_set(
+            glib::clone!(@strong self as this => move |picker| {
+                this.set_property("universe-cell-color-dark", picker.rgba().to_string().to_value());
+            })
+        );
+
+        imp.background_color_dark_picker.connect_color_set(
+            glib::clone!(@strong self as this => move |picker| {
+                this.set_property("universe-background-color-dark", picker.rgba().to_string().to_value());
             })
         );
     }

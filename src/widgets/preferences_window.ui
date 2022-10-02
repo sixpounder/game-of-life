@@ -36,26 +36,50 @@
             <property name="title" translatable="yes">Appearance</property>
             <child>
               <object class="AdwActionRow">
-                <property name="title" translatable="yes">Cell color</property>
+                <property name="title" translatable="yes">Light colors</property>
+                <property name="subtitle" translatable="yes">These colors are applied if you use a light scheme color on your desktop</property>
                 <property name="title-selectable">false</property>
                 <property name="activatable">true</property>
-                <property name="activatable-widget">cell_color_picker</property>
+                <property name="activatable-widget">light_scheme_box</property>
                 <child>
-                  <object class="GtkColorButton" id="cell_color_picker">
-                    <property name="valign">center</property>
+                  <object class="GtkBox" id="light_scheme_box">
+                    <property name="orientation">horizontal</property>
+                    <property name="spacing">12</property>
+                    <child>
+                      <object class="GtkColorButton" id="cell_color_picker">
+                        <property name="valign">center</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkColorButton" id="background_color_picker">
+                        <property name="valign">center</property>
+                      </object>
+                    </child>
                   </object>
                 </child>
               </object>
             </child>
             <child>
               <object class="AdwActionRow">
-                <property name="title" translatable="yes">Background color</property>
+                <property name="title" translatable="yes">Dark colors</property>
+                <property name="subtitle" translatable="yes">These colors are applied if you use a dark scheme color on your desktop</property>
                 <property name="title-selectable">false</property>
                 <property name="activatable">true</property>
-                <property name="activatable-widget">background_color_picker</property>
+                <property name="activatable-widget">dark_scheme_box</property>
                 <child>
-                  <object class="GtkColorButton" id="background_color_picker">
-                    <property name="valign">center</property>
+                  <object class="GtkBox" id="dark_scheme_box">
+                    <property name="orientation">horizontal</property>
+                    <property name="spacing">12</property>
+                    <child>
+                      <object class="GtkColorButton" id="cell_color_dark_picker">
+                        <property name="valign">center</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkColorButton" id="background_color_dark_picker">
+                        <property name="valign">center</property>
+                      </object>
+                    </child>
                   </object>
                 </child>
               </object>

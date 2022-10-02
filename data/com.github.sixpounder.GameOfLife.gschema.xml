@@ -2,17 +2,17 @@
 <schemalist gettext-domain="game-of-life">
 	<schema id="com.github.sixpounder.GameOfLife" path="/com/github/sixpounder/GameOfLife/">
 	  <key name="fg-color" type="s">
-	    <default>"#C061CB"</default>
+	    <default>"#64BAFF"</default>
 	  </key>
 	  <key name="bg-color" type="s">
+	    <default>"#FAFAFA"</default>
+	  </key>
+	  <key name="fg-color-dark" type="s">
+	    <default>"#C061CB"</default>
+	  </key>
+	  <key name="bg-color-dark" type="s">
 	    <default>"#3D3846"</default>
 	  </key>
-	  <!-- <key name="fg-color-dark" type="s"> -->
-	  <!--   <default>"#C061CB"</default> -->
-	  <!-- </key> -->
-	  <!-- <key name="bg-color-dark" type="s"> -->
-	  <!--   <default>"#3D3846"</default> -->
-	  <!-- </key> -->
 	  <key name="evolution-speed" type="u">
 	    <default>5</default>
 	    <description>The number of generations per seconds that should be computed when a simulation is running</description>
@@ -45,3 +45,4 @@
 	  </key>
 	</schema>
 </schemalist>
+
