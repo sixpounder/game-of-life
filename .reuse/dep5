@@ -7,6 +7,10 @@ Files: .gitignore
 Copyright: 2022  Andrea Coronese
 License: CC0-1.0
 
+Files: Cargo.toml
+Copyright: 2022  Andrea Coronese
+License: GPL-3.0-or-later
+
 Files: Cargo.lock
 Copyright: 2022  Andrea Coronese
 License: GPL-3.0-or-later

@@ -1,5 +1,4 @@
 # Game Of Life
-=======
 
 ![Application icon](./data/icons/hicolor/scalable/apps/com.github.sixpounder.GameOfLife.svg)
 
