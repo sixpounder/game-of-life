@@ -1,5 +1,11 @@
+desktop_data = configuration_data()
+desktop_data.set('APPLICATION_ID', application_id)
 desktop_file = i18n.merge_file(
-  input: 'com.github.sixpounder.GameOfLife.desktop.in',
+  input: configure_file(
+    input: 'com.github.sixpounder.GameOfLife.desktop.in.in',
+    output: 'com.github.sixpounder.GameOfLife.desktop.in',
+    configuration: desktop_data,
+  ),
   output: 'com.github.sixpounder.GameOfLife.desktop',
   type: 'desktop',
   po_dir: '../po',

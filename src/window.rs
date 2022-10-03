@@ -26,9 +26,6 @@ mod imp {
         pub toast_overlay: TemplateChild<adw::ToastOverlay>,
 
         #[template_child]
-        pub(super) header_bar: TemplateChild<gtk::HeaderBar>,
-
-        #[template_child]
         pub(super) universe_grid: TemplateChild<crate::widgets::GameOfLifeUniverseGrid>,
 
         #[template_child]
@@ -47,12 +44,11 @@ mod imp {
     impl ObjectSubclass for GameOfLifeWindow {
         const NAME: &'static str = "GameOfLifeWindow";
         type Type = super::GameOfLifeWindow;
-        type ParentType = gtk::ApplicationWindow;
+        type ParentType = adw::ApplicationWindow;
 
         fn new() -> Self {
             Self {
                 toast_overlay: TemplateChild::default(),
-                header_bar: TemplateChild::default(),
                 universe_grid: TemplateChild::default(),
                 controls: TemplateChild::default(),
                 mode: std::cell::Cell::default(),
@@ -146,6 +142,7 @@ mod imp {
     impl WidgetImpl for GameOfLifeWindow {}
     impl WindowImpl for GameOfLifeWindow {}
     impl ApplicationWindowImpl for GameOfLifeWindow {}
+    impl adw::subclass::application_window::AdwApplicationWindowImpl for GameOfLifeWindow {}
 }
 
 glib::wrapper! {
