@@ -3,17 +3,53 @@
 	<id>@APPLICATION_ID@</id>
 	<metadata_license>CC0-1.0</metadata_license>
 	<project_license>GPL-3.0-or-later</project_license>
+    <name>Game Of Life</name>
+    <summary>A simulator of Conway's game of life</summary>
 	<description>
-	  <p>A simulator of Conway's game of life</p>
+	    <p>
+	        Game Of Life lets you simulate simple universes made of cells that can be
+	        alive or dead, and evolve according to simple rules.
+	    </p>
+	    <p>
+	        Current features:
+	    </p>
+	    <ul>
+	        <li>Random seed universes</li>
+	        <li>Provide start templates</li>
+	        <li>Manually edit universes</li>
+	        <li>Save and restore snapshots</li>
+	    </ul>
 	</description>
+    <screenshots>
+        <screenshot>
+          <image>https://raw.githubusercontent.com/sixpounder/game-of-life/main/data/screenshots/1.png</image>
+        </screenshot>
+        <screenshot>
+          <image>https://raw.githubusercontent.com/sixpounder/game-of-life/main/data/screenshots/2.png</image>
+        </screenshot>
+        <screenshot>
+          <image>https://raw.githubusercontent.com/sixpounder/game-of-life/main/data/screenshots/3.png</image>
+        </screenshot>
+        <screenshot>
+          <image>https://raw.githubusercontent.com/sixpounder/game-of-life/main/data/screenshots/4.png</image>
+        </screenshot>
+    </screenshots>
     <launchable type="desktop-id">@APPLICATION_ID@.desktop</launchable>
+    <url type="homepage">https://github.com/sixpounder/game-of-life</url>
     <developer_name>Andrea Coronese</developer_name>
     <update_contact>sixpounder_at_protonmail.com</update_contact>
+    <translation type="gettext">game-of-life</translation>
+    <requires>
+        <display_length compare="ge">600</display_length>
+    </requires>
     <recommends>
       <control>keyboard</control>
       <control>pointing</control>
-      <control>touch</control>
     </recommends>
+    <content_rating type="oars-1.1"/>
+    <releases>
+        <release version="0.1.0" date="2022-10-03"/>
+    </releases>
     <content_rating type="oars-1.1"/>
     <provides>@APPLICATION_ID@.desktop</provides>
 </component>
