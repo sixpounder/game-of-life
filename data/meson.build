@@ -20,8 +20,14 @@ if desktop_utils.found()
   )
 endif
 
+appstream_data = configuration_data()
+appstream_data.set('APPLICATION_ID', application_id)
 appstream_file = i18n.merge_file(
-  input: 'com.github.sixpounder.GameOfLife.appdata.xml.in',
+  input: configure_file(
+    input: 'com.github.sixpounder.GameOfLife.appdata.xml.in.in',
+    output: 'com.github.sixpounder.GameOfLife.appdata.xml.in',
+    configuration: appstream_data,
+  ),
   output: 'com.github.sixpounder.GameOfLife.appdata.xml',
   po_dir: '../po',
   install: true,
