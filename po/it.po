@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: game-of-life\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-10-04 10:21+0200\n"
+"POT-Creation-Date: 2022-10-04 11:00+0200\n"
 "PO-Revision-Date: 2022-09-20 00:48+0200\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -115,7 +115,7 @@ msgstr "General"
 #, fuzzy
 msgctxt "shortcut window"
 msgid "New universe"
-msgstr "Nuovo universe"
+msgstr "Nuovo universo"
 
 #: src/gtk/help-overlay.ui:20
 #, fuzzy
@@ -263,7 +263,7 @@ msgstr "Salva lo stato corrente"
 #: src/widgets/universe_controls.ui:120
 #, fuzzy
 msgid "_New universe"
-msgstr "Avvia/Ferma evoluzione"
+msgstr "_Nuovo universo"
 
 #: src/widgets/universe_controls.ui:124
 #, fuzzy
@@ -295,7 +295,7 @@ msgstr "Esci"
 #: src/widgets/new_universe_view.ui:4
 #, fuzzy
 msgid "New universe"
-msgstr "Avvia/Ferma evoluzione"
+msgstr "Nuovo universo"
 
 #: src/widgets/new_universe_view.ui:36
 msgid "Empty universe"
