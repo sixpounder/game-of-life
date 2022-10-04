@@ -41,9 +41,7 @@
             "sources" : [
                 {
                     "type" : "git",
-                    "tag" : "v0.1.0",
-                    "commit": "3c457a551552098b03f17e0d6f3590be1cad4afb",
-                    "url" : "https://github.com/sixpounder/game-of-life"
+                    "url" : "file:///home/sixpounder/Projects/game-of-life"
                 }
             ]
         }
