@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: game-of-life\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-10-03 23:39+0200\n"
+"POT-Creation-Date: 2022-10-04 10:21+0200\n"
 "PO-Revision-Date: 2022-09-20 00:48+0200\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -17,55 +17,60 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: data/com.github.sixpounder.GameOfLife.desktop.in:3
+#: data/com.github.sixpounder.GameOfLife.desktop.in.in:3
 msgid "Game of Life"
 msgstr "Gioco della vita"
 
-#: data/com.github.sixpounder.GameOfLife.desktop.in:4
+#: data/com.github.sixpounder.GameOfLife.desktop.in.in:4
 msgid "Game of Life Simulator"
 msgstr "Simulatore del gioco della vita"
 
-#: data/com.github.sixpounder.GameOfLife.appdata.xml.in:6
+#: data/com.github.sixpounder.GameOfLife.desktop.in.in:12
+msgid "simulation;game;"
+msgstr ""
+
+#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:6
 #, fuzzy
 msgid "Game Of Life"
 msgstr "Gioco della vita"
 
-#: data/com.github.sixpounder.GameOfLife.appdata.xml.in:7
+#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:7
 msgid "A simulator of Conway's game of life"
 msgstr "Un simulatore del gioco della vita di Conway"
 
-#: data/com.github.sixpounder.GameOfLife.appdata.xml.in:9
+#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:9
+#, fuzzy
 msgid ""
 "Game Of Life lets you simulate simple universes made of cells that can be "
-"alive or dead and evolve according to simple rules."
+"alive or dead, and evolve according to simple rules."
 msgstr ""
-"Il gioco della vita permette di simulare semplici universe di celle che possono "
-"essere 'vive' o 'morte' ed evolvono secondo regole precise"
+"Il gioco della vita permette di simulare semplici universe di celle che "
+"possono essere 'vive' o 'morte' ed evolvono secondo regole precise"
 
-#: data/com.github.sixpounder.GameOfLife.appdata.xml.in:13
+#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:13
 msgid "Current features:"
 msgstr "Features correnti:"
 
-#: data/com.github.sixpounder.GameOfLife.appdata.xml.in:17
+#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:17
 #, fuzzy
 msgid "Random seed universes"
 msgstr "Popola casualmente l'universo"
 
-#: data/com.github.sixpounder.GameOfLife.appdata.xml.in:18
+#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:18
 msgid "Provide start templates"
 msgstr "Templates di partenza"
 
-#: data/com.github.sixpounder.GameOfLife.appdata.xml.in:19
+#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:19
 #, fuzzy
 msgid "Manually edit universes"
 msgstr "Modifica manuale degli universi"
 
-#: data/com.github.sixpounder.GameOfLife.appdata.xml.in:20
+#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:20
 #, fuzzy
 msgid "Save and restore snapshots"
 msgstr "Salva lo stato corrente"
 
-#: data/com.github.sixpounder.GameOfLife.appdata.xml.in:39
+#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:39
 msgid "Andrea Coronese"
 msgstr ""
 
@@ -97,7 +102,9 @@ msgstr ""
 
 #: data/com.github.sixpounder.GameOfLife.gschema.xml:44
 msgid "Wheter to show an interaction hint on design mode activated"
-msgstr "Specifica se mostrare le istruzioni di interazione quando la modalità design viene attivata"
+msgstr ""
+"Specifica se mostrare le istruzioni di interazione quando la modalità design "
+"viene attivata"
 
 #: src/gtk/help-overlay.ui:11
 msgctxt "shortcut window"
@@ -107,165 +114,183 @@ msgstr "General"
 #: src/gtk/help-overlay.ui:14
 #, fuzzy
 msgctxt "shortcut window"
-msgid "Show Shortcuts"
-msgstr "_Scorciatoie da tastiera"
+msgid "New universe"
+msgstr "Nuovo universe"
 
 #: src/gtk/help-overlay.ui:20
-msgctxt "shortcut window"
-msgid "Quit"
-msgstr "Esci"
-
-#: src/gtk/help-overlay.ui:28
-#, fuzzy
-msgctxt "shortcut window"
-msgid "Universe control"
-msgstr "Velocità di evoluzione"
-
-#: src/gtk/help-overlay.ui:31
-#, fuzzy
-msgctxt "shortcut window"
-msgid "Toggle design mode"
-msgstr "Modalità design"
-
-#: src/gtk/help-overlay.ui:37
-#, fuzzy
-msgctxt "shortcut window"
-msgid "Seed universe"
-msgstr "Salva lo stato corrente"
-
-#: src/gtk/help-overlay.ui:43
-msgctxt "shortcut window"
-msgid "Toggle evolution"
-msgstr "Modalità evoluzione"
-
-#: src/gtk/help-overlay.ui:49
-#, fuzzy
-msgctxt "shortcut window"
-msgid "Save snapshot"
-msgstr "Salva lo stato corrente"
-
-#: src/gtk/help-overlay.ui:55
 #, fuzzy
 msgctxt "shortcut window"
 msgid "Open snapshot"
 msgstr "Salva lo stato corrente"
 
-#: src/window.rs:293
+#: src/gtk/help-overlay.ui:26
+#, fuzzy
+msgctxt "shortcut window"
+msgid "Save snapshot"
+msgstr "Salva lo stato corrente"
+
+#: src/gtk/help-overlay.ui:32
+#, fuzzy
+msgctxt "shortcut window"
+msgid "Preferences"
+msgstr "_Preferenze"
+
+#: src/gtk/help-overlay.ui:38
+#, fuzzy
+msgctxt "shortcut window"
+msgid "Show Shortcuts"
+msgstr "Mostra _scorciatoie"
+
+#: src/gtk/help-overlay.ui:44
+msgctxt "shortcut window"
+msgid "Quit"
+msgstr "Esci"
+
+#: src/gtk/help-overlay.ui:52
+#, fuzzy
+msgctxt "shortcut window"
+msgid "Universe control"
+msgstr "Velocità di evoluzione"
+
+#: src/gtk/help-overlay.ui:55
+#, fuzzy
+msgctxt "shortcut window"
+msgid "Toggle design mode"
+msgstr "Modalità design"
+
+#: src/gtk/help-overlay.ui:61
+#, fuzzy
+msgctxt "shortcut window"
+msgid "Toggle run universe"
+msgstr "Avvia/Ferma evoluzione"
+
+#: src/gtk/help-overlay.ui:67
+#, fuzzy
+msgctxt "shortcut window"
+msgid "Seed universe"
+msgstr "Salva lo stato corrente"
+
+#: src/window.rs:290
 msgid "Left click to make a cell alive, right click to make it dead"
 msgstr "Clic sinistra per rendere vita la cella, destro per renderla morta"
 
-#: src/window.rs:296
+#: src/window.rs:293
 msgid "Do not show again"
 msgstr "Non mostrare più"
 
-#: src/window.rs:317
+#: src/window.rs:314
 msgid "_Save"
 msgstr "_Salva"
 
-#: src/window.rs:318 src/window.rs:380
+#: src/window.rs:315 src/window.rs:377
 msgid "_Cancel"
 msgstr "_Annulla"
 
-#: src/window.rs:320
+#: src/window.rs:317
 #, fuzzy
 msgid "Save universe snapshot"
 msgstr "Salva lo stato corrente"
 
-#: src/window.rs:347
+#: src/window.rs:344
 msgid "Unable to write to file"
 msgstr "Impossibile scrivere il file"
 
-#: src/window.rs:353
+#: src/window.rs:350
 msgid "Unable to serialize snapshot"
 msgstr "Impossibile memorizzare lo stato corrente"
 
-#: src/window.rs:379
+#: src/window.rs:376
 msgid "_Open"
 msgstr "_Apri"
 
-#: src/window.rs:382
+#: src/window.rs:379
 #, fuzzy
 msgid "Open universe snapshot"
 msgstr "Salva lo stato corrente"
 
-#: src/window.rs:412 src/window.rs:418
+#: src/window.rs:409 src/window.rs:415
 msgid "Unreadable file"
 msgstr "File illeggibile"
 
-#: src/window.rs:423
+#: src/window.rs:420
 msgid "File not existing or not accessible"
 msgstr "File inesistente o non accessibile"
 
-#: src/window.rs:469
+#: src/window.rs:466
 msgid "Bad template data"
 msgstr "Template corrotto"
 
-#: src/window.rs:475
+#: src/window.rs:472
 msgid "Template not found"
 msgstr "Template non trovato"
 
-#: src/window.ui:46
-#, fuzzy
-msgid "_New universe"
-msgstr "Avvia/Ferma evoluzione"
-
-#: src/window.ui:50
-#, fuzzy
-msgid "_Open snapshot"
-msgstr "Apri uno stato salvato"
-
-#: src/window.ui:54
-#, fuzzy
-msgid "_Save snapshot"
-msgstr "_Salva lo stato corrente"
-
-#: src/window.ui:60
-msgid "_Preferences"
-msgstr "_Preferenze"
-
-#: src/window.ui:64
-msgid "_Keyboard Shortcuts"
-msgstr "_Scorciatoie da tastiera"
-
-#: src/window.ui:68
-msgid "_About game-of-life"
-msgstr "_About"
-
-#: src/widgets/universe_controls.ui:69
+#: src/widgets/universe_controls.ui:33
 msgid "Toggle design mode"
 msgstr "Modalità design"
 
-#: src/widgets/universe_controls.ui:75
+#: src/widgets/universe_controls.ui:39
 msgctxt "a11y"
 msgid "Toggle design mode"
 msgstr "Modalità design"
 
-#: src/widgets/universe_controls.ui:82
+#: src/widgets/universe_controls.ui:46
 msgid "Toggle universe run"
 msgstr "Avvia/Ferma evoluzione"
 
-#: src/widgets/universe_controls.ui:91
+#: src/widgets/universe_controls.ui:55
 msgctxt "a11y"
 msgid "Toggle universe run"
 msgstr "Avvia o ferma l'evoluzione"
 
-#: src/widgets/universe_controls.ui:98
+#: src/widgets/universe_controls.ui:62
 msgid "Randomly seed this universe"
 msgstr "Popola casualmente l'universo"
+
+#: src/widgets/universe_controls.ui:72
+msgctxt "a11y"
+msgid "Randomly seed this universe"
+msgstr "Popola casualmente l'universo"
+
+#: src/widgets/universe_controls.ui:98
+msgid "Save the current state snapshot"
+msgstr "Salva lo stato corrente"
 
 #: src/widgets/universe_controls.ui:108
 msgctxt "a11y"
-msgid "Randomly seed this universe"
-msgstr "Popola casualmente l'universo"
-
-#: src/widgets/universe_controls.ui:122
 msgid "Save the current state snapshot"
 msgstr "Salva lo stato corrente"
 
-#: src/widgets/universe_controls.ui:132
-msgctxt "a11y"
-msgid "Save the current state snapshot"
-msgstr "Salva lo stato corrente"
+#: src/widgets/universe_controls.ui:120
+#, fuzzy
+msgid "_New universe"
+msgstr "Avvia/Ferma evoluzione"
+
+#: src/widgets/universe_controls.ui:124
+#, fuzzy
+msgid "_Open snapshot"
+msgstr "Apri uno stato salvato"
+
+#: src/widgets/universe_controls.ui:128
+#, fuzzy
+msgid "_Save snapshot"
+msgstr "_Salva lo stato corrente"
+
+#: src/widgets/universe_controls.ui:134
+msgid "_Preferences"
+msgstr "_Preferenze"
+
+#: src/widgets/universe_controls.ui:138
+msgid "_Keyboard Shortcuts"
+msgstr "_Scorciatoie da tastiera"
+
+#: src/widgets/universe_controls.ui:142
+msgid "_About"
+msgstr "_Informazioni"
+
+#: src/widgets/universe_controls.ui:146
+#, fuzzy
+msgid "_Quit"
+msgstr "Esci"
 
 #: src/widgets/new_universe_view.ui:4
 #, fuzzy
@@ -357,8 +382,7 @@ msgstr "Colori tema scuro"
 
 #: src/widgets/preferences_window.ui:65
 msgid "These colors are applied if you use a dark scheme color on your desktop"
-msgstr ""
-"Questi colori sono applicati se il desktop usa uno schema colori scuro"
+msgstr "Questi colori sono applicati se il desktop usa uno schema colori scuro"
 
 #: src/widgets/preferences_window.ui:89
 msgid "Draw cells outline"
@@ -373,8 +397,8 @@ msgid ""
 "Allows rendering the grid during a resize event of the application window. "
 "May affect performance."
 msgstr ""
-"Permette il rendering della griglia delle celle durante il ridimensionamento della finestra. "
-"Può impattare le performance."
+"Permette il rendering della griglia delle celle durante il ridimensionamento "
+"della finestra. Può impattare le performance."
 
 #: src/widgets/preferences_window.ui:119
 msgid "Evolution"
@@ -391,6 +415,13 @@ msgid "The number of generations to be computed per second during an evolution"
 msgstr ""
 "Il numero di generazioni al secondo che dovrebbero essere computate durante "
 "una simulazione"
+
+#~ msgctxt "shortcut window"
+#~ msgid "Toggle evolution"
+#~ msgstr "Modalità evoluzione"
+
+#~ msgid "_About game-of-life"
+#~ msgstr "_About"
 
 #~ msgctxt "a11y"
 #~ msgid "Modify universe evolution speed"

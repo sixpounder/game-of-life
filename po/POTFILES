@@ -1,5 +1,5 @@
-data/com.github.sixpounder.GameOfLife.desktop.in
-data/com.github.sixpounder.GameOfLife.appdata.xml.in
+data/com.github.sixpounder.GameOfLife.desktop.in.in
+data/com.github.sixpounder.GameOfLife.appdata.xml.in.in
 data/com.github.sixpounder.GameOfLife.gschema.xml
 src/gtk/help-overlay.ui
 src/window.rs

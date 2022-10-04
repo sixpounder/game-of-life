@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: game-of-life\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-10-03 23:39+0200\n"
+"POT-Creation-Date: 2022-10-04 10:21+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,49 +17,53 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: data/com.github.sixpounder.GameOfLife.desktop.in:3
+#: data/com.github.sixpounder.GameOfLife.desktop.in.in:3
 msgid "Game of Life"
 msgstr ""
 
-#: data/com.github.sixpounder.GameOfLife.desktop.in:4
+#: data/com.github.sixpounder.GameOfLife.desktop.in.in:4
 msgid "Game of Life Simulator"
 msgstr ""
 
-#: data/com.github.sixpounder.GameOfLife.appdata.xml.in:6
+#: data/com.github.sixpounder.GameOfLife.desktop.in.in:12
+msgid "simulation;game;"
+msgstr ""
+
+#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:6
 msgid "Game Of Life"
 msgstr ""
 
-#: data/com.github.sixpounder.GameOfLife.appdata.xml.in:7
+#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:7
 msgid "A simulator of Conway's game of life"
 msgstr ""
 
-#: data/com.github.sixpounder.GameOfLife.appdata.xml.in:9
+#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:9
 msgid ""
 "Game Of Life lets you simulate simple universes made of cells that can be "
 "alive or dead, and evolve according to simple rules."
 msgstr ""
 
-#: data/com.github.sixpounder.GameOfLife.appdata.xml.in:13
+#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:13
 msgid "Current features:"
 msgstr ""
 
-#: data/com.github.sixpounder.GameOfLife.appdata.xml.in:17
+#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:17
 msgid "Random seed universes"
 msgstr ""
 
-#: data/com.github.sixpounder.GameOfLife.appdata.xml.in:18
+#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:18
 msgid "Provide start templates"
 msgstr ""
 
-#: data/com.github.sixpounder.GameOfLife.appdata.xml.in:19
+#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:19
 msgid "Manually edit universes"
 msgstr ""
 
-#: data/com.github.sixpounder.GameOfLife.appdata.xml.in:20
+#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:20
 msgid "Save and restore snapshots"
 msgstr ""
 
-#: data/com.github.sixpounder.GameOfLife.appdata.xml.in:39
+#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:39
 msgid "Andrea Coronese"
 msgstr ""
 
@@ -97,154 +101,168 @@ msgstr ""
 
 #: src/gtk/help-overlay.ui:14
 msgctxt "shortcut window"
-msgid "Show Shortcuts"
+msgid "New universe"
 msgstr ""
 
 #: src/gtk/help-overlay.ui:20
 msgctxt "shortcut window"
-msgid "Quit"
+msgid "Open snapshot"
 msgstr ""
 
-#: src/gtk/help-overlay.ui:28
-msgctxt "shortcut window"
-msgid "Universe control"
-msgstr ""
-
-#: src/gtk/help-overlay.ui:31
-msgctxt "shortcut window"
-msgid "Toggle design mode"
-msgstr ""
-
-#: src/gtk/help-overlay.ui:37
-msgctxt "shortcut window"
-msgid "Seed universe"
-msgstr ""
-
-#: src/gtk/help-overlay.ui:43
-msgctxt "shortcut window"
-msgid "Toggle evolution"
-msgstr ""
-
-#: src/gtk/help-overlay.ui:49
+#: src/gtk/help-overlay.ui:26
 msgctxt "shortcut window"
 msgid "Save snapshot"
 msgstr ""
 
-#: src/gtk/help-overlay.ui:55
+#: src/gtk/help-overlay.ui:32
 msgctxt "shortcut window"
-msgid "Open snapshot"
+msgid "Preferences"
 msgstr ""
 
-#: src/window.rs:293
+#: src/gtk/help-overlay.ui:38
+msgctxt "shortcut window"
+msgid "Show Shortcuts"
+msgstr ""
+
+#: src/gtk/help-overlay.ui:44
+msgctxt "shortcut window"
+msgid "Quit"
+msgstr ""
+
+#: src/gtk/help-overlay.ui:52
+msgctxt "shortcut window"
+msgid "Universe control"
+msgstr ""
+
+#: src/gtk/help-overlay.ui:55
+msgctxt "shortcut window"
+msgid "Toggle design mode"
+msgstr ""
+
+#: src/gtk/help-overlay.ui:61
+msgctxt "shortcut window"
+msgid "Toggle run universe"
+msgstr ""
+
+#: src/gtk/help-overlay.ui:67
+msgctxt "shortcut window"
+msgid "Seed universe"
+msgstr ""
+
+#: src/window.rs:290
 msgid "Left click to make a cell alive, right click to make it dead"
 msgstr ""
 
-#: src/window.rs:296
+#: src/window.rs:293
 msgid "Do not show again"
 msgstr ""
 
-#: src/window.rs:317
+#: src/window.rs:314
 msgid "_Save"
 msgstr ""
 
-#: src/window.rs:318 src/window.rs:380
+#: src/window.rs:315 src/window.rs:377
 msgid "_Cancel"
 msgstr ""
 
-#: src/window.rs:320
+#: src/window.rs:317
 msgid "Save universe snapshot"
 msgstr ""
 
-#: src/window.rs:347
+#: src/window.rs:344
 msgid "Unable to write to file"
 msgstr ""
 
-#: src/window.rs:353
+#: src/window.rs:350
 msgid "Unable to serialize snapshot"
 msgstr ""
 
-#: src/window.rs:379
+#: src/window.rs:376
 msgid "_Open"
 msgstr ""
 
-#: src/window.rs:382
+#: src/window.rs:379
 msgid "Open universe snapshot"
 msgstr ""
 
-#: src/window.rs:412 src/window.rs:418
+#: src/window.rs:409 src/window.rs:415
 msgid "Unreadable file"
 msgstr ""
 
-#: src/window.rs:423
+#: src/window.rs:420
 msgid "File not existing or not accessible"
 msgstr ""
 
-#: src/window.rs:469
+#: src/window.rs:466
 msgid "Bad template data"
 msgstr ""
 
-#: src/window.rs:475
+#: src/window.rs:472
 msgid "Template not found"
 msgstr ""
 
-#: src/window.ui:46
-msgid "_New universe"
-msgstr ""
-
-#: src/window.ui:50
-msgid "_Open snapshot"
-msgstr ""
-
-#: src/window.ui:54
-msgid "_Save snapshot"
-msgstr ""
-
-#: src/window.ui:60
-msgid "_Preferences"
-msgstr ""
-
-#: src/window.ui:64
-msgid "_Keyboard Shortcuts"
-msgstr ""
-
-#: src/window.ui:68
-msgid "_About game-of-life"
-msgstr ""
-
-#: src/widgets/universe_controls.ui:69
+#: src/widgets/universe_controls.ui:33
 msgid "Toggle design mode"
 msgstr ""
 
-#: src/widgets/universe_controls.ui:75
+#: src/widgets/universe_controls.ui:39
 msgctxt "a11y"
 msgid "Toggle design mode"
 msgstr ""
 
-#: src/widgets/universe_controls.ui:82
+#: src/widgets/universe_controls.ui:46
 msgid "Toggle universe run"
 msgstr ""
 
-#: src/widgets/universe_controls.ui:91
+#: src/widgets/universe_controls.ui:55
 msgctxt "a11y"
 msgid "Toggle universe run"
+msgstr ""
+
+#: src/widgets/universe_controls.ui:62
+msgid "Randomly seed this universe"
+msgstr ""
+
+#: src/widgets/universe_controls.ui:72
+msgctxt "a11y"
+msgid "Randomly seed this universe"
 msgstr ""
 
 #: src/widgets/universe_controls.ui:98
-msgid "Randomly seed this universe"
+msgid "Save the current state snapshot"
 msgstr ""
 
 #: src/widgets/universe_controls.ui:108
 msgctxt "a11y"
-msgid "Randomly seed this universe"
-msgstr ""
-
-#: src/widgets/universe_controls.ui:122
 msgid "Save the current state snapshot"
 msgstr ""
 
-#: src/widgets/universe_controls.ui:132
-msgctxt "a11y"
-msgid "Save the current state snapshot"
+#: src/widgets/universe_controls.ui:120
+msgid "_New universe"
+msgstr ""
+
+#: src/widgets/universe_controls.ui:124
+msgid "_Open snapshot"
+msgstr ""
+
+#: src/widgets/universe_controls.ui:128
+msgid "_Save snapshot"
+msgstr ""
+
+#: src/widgets/universe_controls.ui:134
+msgid "_Preferences"
+msgstr ""
+
+#: src/widgets/universe_controls.ui:138
+msgid "_Keyboard Shortcuts"
+msgstr ""
+
+#: src/widgets/universe_controls.ui:142
+msgid "_About"
+msgstr ""
+
+#: src/widgets/universe_controls.ui:146
+msgid "_Quit"
 msgstr ""
 
 #: src/widgets/new_universe_view.ui:4

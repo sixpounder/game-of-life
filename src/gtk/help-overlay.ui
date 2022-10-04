@@ -11,6 +11,30 @@
             <property name="title" translatable="yes" context="shortcut window">General</property>
             <child>
               <object class="GtkShortcutsShortcut">
+                <property name="title" translatable="yes" context="shortcut window">New universe</property>
+                <property name="action-name">win.new</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="title" translatable="yes" context="shortcut window">Open snapshot</property>
+                <property name="action-name">win.open-snapshot</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="title" translatable="yes" context="shortcut window">Save snapshot</property>
+                <property name="action-name">win.snapshot</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="title" translatable="yes" context="shortcut window">Preferences</property>
+                <property name="action-name">app.preferences</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkShortcutsShortcut">
                 <property name="title" translatable="yes" context="shortcut window">Show Shortcuts</property>
                 <property name="action-name">win.show-help-overlay</property>
               </object>
@@ -34,26 +58,14 @@
             </child>
             <child>
               <object class="GtkShortcutsShortcut">
-                <property name="title" translatable="yes" context="shortcut window">Seed universe</property>
-                <property name="action-name">win.seed-universe</property>
-              </object>
-            </child>
-            <child>
-              <object class="GtkShortcutsShortcut">
-                <property name="title" translatable="yes" context="shortcut window">Toggle evolution</property>
+                <property name="title" translatable="yes" context="shortcut window">Toggle run universe</property>
                 <property name="action-name">win.play</property>
               </object>
             </child>
             <child>
               <object class="GtkShortcutsShortcut">
-                <property name="title" translatable="yes" context="shortcut window">Save snapshot</property>
-                <property name="action-name">win.snapshot</property>
-              </object>
-            </child>
-            <child>
-              <object class="GtkShortcutsShortcut">
-                <property name="title" translatable="yes" context="shortcut window">Open snapshot</property>
-                <property name="action-name">win.open-snapshot</property>
+                <property name="title" translatable="yes" context="shortcut window">Seed universe</property>
+                <property name="action-name">win.random-seed</property>
               </object>
             </child>
           </object>
