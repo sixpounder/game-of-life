@@ -6,3 +6,4 @@ tmp
 src/config.rs
 
 target
+vendor
