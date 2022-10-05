@@ -41,9 +41,6 @@
             "name" : "game-of-life",
             "builddir" : true,
             "buildsystem" : "meson",
-            "config-opts" : [
-                "-Dbuildtype=release"
-            ],
             "sources" : [
                 {
                     "type" : "git",
