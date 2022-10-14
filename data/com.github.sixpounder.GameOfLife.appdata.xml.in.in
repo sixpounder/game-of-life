@@ -49,8 +49,7 @@
     </recommends>
     <content_rating type="oars-1.1"/>
     <releases>
-        <release version="0.1.0" date="2022-10-03"/>
-        <release version="0.1.4" date="2022-10-03">
+        <release version="0.1.4" date="2022-10-14">
             <description>
                 <ul>
                     <li>Fix interaction bugs</li>
@@ -58,6 +57,7 @@
                 </ul>
             </description>
         </release>
+        <release version="0.1.0" date="2022-10-03"/>
     </releases>
     <provides>@APPLICATION_ID@.desktop</provides>
 </component>
