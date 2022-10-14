@@ -50,6 +50,14 @@
     <content_rating type="oars-1.1"/>
     <releases>
         <release version="0.1.0" date="2022-10-03"/>
+        <release version="0.1.4" date="2022-10-03">
+            <description>
+                <ul>
+                    <li>Fix interaction bugs</li>
+                    <li>Minor performance tweaks</li>
+                </ul>
+            </description>
+        </release>
     </releases>
     <provides>@APPLICATION_ID@.desktop</provides>
 </component>
