@@ -51,6 +51,7 @@
     <releases>
         <release version="0.1.4" date="2022-10-14">
             <description>
+                <p>This is a revision addressing a few problems</p>
                 <ul>
                     <li>Fix interaction bugs</li>
                     <li>Minor performance tweaks</li>
