@@ -4,11 +4,11 @@
 
 A simple Conway's game of life simulator for the Gnome desktop
 
-<a href="https://flathub.org/apps/details/com.github.sixpounder.GameOfLife"><img src="https://flathub.org/assets/badges/flathub-badge-en.png" width="200"/></a>
-
 ## Installation
 
-The easieast way to install is from Flathub (when approved)
+The easieast way to install is from Flathub.
+
+<a href="https://flathub.org/apps/details/com.github.sixpounder.GameOfLife"><img src="https://flathub.org/assets/badges/flathub-badge-en.png" width="200"/></a>
 
 ### Using Gnome Builder
 
