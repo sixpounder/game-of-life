@@ -14,14 +14,14 @@
 	    <default>"#3D3846"</default>
 	  </key>
 	  <key name="evolution-speed" type="u">
-	    <default>5</default>
+	    <default>10</default>
 	    <description>The number of generations per seconds that should be computed when a simulation is running</description>
 	  </key>
 	  <key name="window-width" type="i">
 	    <default>600</default>
 	  </key>
 	  <key name="window-height" type="i">
-	    <default>800</default>
+	    <default>600</default>
 	  </key>
 	  <key name="universe-width" type="i">
 	    <default>200</default>
