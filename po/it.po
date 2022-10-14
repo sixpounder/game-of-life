@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: game-of-life\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-10-04 11:00+0200\n"
+"POT-Creation-Date: 2022-10-14 11:22+0200\n"
 "PO-Revision-Date: 2022-09-20 00:48+0200\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -17,28 +17,28 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: data/com.github.sixpounder.GameOfLife.desktop.in.in:3
+#: data/io.github.sixpounder.GameOfLife.desktop.in.in:3
 msgid "Game of Life"
 msgstr "Gioco della vita"
 
-#: data/com.github.sixpounder.GameOfLife.desktop.in.in:4
+#: data/io.github.sixpounder.GameOfLife.desktop.in.in:4
 msgid "Game of Life Simulator"
 msgstr "Simulatore del gioco della vita"
 
-#: data/com.github.sixpounder.GameOfLife.desktop.in.in:12
+#: data/io.github.sixpounder.GameOfLife.desktop.in.in:12
 msgid "simulation;game;"
 msgstr ""
 
-#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:6
+#: data/io.github.sixpounder.GameOfLife.appdata.xml.in.in:6
 #, fuzzy
 msgid "Game Of Life"
 msgstr "Gioco della vita"
 
-#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:7
+#: data/io.github.sixpounder.GameOfLife.appdata.xml.in.in:7
 msgid "A simulator of Conway's game of life"
 msgstr "Un simulatore del gioco della vita di Conway"
 
-#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:9
+#: data/io.github.sixpounder.GameOfLife.appdata.xml.in.in:9
 #, fuzzy
 msgid ""
 "Game Of Life lets you simulate simple universes made of cells that can be "
@@ -47,34 +47,46 @@ msgstr ""
 "Il gioco della vita permette di simulare semplici universe di celle che "
 "possono essere 'vive' o 'morte' ed evolvono secondo regole precise"
 
-#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:13
+#: data/io.github.sixpounder.GameOfLife.appdata.xml.in.in:13
 msgid "Current features:"
 msgstr "Features correnti:"
 
-#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:17
+#: data/io.github.sixpounder.GameOfLife.appdata.xml.in.in:17
 #, fuzzy
 msgid "Random seed universes"
 msgstr "Popola casualmente l'universo"
 
-#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:18
+#: data/io.github.sixpounder.GameOfLife.appdata.xml.in.in:18
 msgid "Provide start templates"
 msgstr "Templates di partenza"
 
-#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:19
+#: data/io.github.sixpounder.GameOfLife.appdata.xml.in.in:19
 #, fuzzy
 msgid "Manually edit universes"
 msgstr "Modifica manuale degli universi"
 
-#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:20
+#: data/io.github.sixpounder.GameOfLife.appdata.xml.in.in:20
 #, fuzzy
 msgid "Save and restore snapshots"
 msgstr "Salva lo stato corrente"
 
-#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:39
+#: data/io.github.sixpounder.GameOfLife.appdata.xml.in.in:39
 msgid "Andrea Coronese"
 msgstr ""
 
-#: data/com.github.sixpounder.GameOfLife.gschema.xml:18
+#: data/io.github.sixpounder.GameOfLife.appdata.xml.in.in:54
+msgid "This is a revision addressing a few problems"
+msgstr ""
+
+#: data/io.github.sixpounder.GameOfLife.appdata.xml.in.in:56
+msgid "Fix interaction bugs"
+msgstr ""
+
+#: data/io.github.sixpounder.GameOfLife.appdata.xml.in.in:57
+msgid "Minor performance tweaks"
+msgstr ""
+
+#: data/io.github.sixpounder.GameOfLife.gschema.xml:18
 msgid ""
 "The number of generations per seconds that should be computed when a "
 "simulation is running"
@@ -82,25 +94,25 @@ msgstr ""
 "Il numero di generazioni al secondo che dovrebbero essere computate durante "
 "una simulazione"
 
-#: data/com.github.sixpounder.GameOfLife.gschema.xml:28
+#: data/io.github.sixpounder.GameOfLife.gschema.xml:28
 msgid "The width of the universe being generated, in cells number"
 msgstr "La larghezza dell'universo generato in numero di celle"
 
-#: data/com.github.sixpounder.GameOfLife.gschema.xml:32
+#: data/io.github.sixpounder.GameOfLife.gschema.xml:32
 msgid "The height of the universe being generated, in cells number"
 msgstr "L'altezza dell'universo generato in numero di celle"
 
-#: data/com.github.sixpounder.GameOfLife.gschema.xml:36
+#: data/io.github.sixpounder.GameOfLife.gschema.xml:36
 msgid "Wheter to draw cells outline in universe grid"
 msgstr "Disegna il contorno delle celle nella griglia"
 
-#: data/com.github.sixpounder.GameOfLife.gschema.xml:40
+#: data/io.github.sixpounder.GameOfLife.gschema.xml:40
 msgid ""
 "Wheter to allow universe rendering when the application window is resizing"
 msgstr ""
 "Permette il rendering delle celle durante un ridimensionamento della finestra"
 
-#: data/com.github.sixpounder.GameOfLife.gschema.xml:44
+#: data/io.github.sixpounder.GameOfLife.gschema.xml:44
 msgid "Wheter to show an interaction hint on design mode activated"
 msgstr ""
 "Specifica se mostrare le istruzioni di interazione quando la modalità design "
@@ -224,70 +236,70 @@ msgstr "Template corrotto"
 msgid "Template not found"
 msgstr "Template non trovato"
 
-#: src/widgets/universe_controls.ui:33
+#: src/widgets/universe_controls.ui:35
 msgid "Toggle design mode"
 msgstr "Modalità design"
 
-#: src/widgets/universe_controls.ui:39
+#: src/widgets/universe_controls.ui:41
 msgctxt "a11y"
 msgid "Toggle design mode"
 msgstr "Modalità design"
 
-#: src/widgets/universe_controls.ui:46
+#: src/widgets/universe_controls.ui:48
 msgid "Toggle universe run"
 msgstr "Avvia/Ferma evoluzione"
 
-#: src/widgets/universe_controls.ui:55
+#: src/widgets/universe_controls.ui:57
 msgctxt "a11y"
 msgid "Toggle universe run"
 msgstr "Avvia o ferma l'evoluzione"
 
-#: src/widgets/universe_controls.ui:62
+#: src/widgets/universe_controls.ui:64
 msgid "Randomly seed this universe"
 msgstr "Popola casualmente l'universo"
 
-#: src/widgets/universe_controls.ui:72
+#: src/widgets/universe_controls.ui:74
 msgctxt "a11y"
 msgid "Randomly seed this universe"
 msgstr "Popola casualmente l'universo"
 
-#: src/widgets/universe_controls.ui:98
+#: src/widgets/universe_controls.ui:100
 msgid "Save the current state snapshot"
 msgstr "Salva lo stato corrente"
 
-#: src/widgets/universe_controls.ui:108
+#: src/widgets/universe_controls.ui:110
 msgctxt "a11y"
 msgid "Save the current state snapshot"
 msgstr "Salva lo stato corrente"
 
-#: src/widgets/universe_controls.ui:120
+#: src/widgets/universe_controls.ui:124
 #, fuzzy
 msgid "_New universe"
 msgstr "_Nuovo universo"
 
-#: src/widgets/universe_controls.ui:124
+#: src/widgets/universe_controls.ui:128
 #, fuzzy
 msgid "_Open snapshot"
 msgstr "Apri uno stato salvato"
 
-#: src/widgets/universe_controls.ui:128
+#: src/widgets/universe_controls.ui:132
 #, fuzzy
 msgid "_Save snapshot"
 msgstr "_Salva lo stato corrente"
 
-#: src/widgets/universe_controls.ui:134
+#: src/widgets/universe_controls.ui:138
 msgid "_Preferences"
 msgstr "_Preferenze"
 
-#: src/widgets/universe_controls.ui:138
+#: src/widgets/universe_controls.ui:142
 msgid "_Keyboard Shortcuts"
 msgstr "_Scorciatoie da tastiera"
 
-#: src/widgets/universe_controls.ui:142
+#: src/widgets/universe_controls.ui:146
 msgid "_About"
 msgstr "_Informazioni"
 
-#: src/widgets/universe_controls.ui:146
+#: src/widgets/universe_controls.ui:150
 #, fuzzy
 msgid "_Quit"
 msgstr "Esci"

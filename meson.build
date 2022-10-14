@@ -40,7 +40,7 @@ else
   version_suffix = ''
 endif
 
-application_id = 'com.github.sixpounder.GameOfLife@0@'.format(profile)
+application_id = 'io.github.sixpounder.GameOfLife@0@'.format(profile)
 
 subdir('data')
 subdir('src')

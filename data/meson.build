@@ -2,11 +2,11 @@ desktop_data = configuration_data()
 desktop_data.set('APPLICATION_ID', application_id)
 desktop_file = i18n.merge_file(
   input: configure_file(
-    input: 'com.github.sixpounder.GameOfLife.desktop.in.in',
-    output: 'com.github.sixpounder.GameOfLife.desktop.in',
+    input: 'io.github.sixpounder.GameOfLife.desktop.in.in',
+    output: 'io.github.sixpounder.GameOfLife.desktop.in',
     configuration: desktop_data,
   ),
-  output: 'com.github.sixpounder.GameOfLife.desktop',
+  output: 'io.github.sixpounder.GameOfLife.desktop',
   type: 'desktop',
   po_dir: '../po',
   install: true,
@@ -24,11 +24,11 @@ appstream_data = configuration_data()
 appstream_data.set('APPLICATION_ID', application_id)
 appstream_file = i18n.merge_file(
   input: configure_file(
-    input: 'com.github.sixpounder.GameOfLife.appdata.xml.in.in',
-    output: 'com.github.sixpounder.GameOfLife.appdata.xml.in',
+    input: 'io.github.sixpounder.GameOfLife.appdata.xml.in.in',
+    output: 'io.github.sixpounder.GameOfLife.appdata.xml.in',
     configuration: appstream_data,
   ),
-  output: 'com.github.sixpounder.GameOfLife.appdata.xml',
+  output: 'io.github.sixpounder.GameOfLife.appdata.xml',
   po_dir: '../po',
   install: true,
   install_dir: join_paths(get_option('datadir'), 'appdata')
@@ -41,7 +41,7 @@ if appstream_util.found()
   )
 endif
 
-install_data('com.github.sixpounder.GameOfLife.gschema.xml',
+install_data('io.github.sixpounder.GameOfLife.gschema.xml',
   install_dir: join_paths(get_option('datadir'), 'glib-2.0/schemas')
 )
 

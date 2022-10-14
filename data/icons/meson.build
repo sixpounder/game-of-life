@@ -1,4 +1,4 @@
-application_id = 'com.github.sixpounder.GameOfLife'
+# application_id = 'io.github.sixpounder.GameOfLife'
 
 scalable_dir = join_paths('hicolor', 'scalable', 'apps')
 install_data(

@@ -19,23 +19,23 @@ Files: README.md
 Copyright: 2022  Andrea Coronese
 License: CC0-1.0
 
-Files: com.github.sixpounder.GameOfLife.json
+Files: io.github.sixpounder.GameOfLife.json
 Copyright: 2022  Andrea Coronese
 License: CC0-1.0
 
-Files: data/com.github.sixpounder.GameOfLife.appdata.xml.in
+Files: data/io.github.sixpounder.GameOfLife.appdata.xml.in
 Copyright: 2022  Andrea Coronese
 License: CC0-1.0
 
-Files: data/com.github.sixpounder.GameOfLife.desktop.in.in
+Files: data/io.github.sixpounder.GameOfLife.desktop.in.in
 Copyright: 2022  Andrea Coronese
 License: CC0-1.0
 
-Files: data/com.github.sixpounder.GameOfLife.gschema.xml
+Files: data/io.github.sixpounder.GameOfLife.gschema.xml
 Copyright: 2022  Andrea Coronese
 License: CC0-1.0
 
-Files: data/com.github.sixpounder.GameOfLife.service.in
+Files: data/io.github.sixpounder.GameOfLife.service.in
 Copyright: 2022  Andrea Coronese
 License: CC0-1.0
 
@@ -43,11 +43,11 @@ Files: data/screenshots/*.png
 Copyright: 2022  Andrea Coronese
 License: CC0-1.0
 
-Files: data/icons/hicolor/scalable/apps/com.github.sixpounder.GameOfLife.*
+Files: data/icons/hicolor/scalable/apps/io.github.sixpounder.GameOfLife.*
 Copyright: 2022  Andrea Coronese
 License: GPL-3.0-or-later
 
-Files: data/icons/hicolor/symbolic/apps/com.github.sixpounder.GameOfLife.*
+Files: data/icons/hicolor/symbolic/apps/io.github.sixpounder.GameOfLife.*
 Copyright: 2022  Andrea Coronese
 License: GPL-3.0-or-later
 

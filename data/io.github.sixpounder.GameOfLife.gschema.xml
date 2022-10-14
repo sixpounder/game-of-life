@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <schemalist gettext-domain="game-of-life">
-	<schema id="com.github.sixpounder.GameOfLife" path="/com/github/sixpounder/GameOfLife/">
+	<schema id="io.github.sixpounder.GameOfLife" path="/io/github/sixpounder/GameOfLife/">
 	  <key name="fg-color" type="s">
 	    <default>"#64BAFF"</default>
 	  </key>
@@ -14,21 +14,21 @@
 	    <default>"#3D3846"</default>
 	  </key>
 	  <key name="evolution-speed" type="u">
-	    <default>5</default>
+	    <default>10</default>
 	    <description>The number of generations per seconds that should be computed when a simulation is running</description>
 	  </key>
 	  <key name="window-width" type="i">
 	    <default>600</default>
 	  </key>
 	  <key name="window-height" type="i">
-	    <default>800</default>
+	    <default>600</default>
 	  </key>
 	  <key name="universe-width" type="i">
-	    <default>200</default>
+	    <default>50</default>
 	    <description>The width of the universe being generated, in cells number</description>
 	  </key>
 	  <key name="universe-height" type="i">
-	    <default>200</default>
+	    <default>50</default>
 	    <description>The height of the universe being generated, in cells number</description>
 	  </key>
 	  <key name="draw-cells-outline" type="b">

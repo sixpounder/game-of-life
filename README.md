@@ -1,6 +1,6 @@
 # Game Of Life
 
-![Application icon](./data/icons/hicolor/scalable/apps/com.github.sixpounder.GameOfLife.svg)
+![Application icon](./data/icons/hicolor/scalable/apps/io.github.sixpounder.GameOfLife.svg)
 
 A simple Conway's game of life simulator for the Gnome desktop
 

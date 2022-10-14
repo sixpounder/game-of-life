@@ -1,6 +1,6 @@
-data/com.github.sixpounder.GameOfLife.desktop.in.in
-data/com.github.sixpounder.GameOfLife.appdata.xml.in.in
-data/com.github.sixpounder.GameOfLife.gschema.xml
+data/io.github.sixpounder.GameOfLife.desktop.in.in
+data/io.github.sixpounder.GameOfLife.appdata.xml.in.in
+data/io.github.sixpounder.GameOfLife.gschema.xml
 src/gtk/help-overlay.ui
 src/window.rs
 src/window.ui

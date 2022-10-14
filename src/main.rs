@@ -33,7 +33,7 @@ fn main() {
     // application windows, integration with the window manager/compositor, and
     // desktop features such as file opening and single-instance applications.
     let app = GameOfLifeApplication::new(
-        "com.github.sixpounder.GameOfLife",
+        "io.github.sixpounder.GameOfLife",
         &gio::ApplicationFlags::empty(),
     );
 
