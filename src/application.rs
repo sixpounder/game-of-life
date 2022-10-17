@@ -5,6 +5,7 @@ use gtk::subclass::prelude::*;
 use gtk::{gio, glib};
 
 use crate::config::VERSION;
+use crate::i18n::translators_list;
 use crate::{services::GameOfLifeSettings, widgets::GameOfLifePreferencesWindow, GameOfLifeWindow};
 
 mod imp {
@@ -111,7 +112,10 @@ impl GameOfLifeApplication {
             .modal(true)
             .program_name("Game of Life")
             .version(VERSION)
-            .authors(vec!["Andrea Coronese".into()])
+            .authors(vec![
+                "Andrea Coronese".into(),
+            ])
+            .translator_credits(translators_list().join("\n").as_str())
             .build();
 
         dialog.present();

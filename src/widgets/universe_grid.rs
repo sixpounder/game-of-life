@@ -94,6 +94,8 @@ mod imp {
 
         pub(super) evolution_speed: std::cell::Cell<u32>,
 
+        pub(super) animated: std::cell::Cell<bool>,
+
         pub(super) draw_cells_outline: std::cell::Cell<bool>,
 
         pub(super) interaction_state: std::cell::Cell<UniverseGridInteractionState>,
@@ -178,6 +180,7 @@ mod imp {
                     ),
                     ParamSpecBoolean::new("frozen", "", "", false, ParamFlags::READWRITE),
                     ParamSpecBoolean::new("running", "", "", false, ParamFlags::READABLE),
+                    ParamSpecBoolean::new("animated", "", "", true, ParamFlags::READWRITE),
                     ParamSpecUInt::new("evolution-speed", "", "", 1, 100, 5, ParamFlags::READWRITE),
                 ]
             });
@@ -204,6 +207,9 @@ mod imp {
                 "draw-cells-outline" => {
                     obj.set_draw_cells_outline(value.get::<bool>().unwrap());
                 }
+                "animated" => {
+                    obj.set_animated(value.get::<bool>().unwrap());
+                }
                 "evolution-speed" => {
                     obj.set_evolution_speed(value.get::<u32>().unwrap_or(5));
                 }
@@ -217,6 +223,7 @@ mod imp {
                 "frozen" => self.frozen.get().to_value(),
                 "allow-render-on-resize" => self.allow_draw_on_resize.get().to_value(),
                 "draw-cells-outline" => obj.draw_cells_outline().to_value(),
+                "animated" => obj.animated().to_value(),
                 "evolution-speed" => obj.evolution_speed().to_value(),
                 "running" => obj.is_running().to_value(),
                 _ => unimplemented!(),
@@ -720,6 +727,14 @@ impl GameOfLifeUniverseGrid {
 
     pub fn set_evolution_speed(&self, value: u32) {
         self.imp().evolution_speed.set(value);
+    }
+
+    pub fn animated(&self) -> bool {
+        self.imp().animated.get()
+    }
+
+    pub fn set_animated(&self, value: bool) {
+        self.imp().animated.set(value);
     }
 }
 
