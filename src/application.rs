@@ -3,7 +3,7 @@ use glib::clone;
 use gtk::prelude::*;
 use gtk::{gio, glib};
 
-use crate::config::VERSION;
+use crate::config::{APPLICATION_ID, VERSION};
 use crate::i18n::translators_list;
 use crate::{services::GameOfLifeSettings, widgets::GameOfLifePreferencesWindow, GameOfLifeWindow};
 
@@ -107,12 +107,18 @@ impl GameOfLifeApplication {
 
     fn show_about(&self) {
         let window = self.active_window().unwrap();
-        let dialog = gtk::AboutDialog::builder()
+        let dialog = adw::AboutWindow::builder()
             .transient_for(&window)
+            .application_name("Game of Life")
+            .developer_name("Andrea Coronese")
+            .copyright("© 2022 Andrea Coronese")
+            .application_icon(APPLICATION_ID)
+            .website("https://flathub.org/apps/details/com.github.sixpounder.GameOfLife")
+            .issue_url("https://github.com/sixpounder/game-of-life/issues")
             .modal(true)
-            .program_name("Game of Life")
             .version(VERSION)
-            .authors(vec![
+            .license_type(gtk::License::Gpl30)
+            .developers(vec![
                 "Andrea Coronese".into(),
             ])
             .translator_credits(translators_list().join("\n").as_str())
