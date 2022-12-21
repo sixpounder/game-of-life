@@ -156,11 +156,11 @@ impl GameOfLifeSettings {
         });
     }
 
-    pub fn bind<P>(&self, key: &str, object: P, property: &str)
+    pub fn bind<P>(&self, key: &str, object: &P, property: &str)
     where
         P: IsA<glib::Object>,
     {
-        self.inner.bind(key, &object, property).build();
+        self.inner.bind(key, object, property).build();
     }
 }
 

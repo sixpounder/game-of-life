@@ -1,7 +1,6 @@
 use adw::subclass::prelude::*;
 use glib::clone;
 use gtk::prelude::*;
-use gtk::subclass::prelude::*;
 use gtk::{gio, glib};
 
 use crate::config::VERSION;
@@ -26,8 +25,9 @@ mod imp {
     }
 
     impl ObjectImpl for GameOfLifeApplication {
-        fn constructed(&self, obj: &Self::Type) {
-            self.parent_constructed(obj);
+        fn constructed(&self) {
+            self.parent_constructed();
+            let obj = self.obj();
             obj.setup_gactions();
             obj.set_accels_for_action("app.quit", &["<primary>q"]);
             obj.set_accels_for_action("app.preferences", &["<ctrl>comma"]);
@@ -46,12 +46,13 @@ mod imp {
         // has been launched. Additionally, this callback notifies us when the user
         // tries to launch a "second instance" of the application. When they try
         // to do that, we'll just present any existing window.
-        fn activate(&self, application: &Self::Type) {
+        fn activate(&self) {
             // Get the current window or create one if necessary
+            let application = self.obj();
             let window = if let Some(window) = application.active_window() {
                 window
             } else {
-                let window = GameOfLifeWindow::new(application);
+                let window = GameOfLifeWindow::new(application.as_ref());
                 window.upcast()
             };
 
@@ -72,8 +73,7 @@ glib::wrapper! {
 
 impl GameOfLifeApplication {
     pub fn new(application_id: &str, flags: &gio::ApplicationFlags) -> Self {
-        glib::Object::new(&[("application-id", &application_id), ("flags", flags)])
-            .expect("Failed to create GameOfLifeApplication")
+        glib::Object::new::<Self>(&[("application-id", &application_id), ("flags", flags)])
     }
 
     fn setup_gactions(&self) {

@@ -92,8 +92,9 @@ mod imp {
     }
 
     impl ObjectImpl for GameOfLifeWindow {
-        fn constructed(&self, obj: &Self::Type) {
-            self.parent_constructed(obj);
+        fn constructed(&self) {
+            self.parent_constructed();
+            let obj = self.obj();
             obj.setup_provider();
             obj.setup_widgets();
             obj.restore_window_state();
@@ -125,7 +126,8 @@ mod imp {
             PROPERTIES.as_ref()
         }
 
-        fn property(&self, obj: &Self::Type, _id: usize, pspec: &ParamSpec) -> glib::Value {
+        fn property(&self, _id: usize, pspec: &ParamSpec) -> glib::Value {
+            let obj = self.obj();
             match pspec.name() {
                 "run-button-icon-name" => match obj.is_running() {
                     true => "media-playback-stop-symbolic",
@@ -153,8 +155,7 @@ glib::wrapper! {
 
 impl GameOfLifeWindow {
     pub fn new<P: glib::IsA<adw::Application>>(application: &P) -> Self {
-        let win: Self = glib::Object::new(&[("application", application)])
-            .expect("Failed to create GameOfLifeWindow");
+        let win: Self = glib::Object::new::<Self>(&[("application", application)]);
 
         let style_manager = application.style_manager();
 

@@ -12,13 +12,13 @@ serde = { version = "1.0.144", features = ["derive"] }
 
 [dependencies.adw]
 package = "libadwaita"
-version  = "0.1.1"
+version  = "0.2.1"
 
 [dependencies.gtk]
 package = "gtk4"
-version = "0.4.8"
+version = "0.5.4"
 
 [dependencies.glib]
-version = "0.15.12"
+version = "0.16.7"
 features = ["log_macros"]
 
