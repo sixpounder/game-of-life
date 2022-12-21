@@ -59,7 +59,8 @@ mod imp {
             PROPERTIES.as_ref()
         }
 
-        fn property(&self, obj: &Self::Type, _id: usize, pspec: &ParamSpec) -> glib::Value {
+        fn property(&self, _id: usize, pspec: &ParamSpec) -> glib::Value {
+            let obj = self.obj();
             let imp = obj.imp();
             match pspec.name() {
                 "playing" => imp.playing.get().to_value(),
@@ -77,11 +78,11 @@ mod imp {
 
         fn set_property(
             &self,
-            obj: &Self::Type,
             _id: usize,
             value: &glib::Value,
             pspec: &ParamSpec,
         ) {
+            let obj = self.obj();
             match pspec.name() {
                 "playing" => {
                     let now_playing = value.get::<bool>().unwrap();
@@ -119,8 +120,7 @@ glib::wrapper! {
 
 impl GameOfLifeUniverseControls {
     pub fn new<P: glib::IsA<gtk::Application>>(application: &P) -> Self {
-        glib::Object::new(&[("application", application)])
-            .expect("Failed to create GameOfLifeUniverseControls")
+        glib::Object::new::<Self>(&[("application", application)])
     }
 
     pub fn set_mode(&self, mode: UniverseGridMode) {

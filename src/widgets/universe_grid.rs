@@ -147,8 +147,9 @@ mod imp {
     }
 
     impl ObjectImpl for GameOfLifeUniverseGrid {
-        fn constructed(&self, obj: &Self::Type) {
-            self.parent_constructed(obj);
+        fn constructed(&self) {
+            self.parent_constructed();
+            let obj = self.obj();
             obj.setup_drawing_area();
             obj.setup_channel();
         }
@@ -189,11 +190,11 @@ mod imp {
 
         fn set_property(
             &self,
-            obj: &Self::Type,
             _id: usize,
             value: &glib::Value,
             pspec: &ParamSpec,
         ) {
+            let obj = self.obj();
             match pspec.name() {
                 "allow-render-on-resize" => {
                     obj.set_allow_render_on_resize(value.get::<bool>().unwrap());
@@ -217,7 +218,8 @@ mod imp {
             }
         }
 
-        fn property(&self, obj: &Self::Type, _id: usize, pspec: &ParamSpec) -> glib::Value {
+        fn property(&self, _id: usize, pspec: &ParamSpec) -> glib::Value {
+            let obj = self.obj();
             match pspec.name() {
                 "mode" => self.mode.get().to_value(),
                 "frozen" => self.frozen.get().to_value(),
@@ -241,8 +243,7 @@ glib::wrapper! {
 
 impl GameOfLifeUniverseGrid {
     pub fn new<P: glib::IsA<gtk::Application>>(application: &P) -> Self {
-        glib::Object::new(&[("application", application)])
-            .expect("Failed to create GameOfLifeUniverseGrid")
+        glib::Object::new::<Self>(&[("application", application)])
     }
 
     fn setup_channel(&self) {

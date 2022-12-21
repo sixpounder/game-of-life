@@ -57,9 +57,9 @@ mod imp {
     }
 
     impl ObjectImpl for GameOfLifePreferencesWindow {
-        fn constructed(&self, obj: &Self::Type) {
-            self.parent_constructed(obj);
-            obj.setup_bindings();
+        fn constructed(&self) {
+            self.parent_constructed();
+            self.obj().setup_bindings();
         }
 
         fn properties() -> &'static [glib::ParamSpec] {
@@ -100,7 +100,6 @@ mod imp {
 
         fn set_property(
             &self,
-            _obj: &Self::Type,
             _id: usize,
             value: &glib::Value,
             pspec: &ParamSpec,
@@ -134,7 +133,7 @@ mod imp {
             }
         }
 
-        fn property(&self, _obj: &Self::Type, _id: usize, pspec: &ParamSpec) -> glib::Value {
+        fn property(&self, _id: usize, pspec: &ParamSpec) -> glib::Value {
             match pspec.name() {
                 "universe-cell-color" => self.cell_color_picker.rgba().to_string().to_value(),
                 "universe-background-color" => {
@@ -167,41 +166,42 @@ glib::wrapper! {
 
 impl GameOfLifePreferencesWindow {
     pub fn new() -> Self {
-        glib::Object::new(&[]).expect("Failed to create GameOfLifeNewUniverseView")
+        glib::Object::new::<Self>(&[])
     }
 
     fn setup_bindings(&self) {
         let settings = GameOfLifeSettings::default();
         let imp = self.imp();
+        let instance = imp.obj();
 
-        settings.bind("draw-cells-outline", imp.draw_cells_outline.get(), "active");
+        settings.bind("draw-cells-outline", &imp.draw_cells_outline.get(), "active");
         settings.bind(
             "allow-render-during-resize",
-            imp.allow_render_on_resize.get(),
+            &imp.allow_render_on_resize.get(),
             "active",
         );
-        settings.bind("show-design-hint", imp.show_design_hint.get(), "active");
+        settings.bind("show-design-hint", &imp.show_design_hint.get(), "active");
         settings.bind(
             "evolution-speed",
-            imp.evolution_speed_adjustment.get(),
+            &imp.evolution_speed_adjustment.get(),
             "value",
         );
 
         // Proxy colors to this widget, to convert from RGBA to string
-        settings.bind("fg-color", self.imp().instance(), "universe-cell-color");
+        settings.bind("fg-color", instance.as_ref(), "universe-cell-color");
         settings.bind(
             "bg-color",
-            self.imp().instance(),
+            instance.as_ref(),
             "universe-background-color",
         );
         settings.bind(
             "fg-color-dark",
-            self.imp().instance(),
+            instance.as_ref(),
             "universe-cell-color-dark",
         );
         settings.bind(
             "bg-color-dark",
-            self.imp().instance(),
+            instance.as_ref(),
             "universe-background-color-dark",
         );
 

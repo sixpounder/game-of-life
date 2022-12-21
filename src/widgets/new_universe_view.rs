@@ -54,8 +54,9 @@ mod imp {
     }
 
     impl ObjectImpl for GameOfLifeNewUniverseView {
-        fn constructed(&self, obj: &Self::Type) {
-            self.parent_constructed(obj);
+        fn constructed(&self) {
+            self.parent_constructed();
+            let obj = self.obj();
             obj.setup_widgets();
             obj.connect_events();
         }
@@ -73,7 +74,8 @@ mod imp {
             PROPERTIES.as_ref()
         }
 
-        fn property(&self, obj: &Self::Type, _id: usize, pspec: &ParamSpec) -> glib::Value {
+        fn property(&self, _id: usize, pspec: &ParamSpec) -> glib::Value {
+            let obj = self.obj();
             match pspec.name() {
                 "dimensions-editable" => match obj.option() {
                     NewUniverseType::Template(_) => false,
@@ -98,7 +100,7 @@ glib::wrapper! {
 
 impl GameOfLifeNewUniverseView {
     pub fn new() -> Self {
-        glib::Object::new(&[]).expect("Failed to create GameOfLifeNewUniverseView")
+        glib::Object::new::<Self>(&[])
     }
 
     fn setup_widgets(&self) {

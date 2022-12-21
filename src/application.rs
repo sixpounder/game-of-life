@@ -1,10 +1,9 @@
 use adw::subclass::prelude::*;
 use glib::clone;
 use gtk::prelude::*;
-use gtk::subclass::prelude::*;
 use gtk::{gio, glib};
 
-use crate::config::VERSION;
+use crate::config::{APPLICATION_ID, VERSION};
 use crate::i18n::translators_list;
 use crate::{services::GameOfLifeSettings, widgets::GameOfLifePreferencesWindow, GameOfLifeWindow};
 
@@ -26,8 +25,9 @@ mod imp {
     }
 
     impl ObjectImpl for GameOfLifeApplication {
-        fn constructed(&self, obj: &Self::Type) {
-            self.parent_constructed(obj);
+        fn constructed(&self) {
+            self.parent_constructed();
+            let obj = self.obj();
             obj.setup_gactions();
             obj.set_accels_for_action("app.quit", &["<primary>q"]);
             obj.set_accels_for_action("app.preferences", &["<ctrl>comma"]);
@@ -46,12 +46,13 @@ mod imp {
         // has been launched. Additionally, this callback notifies us when the user
         // tries to launch a "second instance" of the application. When they try
         // to do that, we'll just present any existing window.
-        fn activate(&self, application: &Self::Type) {
+        fn activate(&self) {
             // Get the current window or create one if necessary
+            let application = self.obj();
             let window = if let Some(window) = application.active_window() {
                 window
             } else {
-                let window = GameOfLifeWindow::new(application);
+                let window = GameOfLifeWindow::new(application.as_ref());
                 window.upcast()
             };
 
@@ -72,8 +73,7 @@ glib::wrapper! {
 
 impl GameOfLifeApplication {
     pub fn new(application_id: &str, flags: &gio::ApplicationFlags) -> Self {
-        glib::Object::new(&[("application-id", &application_id), ("flags", flags)])
-            .expect("Failed to create GameOfLifeApplication")
+        glib::Object::new::<Self>(&[("application-id", &application_id), ("flags", flags)])
     }
 
     fn setup_gactions(&self) {
@@ -107,12 +107,18 @@ impl GameOfLifeApplication {
 
     fn show_about(&self) {
         let window = self.active_window().unwrap();
-        let dialog = gtk::AboutDialog::builder()
+        let dialog = adw::AboutWindow::builder()
             .transient_for(&window)
+            .application_name("Game of Life")
+            .developer_name("Andrea Coronese")
+            .copyright("© 2022 Andrea Coronese")
+            .application_icon(APPLICATION_ID)
+            .website("https://flathub.org/apps/details/com.github.sixpounder.GameOfLife")
+            .issue_url("https://github.com/sixpounder/game-of-life/issues")
             .modal(true)
-            .program_name("Game of Life")
             .version(VERSION)
-            .authors(vec![
+            .license_type(gtk::License::Gpl30)
+            .developers(vec![
                 "Andrea Coronese".into(),
             ])
             .translator_credits(translators_list().join("\n").as_str())
