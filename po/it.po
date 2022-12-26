@@ -76,27 +76,27 @@ msgstr ""
 
 #: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:54
 msgid "This release addresses the followings:"
-msgstr ""
+msgstr "Questa release contiene:"
 
 #: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:56
 msgid "Allow for cells fade out when they die"
-msgstr ""
+msgstr "Anima la morte delle celle"
 
 #: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:59
 msgid "Performance issues on edge cases"
-msgstr ""
+msgstr "Problemi di performance in casi limite"
 
 #: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:62
 msgid "gtk4/glib/libadwaita stack upgrade"
-msgstr ""
+msgstr "Upgrade dello stack gtk"
 
 #: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:70
 msgid "Translations:"
-msgstr ""
+msgstr "Traduzioni:"
 
 #: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:72
 msgid "Add french translation (Rene Coty)"
-msgstr ""
+msgstr "Aggiunge traduzione in francese (Rene Coty)"
 
 #: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:78
 msgid "This is a revision addressing a few problems"
