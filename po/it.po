@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: game-of-life\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-10-04 11:00+0200\n"
+"POT-Creation-Date: 2022-12-26 14:28+0100\n"
 "PO-Revision-Date: 2022-09-20 00:48+0200\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -74,7 +74,47 @@ msgstr "Salva lo stato corrente"
 msgid "Andrea Coronese"
 msgstr ""
 
+#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:54
+msgid "This release addresses the followings:"
+msgstr ""
+
+#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:56
+msgid "Allow for cells fade out when they die"
+msgstr ""
+
+#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:59
+msgid "Performance issues on edge cases"
+msgstr ""
+
+#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:62
+msgid "gtk4/glib/libadwaita stack upgrade"
+msgstr ""
+
+#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:70
+msgid "Translations:"
+msgstr ""
+
+#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:72
+msgid "Add french translation (Rene Coty)"
+msgstr ""
+
+#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:78
+msgid "This is a revision addressing a few problems"
+msgstr ""
+
+#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:80
+msgid "Fix interaction bugs"
+msgstr ""
+
+#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:81
+msgid "Minor performance tweaks"
+msgstr ""
+
 #: data/com.github.sixpounder.GameOfLife.gschema.xml:18
+msgid "Fades out cells when they die instead of deleting them in one go"
+msgstr ""
+
+#: data/com.github.sixpounder.GameOfLife.gschema.xml:22
 msgid ""
 "The number of generations per seconds that should be computed when a "
 "simulation is running"
@@ -82,25 +122,25 @@ msgstr ""
 "Il numero di generazioni al secondo che dovrebbero essere computate durante "
 "una simulazione"
 
-#: data/com.github.sixpounder.GameOfLife.gschema.xml:28
+#: data/com.github.sixpounder.GameOfLife.gschema.xml:32
 msgid "The width of the universe being generated, in cells number"
 msgstr "La larghezza dell'universo generato in numero di celle"
 
-#: data/com.github.sixpounder.GameOfLife.gschema.xml:32
+#: data/com.github.sixpounder.GameOfLife.gschema.xml:36
 msgid "The height of the universe being generated, in cells number"
 msgstr "L'altezza dell'universo generato in numero di celle"
 
-#: data/com.github.sixpounder.GameOfLife.gschema.xml:36
+#: data/com.github.sixpounder.GameOfLife.gschema.xml:40
 msgid "Wheter to draw cells outline in universe grid"
 msgstr "Disegna il contorno delle celle nella griglia"
 
-#: data/com.github.sixpounder.GameOfLife.gschema.xml:40
+#: data/com.github.sixpounder.GameOfLife.gschema.xml:44
 msgid ""
 "Wheter to allow universe rendering when the application window is resizing"
 msgstr ""
 "Permette il rendering delle celle durante un ridimensionamento della finestra"
 
-#: data/com.github.sixpounder.GameOfLife.gschema.xml:44
+#: data/com.github.sixpounder.GameOfLife.gschema.xml:48
 msgid "Wheter to show an interaction hint on design mode activated"
 msgstr ""
 "Specifica se mostrare le istruzioni di interazione quando la modalità design "
@@ -170,124 +210,124 @@ msgctxt "shortcut window"
 msgid "Seed universe"
 msgstr "Salva lo stato corrente"
 
-#: src/window.rs:290
+#: src/window.rs:300
 msgid "Left click to make a cell alive, right click to make it dead"
 msgstr "Clic sinistra per rendere vita la cella, destro per renderla morta"
 
-#: src/window.rs:293
+#: src/window.rs:303
 msgid "Do not show again"
 msgstr "Non mostrare più"
 
-#: src/window.rs:314
+#: src/window.rs:324
 msgid "_Save"
 msgstr "_Salva"
 
-#: src/window.rs:315 src/window.rs:377
+#: src/window.rs:325 src/window.rs:387
 msgid "_Cancel"
 msgstr "_Annulla"
 
-#: src/window.rs:317
+#: src/window.rs:327
 #, fuzzy
 msgid "Save universe snapshot"
 msgstr "Salva lo stato corrente"
 
-#: src/window.rs:344
+#: src/window.rs:354
 msgid "Unable to write to file"
 msgstr "Impossibile scrivere il file"
 
-#: src/window.rs:350
+#: src/window.rs:360
 msgid "Unable to serialize snapshot"
 msgstr "Impossibile memorizzare lo stato corrente"
 
-#: src/window.rs:376
+#: src/window.rs:386
 msgid "_Open"
 msgstr "_Apri"
 
-#: src/window.rs:379
+#: src/window.rs:389
 #, fuzzy
 msgid "Open universe snapshot"
 msgstr "Salva lo stato corrente"
 
-#: src/window.rs:409 src/window.rs:415
+#: src/window.rs:419 src/window.rs:425
 msgid "Unreadable file"
 msgstr "File illeggibile"
 
-#: src/window.rs:420
+#: src/window.rs:430
 msgid "File not existing or not accessible"
 msgstr "File inesistente o non accessibile"
 
-#: src/window.rs:466
+#: src/window.rs:476
 msgid "Bad template data"
 msgstr "Template corrotto"
 
-#: src/window.rs:472
+#: src/window.rs:482
 msgid "Template not found"
 msgstr "Template non trovato"
 
-#: src/widgets/universe_controls.ui:33
+#: src/widgets/universe_controls.ui:35
 msgid "Toggle design mode"
 msgstr "Modalità design"
 
-#: src/widgets/universe_controls.ui:39
+#: src/widgets/universe_controls.ui:41
 msgctxt "a11y"
 msgid "Toggle design mode"
 msgstr "Modalità design"
 
-#: src/widgets/universe_controls.ui:46
+#: src/widgets/universe_controls.ui:48
 msgid "Toggle universe run"
 msgstr "Avvia/Ferma evoluzione"
 
-#: src/widgets/universe_controls.ui:55
+#: src/widgets/universe_controls.ui:57
 msgctxt "a11y"
 msgid "Toggle universe run"
 msgstr "Avvia o ferma l'evoluzione"
 
-#: src/widgets/universe_controls.ui:62
+#: src/widgets/universe_controls.ui:64
 msgid "Randomly seed this universe"
 msgstr "Popola casualmente l'universo"
 
-#: src/widgets/universe_controls.ui:72
+#: src/widgets/universe_controls.ui:74
 msgctxt "a11y"
 msgid "Randomly seed this universe"
 msgstr "Popola casualmente l'universo"
 
-#: src/widgets/universe_controls.ui:98
+#: src/widgets/universe_controls.ui:100
 msgid "Save the current state snapshot"
 msgstr "Salva lo stato corrente"
 
-#: src/widgets/universe_controls.ui:108
+#: src/widgets/universe_controls.ui:110
 msgctxt "a11y"
 msgid "Save the current state snapshot"
 msgstr "Salva lo stato corrente"
 
-#: src/widgets/universe_controls.ui:120
+#: src/widgets/universe_controls.ui:124
 #, fuzzy
 msgid "_New universe"
 msgstr "_Nuovo universo"
 
-#: src/widgets/universe_controls.ui:124
+#: src/widgets/universe_controls.ui:128
 #, fuzzy
 msgid "_Open snapshot"
 msgstr "Apri uno stato salvato"
 
-#: src/widgets/universe_controls.ui:128
+#: src/widgets/universe_controls.ui:132
 #, fuzzy
 msgid "_Save snapshot"
 msgstr "_Salva lo stato corrente"
 
-#: src/widgets/universe_controls.ui:134
+#: src/widgets/universe_controls.ui:138
 msgid "_Preferences"
 msgstr "_Preferenze"
 
-#: src/widgets/universe_controls.ui:138
+#: src/widgets/universe_controls.ui:142
 msgid "_Keyboard Shortcuts"
 msgstr "_Scorciatoie da tastiera"
 
-#: src/widgets/universe_controls.ui:142
+#: src/widgets/universe_controls.ui:146
 msgid "_About"
 msgstr "_Informazioni"
 
-#: src/widgets/universe_controls.ui:146
+#: src/widgets/universe_controls.ui:150
 #, fuzzy
 msgid "_Quit"
 msgstr "Esci"
@@ -389,10 +429,14 @@ msgid "Draw cells outline"
 msgstr "Disegna contorno celle"
 
 #: src/widgets/preferences_window.ui:102
+msgid "Fade out dead cells"
+msgstr "Transizione celle morte"
+
+#: src/widgets/preferences_window.ui:115
 msgid "Render on resize"
 msgstr "Render durante ridimensionamento"
 
-#: src/widgets/preferences_window.ui:104
+#: src/widgets/preferences_window.ui:117
 msgid ""
 "Allows rendering the grid during a resize event of the application window. "
 "May affect performance."
@@ -400,16 +444,16 @@ msgstr ""
 "Permette il rendering della griglia delle celle durante il ridimensionamento "
 "della finestra. Può impattare le performance."
 
-#: src/widgets/preferences_window.ui:119
+#: src/widgets/preferences_window.ui:132
 msgid "Evolution"
 msgstr "Evoluzione"
 
-#: src/widgets/preferences_window.ui:122
+#: src/widgets/preferences_window.ui:135
 #, fuzzy
 msgid "Evolutions speed"
 msgstr "Velocità di evoluzione"
 
-#: src/widgets/preferences_window.ui:124
+#: src/widgets/preferences_window.ui:137
 #, fuzzy
 msgid "The number of generations to be computed per second during an evolution"
 msgstr ""
