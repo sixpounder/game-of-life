@@ -32,6 +32,9 @@ mod imp {
         pub(super) draw_cells_outline: TemplateChild<gtk::Switch>,
 
         #[template_child]
+        pub(super) fade_out_dead_cells: TemplateChild<gtk::Switch>,
+
+        #[template_child]
         pub(super) allow_render_on_resize: TemplateChild<gtk::Switch>,
 
         #[template_child]
@@ -98,12 +101,7 @@ mod imp {
             PROPERTIES.as_ref()
         }
 
-        fn set_property(
-            &self,
-            _id: usize,
-            value: &glib::Value,
-            pspec: &ParamSpec,
-        ) {
+        fn set_property(&self, _id: usize, value: &glib::Value, pspec: &ParamSpec) {
             match pspec.name() {
                 "universe-cell-color" => {
                     let str_value = value.get::<String>().unwrap();
@@ -174,7 +172,16 @@ impl GameOfLifePreferencesWindow {
         let imp = self.imp();
         let instance = imp.obj();
 
-        settings.bind("draw-cells-outline", &imp.draw_cells_outline.get(), "active");
+        settings.bind(
+            "draw-cells-outline",
+            &imp.draw_cells_outline.get(),
+            "active",
+        );
+        settings.bind(
+            "fade-out-cells",
+            &imp.fade_out_dead_cells.get(),
+            "active",
+        );
         settings.bind(
             "allow-render-during-resize",
             &imp.allow_render_on_resize.get(),
@@ -189,11 +196,7 @@ impl GameOfLifePreferencesWindow {
 
         // Proxy colors to this widget, to convert from RGBA to string
         settings.bind("fg-color", instance.as_ref(), "universe-cell-color");
-        settings.bind(
-            "bg-color",
-            instance.as_ref(),
-            "universe-background-color",
-        );
+        settings.bind("bg-color", instance.as_ref(), "universe-background-color");
         settings.bind(
             "fg-color-dark",
             instance.as_ref(),
@@ -232,4 +235,3 @@ impl GameOfLifePreferencesWindow {
         );
     }
 }
-

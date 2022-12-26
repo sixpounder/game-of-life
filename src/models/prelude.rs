@@ -35,7 +35,7 @@ impl std::ops::Not for UniverseCell {
     fn not(self) -> Self::Output {
         match self {
             UniverseCell::Alive => UniverseCell::Dead,
-            UniverseCell::Dead => UniverseCell::Alive
+            UniverseCell::Dead => UniverseCell::Alive,
         }
     }
 }
@@ -58,11 +58,17 @@ pub struct UniversePoint {
     row: usize,
     column: usize,
     cell: UniverseCell,
+    corpse_heat: f64,
 }
 
 impl UniversePoint {
-    pub fn new(row: usize, column: usize, cell: UniverseCell) -> Self {
-        Self { row, column, cell }
+    pub fn new(row: usize, column: usize, cell: UniverseCell, corpse_heat: f64) -> Self {
+        Self {
+            row,
+            column,
+            cell,
+            corpse_heat,
+        }
     }
 
     pub fn row(&self) -> usize {
@@ -79,6 +85,10 @@ impl UniversePoint {
 
     pub fn set_cell(&mut self, value: UniverseCell) {
         self.cell = value;
+    }
+
+    pub fn corpse_heat(&self) -> f64 {
+        self.corpse_heat
     }
 }
 
@@ -103,5 +113,3 @@ pub trait UniversePointMatrix {
         value: UniverseCell,
     ) -> Result<UniversePoint, Self::SetCellError>;
 }
-
-

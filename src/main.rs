@@ -43,4 +43,3 @@ fn main() {
     // terminal.
     std::process::exit(app.run());
 }
-

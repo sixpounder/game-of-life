@@ -16,8 +16,8 @@ impl Default for GameOfLifeSettings {
     }
 }
 
-#[allow(dead_code)]
 impl GameOfLifeSettings {
+    #[allow(dead_code)]
     pub fn set_evolution_speed(&self, value: u32) {
         self.inner
             .set_uint("evolution-speed", value)
@@ -52,10 +52,12 @@ impl GameOfLifeSettings {
         self.inner.string("fg-color").to_string()
     }
 
+    #[allow(dead_code)]
     pub fn fg_color_rgba(&self) -> gdk::RGBA {
         gdk::RGBA::parse(self.fg_color().as_str()).expect("Cannot parse RGBA")
     }
 
+    #[allow(dead_code)]
     pub fn set_fg_color(&self, value: String) {
         self.inner
             .set_string("fg-color", value.as_str())
@@ -66,10 +68,7 @@ impl GameOfLifeSettings {
         self.inner.string("bg-color").to_string()
     }
 
-    pub fn bg_color_rgba(&self) -> gdk::RGBA {
-        gdk::RGBA::parse(self.bg_color().as_str()).expect("Cannot parse RGBA")
-    }
-
+    #[allow(dead_code)]
     pub fn set_bg_color(&self, value: String) {
         self.inner
             .set_string("bg-color", value.as_str())
@@ -80,6 +79,7 @@ impl GameOfLifeSettings {
         self.inner.string("fg-color-dark").to_string()
     }
 
+    #[allow(dead_code)]
     pub fn set_fg_color_dark(&self, value: String) {
         self.inner
             .set_string("fg-color-dark", value.as_str())
@@ -90,6 +90,7 @@ impl GameOfLifeSettings {
         self.inner.string("bg-color-dark").to_string()
     }
 
+    #[allow(dead_code)]
     pub fn set_bg_color_dark(&self, value: String) {
         self.inner
             .set_string("bg-color-dark", value.as_str())
@@ -120,6 +121,11 @@ impl GameOfLifeSettings {
         self.inner.boolean("draw-cells-outline")
     }
 
+    pub fn fade_out_cells(&self) -> bool {
+        self.inner.boolean("fade-out-cells")
+    }
+
+    #[allow(dead_code)]
     pub fn set_draw_cells_outline(&self, value: bool) {
         self.inner
             .set_boolean("draw-cells-outline", value)
@@ -140,6 +146,7 @@ impl GameOfLifeSettings {
         self.inner.boolean("allow-render-during-resize")
     }
 
+    #[allow(dead_code)]
     pub fn set_allow_render_during_resize(&self, value: bool) {
         self.inner
             .set_boolean("allow-render-during-resize", value)
@@ -163,4 +170,3 @@ impl GameOfLifeSettings {
         self.inner.bind(key, object, property).build();
     }
 }
-

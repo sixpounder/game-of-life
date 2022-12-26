@@ -76,12 +76,7 @@ mod imp {
             }
         }
 
-        fn set_property(
-            &self,
-            _id: usize,
-            value: &glib::Value,
-            pspec: &ParamSpec,
-        ) {
+        fn set_property(&self, _id: usize, value: &glib::Value, pspec: &ParamSpec) {
             let obj = self.obj();
             match pspec.name() {
                 "playing" => {
@@ -128,4 +123,3 @@ impl GameOfLifeUniverseControls {
         self.notify("editing");
     }
 }
-

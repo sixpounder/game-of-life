@@ -118,13 +118,10 @@ impl GameOfLifeApplication {
             .modal(true)
             .version(VERSION)
             .license_type(gtk::License::Gpl30)
-            .developers(vec![
-                "Andrea Coronese".into(),
-            ])
+            .developers(vec!["Andrea Coronese".into()])
             .translator_credits(translators_list().join("\n").as_str())
             .build();
 
         dialog.present();
     }
 }
-

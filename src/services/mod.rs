@@ -1,5 +1,5 @@
-mod settings;
 mod gio_utils;
+mod settings;
 
-pub use settings::*;
 pub use gio_utils::*;
+pub use settings::*;

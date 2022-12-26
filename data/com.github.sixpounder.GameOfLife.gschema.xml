@@ -13,6 +13,10 @@
 	  <key name="bg-color-dark" type="s">
 	    <default>"#3D3846"</default>
 	  </key>
+	  <key name="fade-out-cells" type="b">
+	    <default>false</default>
+	    <description>Fades out cells when they die instead of deleting them in one go</description>
+	  </key>
 	  <key name="evolution-speed" type="u">
 	    <default>10</default>
 	    <description>The number of generations per seconds that should be computed when a simulation is running</description>
