@@ -98,6 +98,8 @@ mod imp {
 
         pub(super) draw_cells_outline: std::cell::Cell<bool>,
 
+        pub(super) fades_dead_cells: std::cell::Cell<bool>,
+
         pub(super) interaction_state: std::cell::Cell<UniverseGridInteractionState>,
     }
 
@@ -188,12 +190,7 @@ mod imp {
             PROPERTIES.as_ref()
         }
 
-        fn set_property(
-            &self,
-            _id: usize,
-            value: &glib::Value,
-            pspec: &ParamSpec,
-        ) {
+        fn set_property(&self, _id: usize, value: &glib::Value, pspec: &ParamSpec) {
             let obj = self.obj();
             match pspec.name() {
                 "allow-render-on-resize" => {
@@ -207,6 +204,9 @@ mod imp {
                 }
                 "draw-cells-outline" => {
                     obj.set_draw_cells_outline(value.get::<bool>().unwrap());
+                }
+                "fades-dead-cells" => {
+                    obj.set_fades_dead_cells(value.get::<bool>().unwrap());
                 }
                 "animated" => {
                     obj.set_animated(value.get::<bool>().unwrap());
@@ -225,6 +225,7 @@ mod imp {
                 "frozen" => self.frozen.get().to_value(),
                 "allow-render-on-resize" => self.allow_draw_on_resize.get().to_value(),
                 "draw-cells-outline" => obj.draw_cells_outline().to_value(),
+                "fades-dead-cells" => obj.fades_dead_cells().to_value(),
                 "animated" => obj.animated().to_value(),
                 "evolution-speed" => obj.evolution_speed().to_value(),
                 "running" => obj.is_running().to_value(),
@@ -512,6 +513,7 @@ impl GameOfLifeUniverseGrid {
             let fg_color = imp.fg_color.get().unwrap();
             let bg_color = imp.bg_color.get().unwrap();
             let wants_outlines = self.draw_cells_outline();
+            let fades_dead_cells = self.fades_dead_cells();
 
             let mut outline_color = bg_color.clone();
             outline_color.set_red(outline_color.red() + 0.1);
@@ -560,6 +562,20 @@ impl GameOfLifeUniverseGrid {
                             fg_color.alpha() as f64,
                         );
                         context.fill().unwrap();
+                    } else {
+                        if fades_dead_cells {
+                            let transparency_factor = el.corpse_heat();
+                            if transparency_factor > 0.0 {
+                                context.rectangle(coords.0, coords.1, width, height);
+                                context.set_source_rgba(
+                                    fg_color.red() as f64,
+                                    fg_color.green() as f64,
+                                    fg_color.blue() as f64,
+                                    fg_color.alpha() as f64 * transparency_factor,
+                                );
+                                context.fill().unwrap();
+                            }
+                        }
                     }
                 }
             } else {
@@ -722,6 +738,21 @@ impl GameOfLifeUniverseGrid {
         }
     }
 
+    pub fn fades_dead_cells(&self) -> bool {
+        self.imp().fades_dead_cells.get()
+    }
+
+    pub fn set_fades_dead_cells(&self, value: bool) {
+        let current = self.imp().fades_dead_cells.get();
+        if value != current {
+            self.imp().fades_dead_cells.set(value);
+
+            if !self.is_running() {
+                self.redraw();
+            }
+        }
+    }
+
     pub fn evolution_speed(&self) -> u32 {
         self.imp().evolution_speed.get()
     }
@@ -738,4 +769,3 @@ impl GameOfLifeUniverseGrid {
         self.imp().animated.set(value);
     }
 }
-

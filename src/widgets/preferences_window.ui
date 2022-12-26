@@ -99,6 +99,19 @@
             </child>
             <child>
               <object class="AdwActionRow">
+                <property name="title" translatable="yes">Fade out dead cells</property>
+                <property name="title-selectable">false</property>
+                <property name="activatable">true</property>
+                <property name="activatable-widget">fade_out_dead_cells</property>
+                <child>
+                  <object class="GtkSwitch" id="fade_out_dead_cells">
+                    <property name="valign">center</property>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="AdwActionRow">
                 <property name="title" translatable="yes">Render on resize</property>
                 <property name="title-selectable">false</property>
                 <property name="subtitle" translatable="yes">Allows rendering the grid during a resize event of the application window. May affect performance.</property>
