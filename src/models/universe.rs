@@ -285,7 +285,7 @@ impl UniversePointMatrix for Universe {
     fn get(&self, row: usize, column: usize) -> Option<UniversePoint> {
         let idx = self.get_index(row, column);
         match self.cells.get(idx) {
-            Some(cell) => Some(UniversePoint::new(row, column, *cell, self.death_map[idx])),
+            Some(cell) => Some(UniversePoint::new(row, column, *cell, *self.death_map.get(idx).unwrap_or(&0.0))),
             None => None,
         }
     }
@@ -383,6 +383,8 @@ pub struct UniverseSnapshot {
     rows: usize,
     columns: usize,
     cells: Vec<UniverseCell>,
+
+    #[serde(skip, default)]
     death_map: Vec<f64>,
 }
 
