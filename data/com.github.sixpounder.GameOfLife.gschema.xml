@@ -40,7 +40,7 @@
 	    <description>Wheter to draw cells outline in universe grid</description>
 	  </key>
 	  <key name="allow-render-during-resize" type="b">
-	    <default>false</default>
+	    <default>true</default>
 	    <description>Wheter to allow universe rendering when the application window is resizing</description>
 	  </key>
 	  <key name="show-design-hint" type="b">

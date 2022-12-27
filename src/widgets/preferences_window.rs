@@ -177,11 +177,7 @@ impl GameOfLifePreferencesWindow {
             &imp.draw_cells_outline.get(),
             "active",
         );
-        settings.bind(
-            "fade-out-cells",
-            &imp.fade_out_dead_cells.get(),
-            "active",
-        );
+        settings.bind("fade-out-cells", &imp.fade_out_dead_cells.get(), "active");
         settings.bind(
             "allow-render-during-resize",
             &imp.allow_render_on_resize.get(),
