@@ -285,7 +285,12 @@ impl UniversePointMatrix for Universe {
     fn get(&self, row: usize, column: usize) -> Option<UniversePoint> {
         let idx = self.get_index(row, column);
         match self.cells.get(idx) {
-            Some(cell) => Some(UniversePoint::new(row, column, *cell, *self.death_map.get(idx).unwrap_or(&0.0))),
+            Some(cell) => Some(UniversePoint::new(
+                row,
+                column,
+                *cell,
+                *self.death_map.get(idx).unwrap_or(&0.0),
+            )),
             None => None,
         }
     }
