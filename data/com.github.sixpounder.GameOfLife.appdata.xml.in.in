@@ -49,6 +49,19 @@
     </recommends>
     <content_rating type="oars-1.1"/>
     <releases>
+        <release version="0.3.0" date="2022-12-23">
+            <description>
+                <p>This release addresses the followings:</p>
+                <ul>
+                    <li>
+                        Fixes templates not being loaded
+                    </li>
+                    <li>
+                        Moves grid rendering to gtk4 render node api
+                    </li>
+                </ul>
+            </description>
+        </release>
         <release version="0.2.0" date="2022-12-23">
             <description>
                 <p>This release addresses the followings:</p>
