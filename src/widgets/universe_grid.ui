@@ -2,13 +2,23 @@
 <interface>
   <requires lib="gtk" version="4.0"/>
   <template class="GameOfLifeUniverseGrid" parent="GtkWidget">
-    <child>
-      <object class="GtkDrawingArea" id="drawing_area">
-        <property name="vexpand">True</property>
-        <property name="hexpand">True</property>
-        <property name="valign">fill</property>
-        <property name="halign">fill</property>
-      </object>
-    </child>
+    <!-- <child> -->
+    <!--   <object class="GtkDrawingArea" id="drawing_area"> -->
+    <!--     <property name="visible" bind-property="cairo-mode" bind-source="GameOfLifeUniverseGrid" bind-flags="default|sync-create"></property> -->
+    <!--     <property name="vexpand">True</property> -->
+    <!--     <property name="hexpand">True</property> -->
+    <!--     <property name="valign">fill</property> -->
+    <!--     <property name="halign">fill</property> -->
+    <!--   </object> -->
+    <!-- </child> -->
+    <!-- <child> -->
+    <!--   <object class="GtkGLArea" id="gl_drawing_area"> -->
+    <!--     <property name="visible" bind-property="gl-mode" bind-source="GameOfLifeUniverseGrid" bind-flags="default|sync-create"></property> -->
+    <!--     <property name="vexpand">True</property> -->
+    <!--     <property name="hexpand">True</property> -->
+    <!--     <property name="valign">fill</property> -->
+    <!--     <property name="halign">fill</property> -->
+    <!--   </object> -->
+    <!-- </child> -->
   </template>
 </interface>

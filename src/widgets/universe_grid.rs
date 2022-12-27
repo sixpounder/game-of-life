@@ -16,7 +16,7 @@ use std::str::FromStr;
 
 /// Maps a point on the widget area onto a cell in a given universe
 fn widget_area_point_to_universe_cell(
-    drawing_area: &gtk::DrawingArea,
+    drawing_area: &GameOfLifeUniverseGrid,
     universe: Option<&Universe>,
     x: f64,
     y: f64,
@@ -34,14 +34,110 @@ fn widget_area_point_to_universe_cell(
     }
 }
 
+fn cairo_render(
+    imp: &imp::GameOfLifeUniverseGrid,
+    context: &gtk::cairo::Context,
+    width: i32,
+    height: i32,
+) {
+    if !imp.frozen.get() {
+        // Determine colors
+        let fg_color = imp.fg_color.get().unwrap();
+        let bg_color = imp.bg_color.get().unwrap();
+        let wants_outlines = imp.draw_cells_outline.get();
+        let fades_dead_cells = imp.fades_dead_cells.get();
+
+        let mut outline_color = bg_color.clone();
+        outline_color.set_red(outline_color.red() + 0.1);
+        outline_color.set_green(outline_color.green() + 0.1);
+        outline_color.set_blue(outline_color.blue() + 0.1);
+
+        context.set_source_rgba(
+            bg_color.red() as f64,
+            bg_color.green() as f64,
+            bg_color.blue() as f64,
+            bg_color.alpha() as f64,
+        );
+        context.rectangle(0.0, 0.0, width.into(), height.into());
+        context.fill().unwrap();
+
+        // Get a lock on the universe object
+        let universe = imp.universe.borrow();
+        if let Some(universe) = universe.as_ref() {
+            let (width, height) = (
+                width as f64 / universe.columns() as f64,
+                height as f64 / universe.rows() as f64,
+            );
+
+            for el in universe.iter_cells() {
+                let w = el.row();
+                let h = el.column();
+                let coords: (f64, f64) = ((w as f64) * width, (h as f64) * height);
+
+                if wants_outlines {
+                    context.rectangle(coords.0, coords.1, width, height);
+                    context.set_line_width(1.0);
+                    context.set_source_rgba(
+                        outline_color.red() as f64,
+                        outline_color.green() as f64,
+                        outline_color.blue() as f64,
+                        outline_color.alpha() as f64,
+                    );
+                    context.stroke().unwrap();
+                }
+                if el.cell().is_alive() {
+                    context.rectangle(coords.0, coords.1, width, height);
+                    context.set_source_rgba(
+                        fg_color.red() as f64,
+                        fg_color.green() as f64,
+                        fg_color.blue() as f64,
+                        fg_color.alpha() as f64,
+                    );
+                    context.fill().unwrap();
+                } else {
+                    if fades_dead_cells {
+                        let transparency_factor = el.corpse_heat();
+                        if transparency_factor > 0.0 {
+                            context.rectangle(coords.0, coords.1, width, height);
+                            context.set_source_rgba(
+                                fg_color.red() as f64,
+                                fg_color.green() as f64,
+                                fg_color.blue() as f64,
+                                fg_color.alpha() as f64 * transparency_factor,
+                            );
+                            context.fill().unwrap();
+                        }
+                    }
+                }
+            }
+        } else {
+            glib::warn!("No universe to render");
+        }
+    }
+}
+
 #[derive(Debug)]
 pub enum UniverseGridRequest {
     /// Restores normal rendering operations
+    #[allow(dead_code)]
     Unfreeze,
 
     /// Requests the grid to redraw itself. If the value is Some(universe) the contained
     /// value will replace the current model inside the widget
     Redraw(Option<Universe>),
+}
+
+#[derive(Debug, PartialEq, Clone, Copy)]
+#[repr(u8)]
+pub enum UniverseGridRenderMode {
+    Cairo,
+    GL
+}
+
+impl Default for UniverseGridRenderMode {
+    fn default() -> Self {
+        UniverseGridRenderMode::Cairo
+    }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq)]
@@ -67,12 +163,11 @@ mod imp {
     #[derive(Debug, Default, CompositeTemplate)]
     #[template(resource = "/com/github/sixpounder/GameOfLife/universe_grid.ui")]
     pub struct GameOfLifeUniverseGrid {
-        #[template_child]
-        pub(super) drawing_area: TemplateChild<gtk::DrawingArea>,
-
         pub(super) settings: GameOfLifeSettings,
 
         pub(super) mode: Cell<UniverseGridMode>,
+
+        pub(super) render_mode: Cell<UniverseGridRenderMode>,
 
         pub(super) frozen: Cell<bool>,
 
@@ -233,7 +328,13 @@ mod imp {
             }
         }
     }
-    impl WidgetImpl for GameOfLifeUniverseGrid {}
+    impl WidgetImpl for GameOfLifeUniverseGrid {
+        fn snapshot(&self, snapshot: &gtk::Snapshot) {
+            let bounds = gtk::graphene::Rect::new(0.0, 0.0, self.obj().width() as f32, self.obj().height() as f32);
+            let cairo_context = snapshot.append_cairo(&bounds);
+            cairo_render(&self, &cairo_context, bounds.width().ceil() as i32, bounds.height().ceil() as i32);
+        }
+    }
 }
 
 glib::wrapper! {
@@ -257,7 +358,7 @@ impl GameOfLifeUniverseGrid {
 
     /// Initializes the inner drawing area with callbacks, controllers etc...
     fn setup_drawing_area(&self) {
-        let drawing_area = self.imp().drawing_area.get();
+        let drawing_area = self.imp().obj();
 
         let left_click_gesture_controller = gtk::GestureClick::new();
         left_click_gesture_controller.set_button(gtk::gdk::ffi::GDK_BUTTON_PRIMARY as u32);
@@ -354,21 +455,21 @@ impl GameOfLifeUniverseGrid {
 
         drawing_area.add_controller(&motion_controller);
 
-        drawing_area.connect_resize(
-            clone!(@strong self as this => move |_widget, _width, _height| {
-                if !this.allow_draw_on_resize() {
-                    this.set_frozen(true);
-                    let sender = this.get_sender();
-                    glib::timeout_add_once(std::time::Duration::from_millis(500), move || {
-                        sender.send(UniverseGridRequest::Unfreeze).expect("Could not unlock grid");
-                    });
-                }
-            }),
-        );
+        // drawing_area.connect_resize(
+        //     clone!(@strong self as this => move |_widget, _width, _height| {
+        //         if !this.allow_draw_on_resize() {
+        //             this.set_frozen(true);
+        //             let sender = this.get_sender();
+        //             glib::timeout_add_once(std::time::Duration::from_millis(500), move || {
+        //                 sender.send(UniverseGridRequest::Unfreeze).expect("Could not unlock grid");
+        //             });
+        //         }
+        //     }),
+        // );
 
-        drawing_area.set_draw_func(
-            clone!(@strong self as this => move |widget, context, width, height| this.render(widget, context, width, height) ),
-        );
+        // drawing_area.set_draw_func(
+        //     clone!(@strong self as this => move |widget, context, width, height| this.render(widget, context, width, height) ),
+        // );
     }
 
     fn process_action(&self, action: UniverseGridRequest) -> glib::Continue {
@@ -462,7 +563,7 @@ impl GameOfLifeUniverseGrid {
         self.imp()
             .point_under_pointing_device
             .set(widget_area_point_to_universe_cell(
-                &self.imp().drawing_area.get(),
+                &self.imp().obj(),
                 self.imp().universe.borrow().as_ref(),
                 x,
                 y,
@@ -477,7 +578,7 @@ impl GameOfLifeUniverseGrid {
     /// is provided it will be used as the new cell value, else the opposite value of the current
     /// one will be set
     fn alter_universe_point(&self, x: f64, y: f64, value: Option<UniverseCell>) {
-        let drawing_area = self.imp().drawing_area.get();
+        let drawing_area = self.imp().obj();
         let universe_borrow = self.imp().universe.borrow();
 
         if let Some(universe_point) =
@@ -496,91 +597,6 @@ impl GameOfLifeUniverseGrid {
 
             mut_borrow.set_cell(universe_point.row(), universe_point.column(), next_value);
             self.redraw();
-        }
-    }
-
-    fn render(
-        &self,
-        _widget: &gtk::DrawingArea,
-        context: &gtk::cairo::Context,
-        width: i32,
-        height: i32,
-    ) {
-        if !self.frozen() {
-            let imp = self.imp();
-
-            // Determine colors
-            let fg_color = imp.fg_color.get().unwrap();
-            let bg_color = imp.bg_color.get().unwrap();
-            let wants_outlines = self.draw_cells_outline();
-            let fades_dead_cells = self.fades_dead_cells();
-
-            let mut outline_color = bg_color.clone();
-            outline_color.set_red(outline_color.red() + 0.1);
-            outline_color.set_green(outline_color.green() + 0.1);
-            outline_color.set_blue(outline_color.blue() + 0.1);
-
-            context.set_source_rgba(
-                bg_color.red() as f64,
-                bg_color.green() as f64,
-                bg_color.blue() as f64,
-                bg_color.alpha() as f64,
-            );
-            context.rectangle(0.0, 0.0, width.into(), height.into());
-            context.fill().unwrap();
-
-            // Get a lock on the universe object
-            let universe = self.imp().universe.borrow();
-            if let Some(universe) = universe.as_ref() {
-                let (width, height) = (
-                    width as f64 / universe.columns() as f64,
-                    height as f64 / universe.rows() as f64,
-                );
-
-                for el in universe.iter_cells() {
-                    let w = el.row();
-                    let h = el.column();
-                    let coords: (f64, f64) = ((w as f64) * width, (h as f64) * height);
-
-                    if wants_outlines {
-                        context.rectangle(coords.0, coords.1, width, height);
-                        context.set_line_width(1.0);
-                        context.set_source_rgba(
-                            outline_color.red() as f64,
-                            outline_color.green() as f64,
-                            outline_color.blue() as f64,
-                            outline_color.alpha() as f64,
-                        );
-                        context.stroke().unwrap();
-                    }
-                    if el.cell().is_alive() {
-                        context.rectangle(coords.0, coords.1, width, height);
-                        context.set_source_rgba(
-                            fg_color.red() as f64,
-                            fg_color.green() as f64,
-                            fg_color.blue() as f64,
-                            fg_color.alpha() as f64,
-                        );
-                        context.fill().unwrap();
-                    } else {
-                        if fades_dead_cells {
-                            let transparency_factor = el.corpse_heat();
-                            if transparency_factor > 0.0 {
-                                context.rectangle(coords.0, coords.1, width, height);
-                                context.set_source_rgba(
-                                    fg_color.red() as f64,
-                                    fg_color.green() as f64,
-                                    fg_color.blue() as f64,
-                                    fg_color.alpha() as f64 * transparency_factor,
-                                );
-                                context.fill().unwrap();
-                            }
-                        }
-                    }
-                }
-            } else {
-                glib::warn!("No universe to render");
-            }
         }
     }
 
@@ -608,7 +624,7 @@ impl GameOfLifeUniverseGrid {
     pub fn set_frozen(&self, value: bool) {
         match value {
             false => {
-                self.imp().drawing_area.queue_draw();
+                self.queue_draw();
             }
             _ => (),
         }
@@ -705,7 +721,7 @@ impl GameOfLifeUniverseGrid {
     }
 
     pub fn redraw(&self) {
-        self.imp().drawing_area.queue_draw();
+        self.queue_draw();
     }
 
     pub fn set_cell_color(&self, color: Option<gtk::gdk::RGBA>) {
@@ -767,5 +783,13 @@ impl GameOfLifeUniverseGrid {
 
     pub fn set_animated(&self, value: bool) {
         self.imp().animated.set(value);
+    }
+
+    pub fn render_mode(&self) -> UniverseGridRenderMode {
+        self.imp().render_mode.get()
+    }
+
+    pub fn set_render_mode(&self, value: UniverseGridRenderMode) {
+        self.imp().render_mode.set(value);
     }
 }
