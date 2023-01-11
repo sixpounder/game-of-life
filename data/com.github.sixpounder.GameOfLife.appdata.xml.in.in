@@ -54,13 +54,13 @@
                 <p>This release addresses the followings:</p>
                 <ul>
                     <li>
-                        Fixes menu button shape
+                        Fixes main menu button shape
                     </li>
                     <li>
                         Fixes a few problems with the main menu entries
                     </li>
                     <li>
-                        Moves menu to the left of the window
+                        <b>Layout changes</b>: Moves main menu to the left of the window, introduce close button to the right
                     </li>
                 </ul>
             </description>
