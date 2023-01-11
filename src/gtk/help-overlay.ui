@@ -11,19 +11,19 @@
             <property name="title" translatable="yes" context="shortcut window">General</property>
             <child>
               <object class="GtkShortcutsShortcut">
-                <property name="title" translatable="yes" context="shortcut window">New universe</property>
+                <property name="title" translatable="yes" context="shortcut window">New Universe</property>
                 <property name="action-name">win.new</property>
               </object>
             </child>
             <child>
               <object class="GtkShortcutsShortcut">
-                <property name="title" translatable="yes" context="shortcut window">Open snapshot</property>
+                <property name="title" translatable="yes" context="shortcut window">Open Snapshot</property>
                 <property name="action-name">win.open-snapshot</property>
               </object>
             </child>
             <child>
               <object class="GtkShortcutsShortcut">
-                <property name="title" translatable="yes" context="shortcut window">Save snapshot</property>
+                <property name="title" translatable="yes" context="shortcut window">Save Snapshot</property>
                 <property name="action-name">win.snapshot</property>
               </object>
             </child>
@@ -41,7 +41,7 @@
             </child>
             <child>
               <object class="GtkShortcutsShortcut">
-                <property name="title" translatable="yes" context="shortcut window">Quit</property>
+                <property name="title" translatable="yes" context="shortcut window">Close</property>
                 <property name="action-name">app.quit</property>
               </object>
             </child>
@@ -49,22 +49,22 @@
         </child>
         <child>
           <object class="GtkShortcutsGroup">
-            <property name="title" translatable="yes" context="shortcut window">Universe control</property>
+            <property name="title" translatable="yes" context="shortcut window">Universe Control</property>
             <child>
               <object class="GtkShortcutsShortcut">
-                <property name="title" translatable="yes" context="shortcut window">Toggle design mode</property>
+                <property name="title" translatable="yes" context="shortcut window">Toggle Design Mode</property>
                 <property name="action-name">win.toggle-design-mode</property>
               </object>
             </child>
             <child>
               <object class="GtkShortcutsShortcut">
-                <property name="title" translatable="yes" context="shortcut window">Toggle run universe</property>
+                <property name="title" translatable="yes" context="shortcut window">Toggle Run Universe</property>
                 <property name="action-name">win.play</property>
               </object>
             </child>
             <child>
               <object class="GtkShortcutsShortcut">
-                <property name="title" translatable="yes" context="shortcut window">Seed universe</property>
+                <property name="title" translatable="yes" context="shortcut window">Seed Universe</property>
                 <property name="action-name">win.random-seed</property>
               </object>
             </child>

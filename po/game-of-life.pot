@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: game-of-life\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-12-26 14:28+0100\n"
+"POT-Creation-Date: 2023-01-11 09:47+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -68,38 +68,60 @@ msgid "Andrea Coronese"
 msgstr ""
 
 #: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:54
+#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:70
+#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:83
 msgid "This release addresses the followings:"
 msgstr ""
 
 #: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:56
-msgid "Allow for cells fade out when they die"
+msgid "Fixes menu button shape"
 msgstr ""
 
 #: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:59
-msgid "Performance issues on edge cases"
+msgid "Fixes a few problems with the main menu entries"
 msgstr ""
 
 #: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:62
-msgid "gtk4/glib/libadwaita stack upgrade"
-msgstr ""
-
-#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:70
-msgid "Translations:"
+msgid "Moves menu to the left of the window"
 msgstr ""
 
 #: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:72
+msgid "Fixes templates not being loaded"
+msgstr ""
+
+#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:75
+msgid "Moves grid rendering to gtk4 render node api"
+msgstr ""
+
+#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:85
+msgid "Allow for cells fade out when they die"
+msgstr ""
+
+#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:88
+msgid "Performance issues on edge cases"
+msgstr ""
+
+#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:91
+msgid "gtk4/glib/libadwaita stack upgrade"
+msgstr ""
+
+#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:99
+msgid "Translations:"
+msgstr ""
+
+#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:101
 msgid "Add french translation (Rene Coty)"
 msgstr ""
 
-#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:78
+#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:107
 msgid "This is a revision addressing a few problems"
 msgstr ""
 
-#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:80
+#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:109
 msgid "Fix interaction bugs"
 msgstr ""
 
-#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:81
+#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:110
 msgid "Minor performance tweaks"
 msgstr ""
 
@@ -141,17 +163,17 @@ msgstr ""
 
 #: src/gtk/help-overlay.ui:14
 msgctxt "shortcut window"
-msgid "New universe"
+msgid "New Universe"
 msgstr ""
 
 #: src/gtk/help-overlay.ui:20
 msgctxt "shortcut window"
-msgid "Open snapshot"
+msgid "Open Snapshot"
 msgstr ""
 
 #: src/gtk/help-overlay.ui:26
 msgctxt "shortcut window"
-msgid "Save snapshot"
+msgid "Save Snapshot"
 msgstr ""
 
 #: src/gtk/help-overlay.ui:32
@@ -166,27 +188,27 @@ msgstr ""
 
 #: src/gtk/help-overlay.ui:44
 msgctxt "shortcut window"
-msgid "Quit"
+msgid "Close"
 msgstr ""
 
 #: src/gtk/help-overlay.ui:52
 msgctxt "shortcut window"
-msgid "Universe control"
+msgid "Universe Control"
 msgstr ""
 
 #: src/gtk/help-overlay.ui:55
 msgctxt "shortcut window"
-msgid "Toggle design mode"
+msgid "Toggle Design Mode"
 msgstr ""
 
 #: src/gtk/help-overlay.ui:61
 msgctxt "shortcut window"
-msgid "Toggle run universe"
+msgid "Toggle Run Universe"
 msgstr ""
 
 #: src/gtk/help-overlay.ui:67
 msgctxt "shortcut window"
-msgid "Seed universe"
+msgid "Seed Universe"
 msgstr ""
 
 #: src/window.rs:300
@@ -278,15 +300,15 @@ msgid "Save the current state snapshot"
 msgstr ""
 
 #: src/widgets/universe_controls.ui:124
-msgid "_New universe"
+msgid "_New Universe"
 msgstr ""
 
 #: src/widgets/universe_controls.ui:128
-msgid "_Open snapshot"
+msgid "_Open Snapshot"
 msgstr ""
 
 #: src/widgets/universe_controls.ui:132
-msgid "_Save snapshot"
+msgid "_Save Snapshot"
 msgstr ""
 
 #: src/widgets/universe_controls.ui:138
@@ -298,11 +320,11 @@ msgid "_Keyboard Shortcuts"
 msgstr ""
 
 #: src/widgets/universe_controls.ui:146
-msgid "_About"
+msgid "_About Game Of Life"
 msgstr ""
 
 #: src/widgets/universe_controls.ui:150
-msgid "_Quit"
+msgid "_Close"
 msgstr ""
 
 #: src/widgets/new_universe_view.ui:4
@@ -406,20 +428,20 @@ msgstr ""
 msgid "Render on resize"
 msgstr ""
 
-#: src/widgets/preferences_window.ui:117
+#: src/widgets/preferences_window.ui:118
 msgid ""
 "Allows rendering the grid during a resize event of the application window. "
 "May affect performance."
 msgstr ""
 
-#: src/widgets/preferences_window.ui:132
+#: src/widgets/preferences_window.ui:133
 msgid "Evolution"
 msgstr ""
 
-#: src/widgets/preferences_window.ui:135
+#: src/widgets/preferences_window.ui:136
 msgid "Evolutions speed"
 msgstr ""
 
-#: src/widgets/preferences_window.ui:137
+#: src/widgets/preferences_window.ui:138
 msgid "The number of generations to be computed per second during an evolution"
 msgstr ""
