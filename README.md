@@ -26,8 +26,6 @@ meson build --prefix=/usr/local
 ninja -C build
 ```
 
-## The icon kinda stinks
+# Credits
 
-If anyone is willing to give this small app an icon that is not complete garbage like the one I made, PRs are open <3
-
-(the source svg is in `data/icons/hicolor/scalable/apps`)
+**Icon design:** Tobias Bernard

@@ -49,7 +49,7 @@
     </recommends>
     <content_rating type="oars-1.1"/>
     <releases>
-        <release version="0.3.1" date="2023-01-11">
+        <release version="0.3.2" date="2023-01-11">
             <description>
                 <p>This release addresses the followings:</p>
                 <ul>
