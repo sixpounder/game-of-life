@@ -14,9 +14,6 @@ mod imp {
         pub(super) run_button: TemplateChild<gtk::Button>,
 
         #[template_child]
-        pub(super) save_snapshot_button: TemplateChild<gtk::Button>,
-
-        #[template_child]
         pub(super) random_seed_button: TemplateChild<gtk::Button>,
 
         pub(super) playing: std::cell::Cell<bool>,

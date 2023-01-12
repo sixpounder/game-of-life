@@ -49,6 +49,22 @@
     </recommends>
     <content_rating type="oars-1.1"/>
     <releases>
+        <release version="0.3.1" date="2023-01-11">
+            <description>
+                <p>This release addresses the followings:</p>
+                <ul>
+                    <li>
+                        Fixes main menu button shape
+                    </li>
+                    <li>
+                        Fixes a few problems with the main menu entries
+                    </li>
+                    <li>
+                        <b>Layout changes</b>: Moves main menu to the left of the window, introduce close button to the right
+                    </li>
+                </ul>
+            </description>
+        </release>
         <release version="0.3.0" date="2022-12-23">
             <description>
                 <p>This release addresses the followings:</p>

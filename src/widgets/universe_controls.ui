@@ -14,6 +14,20 @@
               <object class="GtkBox">
                 <property name="orientation">horizontal</property>
                 <property name="spacing">24</property>
+                <property name="margin-start">24</property>
+                <child>
+                  <object class="GtkMenuButton">
+                    <property name="icon-name">open-menu-symbolic</property>
+                    <property name="menu-model">primary_menu</property>
+                    <property name="direction">up</property>
+                    <property name="valign">center</property>
+                    <property name="halign">center</property>
+                    <style>
+                      <class name="flat"></class>
+                      <class name="circular"></class>
+                    </style>
+                  </object>
+                </child>
               </object>
             </child>
             <child type="center">
@@ -83,32 +97,16 @@
                 <property name="orientation">horizontal</property>
                 <property name="margin-end">24</property>
                 <child>
-                  <object class="GtkMenuButton">
-                    <property name="icon-name">open-menu-symbolic</property>
-                    <property name="menu-model">primary_menu</property>
-                    <property name="direction">up</property>
-                    <style>
-                      <class name="flat"></class>
-                      <class name="circular"></class>
-                    </style>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkButton" id="save_snapshot_button">
-                    <property name="visible">false</property>
-                    <property name="icon-name">snapshots-alt-symbolic</property>
-                    <property name="tooltip-text" translatable="yes">Save the current state snapshot</property>
-                    <property name="sensitive" bind-property="stopped" bind-source="GameOfLifeUniverseControls" bind-flags="default|sync-create">
-                    </property>
-                    <property name="action-name">win.snapshot</property>
+                  <object class="GtkButton">
+                    <property name="action-name">app.quit</property>
+                    <property name="icon-name">window-close-symbolic</property>
                     <property name="valign">center</property>
-                    <property name="halign">center</property>
+                    <property name="halign">fill</property>
                     <style>
+                      <class name="close"/>
                       <class name="circular"/>
+                      <class name="small"/>
                     </style>
-                    <accessibility>
-                      <property name="label" translatable="yes" context="a11y">Save the current state snapshot</property>
-                    </accessibility>
                   </object>
                 </child>
               </object>
@@ -121,15 +119,15 @@
   <menu id="primary_menu">
     <section>
       <item>
-        <attribute name="label" translatable="yes">_New universe</attribute>
+        <attribute name="label" translatable="yes">_New Universe</attribute>
         <attribute name="action">win.new</attribute>
       </item>
       <item>
-        <attribute name="label" translatable="yes">_Open snapshot</attribute>
+        <attribute name="label" translatable="yes">_Open Snapshot</attribute>
         <attribute name="action">win.open-snapshot</attribute>
       </item>
       <item>
-        <attribute name="label" translatable="yes">_Save snapshot</attribute>
+        <attribute name="label" translatable="yes">_Save Snapshot</attribute>
         <attribute name="action">win.snapshot</attribute>
       </item>
     </section>
@@ -143,11 +141,11 @@
         <attribute name="action">win.show-help-overlay</attribute>
       </item>
       <item>
-        <attribute name="label" translatable="yes">_About</attribute>
+        <attribute name="label" translatable="yes">_About Game Of Life</attribute>
         <attribute name="action">app.about</attribute>
       </item>
       <item>
-        <attribute name="label" translatable="yes">_Quit</attribute>
+        <attribute name="label" translatable="yes">_Close</attribute>
         <attribute name="action">app.quit</attribute>
       </item>
     </section>
