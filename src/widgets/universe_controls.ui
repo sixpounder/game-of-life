@@ -104,8 +104,8 @@
                     <property name="halign">fill</property>
                     <style>
                       <class name="close"/>
-                      <class name="circular"/>
                       <class name="small"/>
+                      <class name="circular"/>
                     </style>
                   </object>
                 </child>

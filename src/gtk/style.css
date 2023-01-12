@@ -4,3 +4,7 @@ button.large {
   min-height: 48px;
 }
 
+button.small {
+  min-width: 24px;
+  min-height: 24px;
+}

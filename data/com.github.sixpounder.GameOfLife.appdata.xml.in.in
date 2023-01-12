@@ -54,6 +54,19 @@
                 <p>This release addresses the followings:</p>
                 <ul>
                     <li>
+                        New icon (thanks to Tobias Bernard)
+                    </li>
+                    <li>
+                        Reduce close button size
+                    </li>
+                </ul>
+            </description>
+        </release>
+        <release version="0.3.1" date="2023-01-11">
+            <description>
+                <p>This release addresses the followings:</p>
+                <ul>
+                    <li>
                         Fixes main menu button shape
                     </li>
                     <li>
