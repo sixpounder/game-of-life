@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: game-of-life\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-01-11 09:47+0100\n"
+"POT-Creation-Date: 2023-01-15 16:21+0100\n"
 "PO-Revision-Date: 2022-09-20 00:48+0200\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -72,60 +72,74 @@ msgid "Andrea Coronese"
 msgstr "Andrea Coronese"
 
 #: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:54
-#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:70
-#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:83
+#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:64
+#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:77
+#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:93
+#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:106
 msgid "This release addresses the followings:"
 msgstr ""
 
 #: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:56
-msgid "Fixes menu button shape"
+msgid "Feature: step forward one generation"
 msgstr ""
 
-#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:59
+#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:66
+msgid "New icon (thanks to Tobias Bernard)"
+msgstr ""
+
+#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:69
+msgid "Reduce close button size"
+msgstr ""
+
+#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:79
+msgid "Fixes main menu button shape"
+msgstr ""
+
+#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:82
 msgid "Fixes a few problems with the main menu entries"
 msgstr ""
 
-#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:62
-msgid "Moves menu to the left of the window"
+#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:86
+msgid "Layout changes"
 msgstr ""
 
-#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:72
+#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:95
 msgid "Fixes templates not being loaded"
 msgstr ""
 
-#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:75
+#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:98
 msgid "Moves grid rendering to gtk4 render node api"
 msgstr ""
 
-#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:85
+#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:108
 msgid "Allow for cells fade out when they die"
 msgstr ""
 
-#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:88
+#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:111
 msgid "Performance issues on edge cases"
 msgstr ""
 
-#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:91
+#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:114
 msgid "gtk4/glib/libadwaita stack upgrade"
 msgstr ""
 
-#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:99
+#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:122
 msgid "Translations:"
 msgstr ""
 
-#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:101
+#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:124
 msgid "Add french translation (Rene Coty)"
 msgstr ""
 
-#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:107
+#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:130
 msgid "This is a revision addressing a few problems"
 msgstr ""
 
-#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:109
+#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:132
 msgid "Fix interaction bugs"
 msgstr ""
 
-#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:110
+#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:133
 msgid "Minor performance tweaks"
 msgstr ""
 
@@ -226,123 +240,123 @@ msgctxt "shortcut window"
 msgid "Seed Universe"
 msgstr "Toggle universe run"
 
-#: src/window.rs:300
+#: src/window.rs:304
 msgid "Left click to make a cell alive, right click to make it dead"
 msgstr ""
 
-#: src/window.rs:303
+#: src/window.rs:307
 msgid "Do not show again"
 msgstr ""
 
-#: src/window.rs:324
+#: src/window.rs:328
 msgid "_Save"
 msgstr ""
 
-#: src/window.rs:325 src/window.rs:387
+#: src/window.rs:329 src/window.rs:391
 msgid "_Cancel"
 msgstr ""
 
-#: src/window.rs:327
+#: src/window.rs:331
 #, fuzzy
 msgid "Save universe snapshot"
 msgstr "Save the current state snapshot"
 
-#: src/window.rs:354
+#: src/window.rs:358
 msgid "Unable to write to file"
 msgstr ""
 
-#: src/window.rs:360
+#: src/window.rs:364
 msgid "Unable to serialize snapshot"
 msgstr ""
 
-#: src/window.rs:386
+#: src/window.rs:390
 msgid "_Open"
 msgstr ""
 
-#: src/window.rs:389
+#: src/window.rs:393
 msgid "Open universe snapshot"
 msgstr ""
 
-#: src/window.rs:419 src/window.rs:425
+#: src/window.rs:423 src/window.rs:429
 msgid "Unreadable file"
 msgstr ""
 
-#: src/window.rs:430
+#: src/window.rs:434
 msgid "File not existing or not accessible"
 msgstr ""
 
-#: src/window.rs:476
+#: src/window.rs:480
 msgid "Bad template data"
 msgstr ""
 
-#: src/window.rs:482
+#: src/window.rs:486
 msgid "Template not found"
 msgstr ""
 
-#: src/widgets/universe_controls.ui:35
+#: src/widgets/universe_controls.ui:49
 msgid "Toggle design mode"
 msgstr "Toggle design mode"
 
-#: src/widgets/universe_controls.ui:41
+#: src/widgets/universe_controls.ui:55
 msgctxt "a11y"
 msgid "Toggle design mode"
 msgstr "Toggle design mode"
 
-#: src/widgets/universe_controls.ui:48
-msgid "Toggle universe run"
-msgstr "Toggle universe run"
-
-#: src/widgets/universe_controls.ui:57
-msgctxt "a11y"
-msgid "Toggle universe run"
-msgstr "Toggle universe run"
-
-#: src/widgets/universe_controls.ui:64
+#: src/widgets/universe_controls.ui:62
 msgid "Randomly seed this universe"
 msgstr "Randomly seed this universe"
 
-#: src/widgets/universe_controls.ui:74
+#: src/widgets/universe_controls.ui:72
 msgctxt "a11y"
 msgid "Randomly seed this universe"
 msgstr "Randomly seed this universe"
 
-#: src/widgets/universe_controls.ui:100
-msgid "Save the current state snapshot"
-msgstr "Save the current state snapshot"
+#: src/widgets/universe_controls.ui:79
+msgid "Toggle universe run"
+msgstr "Toggle universe run"
 
-#: src/widgets/universe_controls.ui:110
+#: src/widgets/universe_controls.ui:88
 msgctxt "a11y"
-msgid "Save the current state snapshot"
-msgstr "Save the current state snapshot"
+msgid "Toggle universe run"
+msgstr "Toggle universe run"
 
-#: src/widgets/universe_controls.ui:124
+#: src/widgets/universe_controls.ui:95
+msgid "Skip forward one generation"
+msgstr ""
+
+#: src/widgets/universe_controls.ui:105
+msgctxt "a11y"
+msgid "Skip forward one generation"
+msgstr ""
+
+#: src/widgets/universe_controls.ui:139
 #, fuzzy
 msgid "_New Universe"
 msgstr "Toggle universe run"
 
-#: src/widgets/universe_controls.ui:128
+#: src/widgets/universe_controls.ui:143
 msgid "_Open Snapshot"
 msgstr ""
 
-#: src/widgets/universe_controls.ui:132
+#: src/widgets/universe_controls.ui:147
 #, fuzzy
 msgid "_Save Snapshot"
 msgstr "Save the current state snapshot"
 
-#: src/widgets/universe_controls.ui:138
+#: src/widgets/universe_controls.ui:153
 msgid "_Preferences"
 msgstr "_Preferences"
 
-#: src/widgets/universe_controls.ui:142
+#: src/widgets/universe_controls.ui:157
 msgid "_Keyboard Shortcuts"
 msgstr "_Keyboard Shortcuts"
 
-#: src/widgets/universe_controls.ui:146
+#: src/widgets/universe_controls.ui:161
 #, fuzzy
 msgid "_About Game Of Life"
 msgstr "Game of Life"
 
-#: src/widgets/universe_controls.ui:150
+#: src/widgets/universe_controls.ui:165
 msgid "_Close"
 msgstr ""
 
@@ -469,6 +483,13 @@ msgid "The number of generations to be computed per second during an evolution"
 msgstr ""
 "The number of generations per seconds that should be computed when a "
 "simulation is running"
+
+#~ msgid "Save the current state snapshot"
+#~ msgstr "Save the current state snapshot"
+
+#~ msgctxt "a11y"
+#~ msgid "Save the current state snapshot"
+#~ msgstr "Save the current state snapshot"
 
 #, fuzzy
 #~ msgctxt "shortcut window"

@@ -23,7 +23,7 @@ mod imp {
     pub struct GameOfLifeWindow {
         // Template widgets
         #[template_child]
-        pub toast_overlay: TemplateChild<adw::ToastOverlay>,
+        pub(super) toast_overlay: TemplateChild<adw::ToastOverlay>,
 
         #[template_child]
         pub(super) universe_grid: TemplateChild<crate::widgets::GameOfLifeUniverseGrid>,
