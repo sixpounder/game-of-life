@@ -677,6 +677,18 @@ impl GameOfLifeUniverseGrid {
         self.process_action(UniverseGridRequest::Redraw(Some(new_universe)));
     }
 
+    pub fn skip_forward_one(&self) {
+        if let Ok(mut borrow) = self.imp().universe.try_borrow_mut() {
+            match borrow.as_mut() {
+                Some(current_universe) => {
+                    current_universe.tick();
+                    self.redraw();
+                }
+                None => {}
+            }
+        }
+    }
+
     pub fn set_universe(&self, universe: Universe) {
         self.imp().universe.replace(Some(universe));
         self.redraw();

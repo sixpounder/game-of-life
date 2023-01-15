@@ -49,6 +49,16 @@
     </recommends>
     <content_rating type="oars-1.1"/>
     <releases>
+        <release version="0.3.3" date="2023-01-15">
+            <description>
+                <p>This release addresses the followings:</p>
+                <ul>
+                    <li>
+                        Feature: step forward one generation
+                    </li>
+                </ul>
+            </description>
+        </release>
         <release version="0.3.2" date="2023-01-11">
             <description>
                 <p>This release addresses the followings:</p>

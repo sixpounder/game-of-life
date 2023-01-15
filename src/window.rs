@@ -69,6 +69,10 @@ mod imp {
                 win.seed_universe();
             });
 
+            klass.install_action("win.skip-forward-one", None, move |win, _, _| {
+                win.skip_forward_one();
+            });
+
             klass.install_action("win.play", None, move |win, _, _| {
                 win.toggle_run();
             });
@@ -506,6 +510,11 @@ impl GameOfLifeWindow {
     fn seed_universe(&self) {
         let universe_grid = self.imp().universe_grid.get();
         universe_grid.random_seed();
+    }
+
+    fn skip_forward_one(&self) {
+        let universe_grid = self.imp().universe_grid.get();
+        universe_grid.skip_forward_one();
     }
 
     fn seed_from_snapshot(&self, snapshot: UniverseSnapshot) {

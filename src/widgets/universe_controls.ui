@@ -57,6 +57,23 @@
                   </object>
                 </child>
                 <child>
+                  <object class="GtkButton" id="random_seed_button">
+                    <property name="icon-name">dice3-symbolic</property>
+                    <property name="tooltip-text" translatable="yes">Randomly seed this universe</property>
+                    <property name="sensitive" bind-property="stopped" bind-source="GameOfLifeUniverseControls" bind-flags="default|sync-create">
+                    </property>
+                    <property name="action-name">win.random-seed</property>
+                    <property name="valign">center</property>
+                    <property name="halign">center</property>
+                    <style>
+                      <class name="circular"/>
+                    </style>
+                    <accessibility>
+                      <property name="label" translatable="yes" context="a11y">Randomly seed this universe</property>
+                    </accessibility>
+                  </object>
+                </child>
+                <child>
                   <object class="GtkButton" id="run_button">
                     <property name="icon-name" bind-property="run-button-icon-name" bind-source="GameOfLifeUniverseControls" bind-flags="default|sync-create"/>
                     <property name="tooltip-text" translatable="yes">Toggle universe run</property>
@@ -73,19 +90,19 @@
                   </object>
                 </child>
                 <child>
-                  <object class="GtkButton" id="random_seed_button">
-                    <property name="icon-name">dice3-symbolic</property>
-                    <property name="tooltip-text" translatable="yes">Randomly seed this universe</property>
+                  <object class="GtkButton" id="skip_forward_button">
+                    <property name="icon-name">media-skip-forward-symbolic</property>
+                    <property name="tooltip-text" translatable="yes">Skip forward one generation</property>
                     <property name="sensitive" bind-property="stopped" bind-source="GameOfLifeUniverseControls" bind-flags="default|sync-create">
                     </property>
-                    <property name="action-name">win.random-seed</property>
+                    <property name="action-name">win.skip-forward-one</property>
                     <property name="valign">center</property>
                     <property name="halign">center</property>
                     <style>
                       <class name="circular"/>
                     </style>
                     <accessibility>
-                      <property name="label" translatable="yes" context="a11y">Randomly seed this universe</property>
+                      <property name="label" translatable="yes" context="a11y">Skip forward one generation</property>
                     </accessibility>
                   </object>
                 </child>
