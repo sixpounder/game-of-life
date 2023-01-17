@@ -88,6 +88,10 @@ mod imp {
             klass.install_action("win.toggle-design-mode", None, move |win, _, _| {
                 win.toggle_edit_mode();
             });
+
+            klass.install_action("win.toggle-instrument-brush", None, move |win, _, _| {
+                win.toggle_instrument_brush();
+            });
         }
 
         fn instance_init(obj: &glib::subclass::InitializingObject<Self>) {
@@ -290,27 +294,39 @@ impl GameOfLifeWindow {
 
     pub fn toggle_run(&self) {
         self.imp().universe_grid.toggle_run();
+        self.notify("running");
     }
 
     pub fn toggle_edit_mode(&self) {
-        let settings = &self.imp().settings;
-        let grid = self.imp().universe_grid.get();
-        let next_mode = match grid.mode() {
-            UniverseGridMode::Design => UniverseGridMode::Run,
-            UniverseGridMode::Run => UniverseGridMode::Design,
-        };
-
-        if next_mode == UniverseGridMode::Design && settings.show_design_hint() {
-            let msg = i18n("Left click to make a cell alive, right click to make it dead");
-            let toast = adw::Toast::new(&msg);
-            toast.set_action_name(Some("app.disable-design-hint"));
-            toast.set_button_label(Some(i18n("Do not show again").as_str()));
-            self.imp().toast_overlay.add_toast(&toast);
-        }
-        grid.set_mode(next_mode);
-
         let controls = self.imp().controls.get();
-        controls.set_mode(next_mode);
+        let tools_revealed = controls.tools_revealed();
+        controls.set_tools_revealed(!tools_revealed);
+        // self.imp().universe_grid.set_mode(match tools_revealed {
+        //     true => UniverseGridMode::Unlocked,
+        //     false => UniverseGridMode::Locked
+        // });
+    }
+
+    pub fn toggle_instrument_brush(&self) {
+        let settings = &self.imp().settings;
+        let controls = self.imp().controls.get();
+
+        controls.toggle_brush();
+
+        if controls.brush() {
+            self.imp()
+                .universe_grid
+                .set_mode(UniverseGridMode::Unlocked);
+            if settings.show_design_hint() {
+                let msg = i18n("Left click to make a cell alive, right click to make it dead");
+                let toast = adw::Toast::new(&msg);
+                toast.set_action_name(Some("app.disable-design-hint"));
+                toast.set_button_label(Some(i18n("Do not show again").as_str()));
+                self.imp().toast_overlay.add_toast(&toast);
+            }
+        } else {
+            self.imp().universe_grid.set_mode(UniverseGridMode::Locked);
+        }
     }
 
     fn make_and_save_snapshot(&self) {

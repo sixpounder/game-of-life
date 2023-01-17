@@ -1,4 +1,3 @@
-use crate::models::UniverseGridMode;
 use gtk::{gio, glib};
 use gtk::{prelude::*, subclass::prelude::*, CompositeTemplate};
 
@@ -17,7 +16,8 @@ mod imp {
         pub(super) random_seed_button: TemplateChild<gtk::Button>,
 
         pub(super) playing: std::cell::Cell<bool>,
-        pub(super) editing: std::cell::Cell<bool>,
+        pub(super) reveal_tools: std::cell::Cell<bool>,
+        pub(super) brush_mode: std::cell::Cell<bool>,
     }
 
     #[glib::object_subclass]
@@ -42,7 +42,8 @@ mod imp {
                 vec![
                     ParamSpecBoolean::new("stopped", "", "", true, ParamFlags::READABLE),
                     ParamSpecBoolean::new("playing", "", "", false, ParamFlags::READWRITE),
-                    ParamSpecBoolean::new("editing", "", "", false, ParamFlags::READWRITE),
+                    ParamSpecBoolean::new("reveal-tools", "", "", false, ParamFlags::READWRITE),
+                    ParamSpecBoolean::new("brush-mode", "", "", false, ParamFlags::READWRITE),
                     ParamSpecBoolean::new("unfrozen", "", "", true, ParamFlags::READABLE),
                     ParamSpecString::new(
                         "run-button-icon-name",
@@ -62,8 +63,9 @@ mod imp {
             match pspec.name() {
                 "playing" => imp.playing.get().to_value(),
                 "stopped" => (!imp.playing.get()).to_value(),
-                "editing" => imp.editing.get().to_value(),
-                "unfrozen" => (!imp.editing.get() && !imp.playing.get()).to_value(),
+                "reveal-tools" => imp.reveal_tools.get().to_value(),
+                "brush-mode" => imp.brush_mode.get().to_value(),
+                "unfrozen" => (!imp.reveal_tools.get() && !imp.playing.get()).to_value(),
                 "run-button-icon-name" => match obj.property("playing") {
                     true => "media-playback-stop-symbolic",
                     false => "media-playback-start-symbolic",
@@ -79,21 +81,28 @@ mod imp {
                 "playing" => {
                     let now_playing = value.get::<bool>().unwrap();
                     let was_playing = self.playing.get();
+                    let run_button = self.run_button.get();
+                    let run_button_style = run_button.style_context();
 
                     if now_playing != was_playing {
                         self.playing.set(now_playing);
 
                         if now_playing {
-                            obj.set_mode(UniverseGridMode::Run);
+                            run_button_style.remove_class("play");
+                            run_button_style.add_class("stop");
+                        } else {
+                            run_button_style.remove_class("stop");
+                            run_button_style.add_class("play");
                         }
 
                         obj.notify("run-button-icon-name");
+                        obj.notify("running");
                         obj.notify("stopped");
                         obj.notify("unfrozen");
                     }
                 }
-                "editing" => {
-                    obj.imp().editing.set(value.get::<bool>().unwrap());
+                "reveal-tools" => {
+                    obj.imp().reveal_tools.set(value.get::<bool>().unwrap());
                     obj.notify("unfrozen");
                 }
                 _ => unimplemented!(),
@@ -115,8 +124,21 @@ impl GameOfLifeUniverseControls {
         glib::Object::new::<Self>(&[("application", application)])
     }
 
-    pub fn set_mode(&self, mode: UniverseGridMode) {
-        self.imp().editing.set(mode == UniverseGridMode::Design);
-        self.notify("editing");
+    pub fn set_tools_revealed(&self, value: bool) {
+        self.imp().reveal_tools.set(value);
+        self.notify("reveal-tools");
+    }
+
+    pub fn tools_revealed(&self) -> bool {
+        self.imp().reveal_tools.get()
+    }
+
+    pub fn toggle_brush(&self) {
+        self.imp().brush_mode.set(!self.brush());
+        self.notify("brush-mode");
+    }
+
+    pub fn brush(&self) -> bool {
+        self.imp().brush_mode.get()
     }
 }

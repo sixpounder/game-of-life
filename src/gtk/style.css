@@ -8,3 +8,11 @@ button.small {
   min-width: 24px;
   min-height: 24px;
 }
+
+button.play {
+  background-color: #26a269;
+}
+
+button.stop {
+  background-color: #c64600;
+}

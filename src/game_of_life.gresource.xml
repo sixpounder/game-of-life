@@ -10,6 +10,7 @@
     <file preprocess="xml-stripblanks" alias="preferences_window.ui">widgets/preferences_window.ui</file>
   </gresource>
   <gresource prefix="/com/github/sixpounder/GameOfLife/icons/scalable/actions">
+    <file preprocess="xml-stripblanks" alias="paintbrush-symbolic.svg">assets/icons/paintbrush-symbolic.svg</file>
     <file preprocess="xml-stripblanks" alias="dice3-symbolic.svg">assets/icons/dice3-symbolic.svg</file>
     <file preprocess="xml-stripblanks" alias="snapshots-alt-symbolic.svg">assets/icons/snapshots-alt-symbolic.svg</file>
   </gresource>

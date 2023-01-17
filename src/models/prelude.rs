@@ -5,13 +5,16 @@ use std::fmt;
 #[derive(Clone, Debug, glib::Enum, Copy, PartialEq)]
 #[enum_type(name = "UniverseGridMode")]
 pub enum UniverseGridMode {
-    Design = 0,
-    Run = 1,
+    /// The grid can receive interactive inputs, such as mouse clicks
+    Unlocked = 0,
+
+    /// The grid will not receive interactive inputs
+    Locked = 1,
 }
 
 impl Default for UniverseGridMode {
     fn default() -> Self {
-        Self::Design
+        Self::Locked
     }
 }
 

@@ -198,7 +198,7 @@ mod imp {
             this.sender = Some(sender);
 
             // Start universe in running mode
-            this.mode.set(UniverseGridMode::Run);
+            this.mode.set(UniverseGridMode::Locked);
 
             // Defaults to light color scheme
             this.fg_color.set(Some(
@@ -456,7 +456,7 @@ impl GameOfLifeUniverseGrid {
         y: f64,
         alter_state: Option<UniverseCell>,
     ) {
-        if self.mode() == UniverseGridMode::Design {
+        if self.mode() == UniverseGridMode::Unlocked {
             self.imp()
                 .interaction_state
                 .set(UniverseGridInteractionState::Ongoing);
@@ -569,14 +569,8 @@ impl GameOfLifeUniverseGrid {
     pub fn set_mode(&self, value: UniverseGridMode) {
         if !self.is_running() {
             self.imp().mode.set(value);
-
-            match self.mode() {
-                UniverseGridMode::Design => {}
-                UniverseGridMode::Run => {}
-            }
+            self.notify("mode");
         }
-
-        self.notify("mode");
     }
 
     pub fn is_running(&self) -> bool {
@@ -611,7 +605,7 @@ impl GameOfLifeUniverseGrid {
     }
 
     pub fn run(&self) {
-        self.set_mode(UniverseGridMode::Run);
+        // self.set_mode(UniverseGridMode::Run);
         let local_sender = self.get_sender();
 
         let (thread_render_stopper_sender, thread_render_stopper_receiver) =
