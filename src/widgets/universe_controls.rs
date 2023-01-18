@@ -40,11 +40,10 @@ mod imp {
         fn properties() -> &'static [ParamSpec] {
             static PROPERTIES: Lazy<Vec<ParamSpec>> = Lazy::new(|| {
                 vec![
-                    ParamSpecBoolean::new("stopped", "", "", true, ParamFlags::READABLE),
                     ParamSpecBoolean::new("playing", "", "", false, ParamFlags::READWRITE),
+                    ParamSpecBoolean::new("stopped", "", "", true, ParamFlags::READABLE),
                     ParamSpecBoolean::new("reveal-tools", "", "", false, ParamFlags::READWRITE),
                     ParamSpecBoolean::new("brush-mode", "", "", false, ParamFlags::READWRITE),
-                    ParamSpecBoolean::new("unfrozen", "", "", true, ParamFlags::READABLE),
                     ParamSpecString::new(
                         "run-button-icon-name",
                         "",
@@ -65,7 +64,6 @@ mod imp {
                 "stopped" => (!imp.playing.get()).to_value(),
                 "reveal-tools" => imp.reveal_tools.get().to_value(),
                 "brush-mode" => imp.brush_mode.get().to_value(),
-                "unfrozen" => (!imp.reveal_tools.get() && !imp.playing.get()).to_value(),
                 "run-button-icon-name" => match obj.property("playing") {
                     true => "media-playback-stop-symbolic",
                     false => "media-playback-start-symbolic",
@@ -98,12 +96,10 @@ mod imp {
                         obj.notify("run-button-icon-name");
                         obj.notify("running");
                         obj.notify("stopped");
-                        obj.notify("unfrozen");
                     }
                 }
                 "reveal-tools" => {
                     obj.imp().reveal_tools.set(value.get::<bool>().unwrap());
-                    obj.notify("unfrozen");
                 }
                 _ => unimplemented!(),
             }

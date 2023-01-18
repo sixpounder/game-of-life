@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<component type="desktop">
+<component type="desktop-application">
 	<id>@APPLICATION_ID@</id>
 	<metadata_license>CC0-1.0</metadata_license>
 	<project_license>GPL-3.0-or-later</project_license>
@@ -48,6 +48,7 @@
       <control>pointing</control>
     </recommends>
     <content_rating type="oars-1.1"/>
+    <provides>@APPLICATION_ID@.desktop</provides>
     <releases>
         <release version="0.3.3" date="2023-01-15">
             <description>
@@ -136,5 +137,5 @@
         </release>
         <release version="0.1.0" date="2022-10-03"/>
     </releases>
-    <provides>@APPLICATION_ID@.desktop</provides>
 </component>
+
