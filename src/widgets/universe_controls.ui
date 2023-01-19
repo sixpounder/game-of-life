@@ -59,6 +59,7 @@
                         <property name="transition-type">slide-left</property>
                         <property name="transition-duration">500</property>
                         <property name="reveal-child" bind-property="reveal-tools" bind-source="GameOfLifeUniverseControls" bind-flags="default|sync-create"></property>
+                        <property name="tooltip-text" translatable="yes">Toggle design tools</property>
                         <child>
                           <object class="GtkBox">
                             <property name="margin-start">12</property>
