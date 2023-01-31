@@ -162,6 +162,12 @@ glib::wrapper! {
         @implements gio::ActionGroup, gio::ActionMap;
 }
 
+impl Default for GameOfLifePreferencesWindow {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl GameOfLifePreferencesWindow {
     pub fn new() -> Self {
         glib::Object::new::<Self>(&[])

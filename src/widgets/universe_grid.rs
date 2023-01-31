@@ -25,8 +25,8 @@ fn widget_area_point_to_universe_cell(
         let (widget_width, widget_height) = (drawing_area.width(), drawing_area.height());
         let (universe_width, universe_height) = (universe.rows(), universe.columns());
 
-        let universe_row = ((x.round() as i32) * universe_width as i32) / widget_width as i32;
-        let universe_column = ((y.round() as i32) * universe_height as i32) / widget_height as i32;
+        let universe_row = ((x.round() as i32) * universe_width as i32) / widget_width;
+        let universe_column = ((y.round() as i32) * universe_height as i32) / widget_height;
 
         universe.get(universe_row as usize, universe_column as usize)
     } else {
@@ -45,16 +45,16 @@ fn snapshot_grid(
     let wants_outlines = widget.draw_cells_outline.get();
     let fades_dead_cells = widget.fades_dead_cells.get();
 
-    let mut outline_color = bg_color.clone();
+    let mut outline_color = bg_color;
     outline_color.set_red(outline_color.red() + 0.1);
     outline_color.set_green(outline_color.green() + 0.1);
     outline_color.set_blue(outline_color.blue() + 0.1);
 
     // Paint the background
-    snapshot.append_color(&bg_color, &bounds);
+    snapshot.append_color(&bg_color, bounds);
 
     // Create a utility cairo context
-    let cairo_context = snapshot.append_cairo(&bounds);
+    let cairo_context = snapshot.append_cairo(bounds);
 
     // Get a lock on the universe object
     let universe = widget.universe.borrow();
@@ -88,20 +88,18 @@ fn snapshot_grid(
                     height as f32,
                 );
                 snapshot.append_color(&fg_color, &cell_rect_bounds);
-            } else {
-                if fades_dead_cells {
-                    let transparency_factor = el.corpse_heat();
-                    if transparency_factor > 0.0 {
-                        let cell_rect_bounds = gtk::graphene::Rect::new(
-                            coords.0 as f32,
-                            coords.1 as f32,
-                            width as f32,
-                            height as f32,
-                        );
-                        let mut fade_color = fg_color.clone();
-                        fade_color.set_alpha(fade_color.alpha() * transparency_factor as f32);
-                        snapshot.append_color(&fade_color, &cell_rect_bounds);
-                    }
+            } else if fades_dead_cells {
+                let transparency_factor = el.corpse_heat();
+                if transparency_factor > 0.0 {
+                    let cell_rect_bounds = gtk::graphene::Rect::new(
+                        coords.0 as f32,
+                        coords.1 as f32,
+                        width as f32,
+                        height as f32,
+                    );
+                    let mut fade_color = fg_color;
+                    fade_color.set_alpha(fade_color.alpha() * transparency_factor as f32);
+                    snapshot.append_color(&fade_color, &cell_rect_bounds);
                 }
             }
         }
@@ -310,7 +308,7 @@ mod imp {
                 self.obj().width() as f32,
                 self.obj().height() as f32,
             );
-            snapshot_grid(&self, &snapshot, &widget_bounds);
+            snapshot_grid(self, snapshot, &widget_bounds);
         }
     }
 }
@@ -578,14 +576,10 @@ impl GameOfLifeUniverseGrid {
     }
 
     pub fn set_frozen(&self, value: bool) {
-        match value {
-            false => {
-                self.queue_draw();
-            }
-            _ => (),
-        }
-
         self.imp().frozen.set(value);
+        if !value {
+            self.queue_draw();
+        }
     }
 
     pub fn frozen(&self) -> bool {
@@ -620,17 +614,14 @@ impl GameOfLifeUniverseGrid {
         if let Some(universe) = thread_universe.as_ref() {
             let mut thread_universe = universe.clone();
             let wait: u64 = 1000 / u64::from(self.evolution_speed());
-            std::thread::spawn(move || loop {
-                match thread_render_stopper_sender.send(()) {
-                    Ok(_) => (),
-                    Err(_) => break,
-                };
-
-                std::thread::sleep(std::time::Duration::from_millis(wait));
-                thread_universe.tick();
-                local_sender
-                    .send(UniverseGridRequest::Redraw(Some(thread_universe.clone())))
-                    .unwrap();
+            std::thread::spawn(move || {
+                while thread_render_stopper_sender.send(()).is_ok() {
+                    std::thread::sleep(std::time::Duration::from_millis(wait));
+                    thread_universe.tick();
+                    local_sender
+                        .send(UniverseGridRequest::Redraw(Some(thread_universe.clone())))
+                        .unwrap();
+                }
             });
 
             self.notify("running");
@@ -673,12 +664,9 @@ impl GameOfLifeUniverseGrid {
 
     pub fn skip_forward_one(&self) {
         if let Ok(mut borrow) = self.imp().universe.try_borrow_mut() {
-            match borrow.as_mut() {
-                Some(current_universe) => {
-                    current_universe.tick();
-                    self.redraw();
-                }
-                None => {}
+            if let Some(current_universe) = borrow.as_mut() {
+                current_universe.tick();
+                self.redraw();
             }
         }
     }

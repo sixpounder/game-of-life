@@ -301,10 +301,6 @@ impl GameOfLifeWindow {
         let controls = self.imp().controls.get();
         let tools_revealed = controls.tools_revealed();
         controls.set_tools_revealed(!tools_revealed);
-        // self.imp().universe_grid.set_mode(match tools_revealed {
-        //     true => UniverseGridMode::Unlocked,
-        //     false => UniverseGridMode::Locked
-        // });
     }
 
     pub fn toggle_instrument_brush(&self) {
@@ -353,36 +349,32 @@ impl GameOfLifeWindow {
         dialog.connect_response(
             clone!(@strong dialog, @weak self as win => move |_, response| {
                 if response == gtk::ResponseType::Accept {
-                    match dialog.file().as_ref() {
-                        Some(file) => {
-                            let snapshot = win.imp().universe_grid.get_universe_snapshot();
-                            match snapshot.serialize() {
-                                Ok(serialized) => {
-                                    let file_io_stream;
-                                    if file.query_exists(gtk::gio::Cancellable::NONE) {
-                                        file_io_stream = file.open_readwrite(gtk::gio::Cancellable::NONE).unwrap();
-                                    } else {
-                                        file_io_stream = file.create_readwrite(gtk::gio::FileCreateFlags::NONE | gtk::gio::FileCreateFlags::REPLACE_DESTINATION, gtk::gio::Cancellable::NONE).unwrap();
-                                    }
+                    if let Some(file) = dialog.file().as_ref() {
+                        let snapshot = win.imp().universe_grid.get_universe_snapshot();
+                        match snapshot.serialize() {
+                            Ok(serialized) => {
+                                let file_io_stream = if file.query_exists(gtk::gio::Cancellable::NONE) {
+                                    file.open_readwrite(gtk::gio::Cancellable::NONE).unwrap()
+                                } else {
+                                    file.create_readwrite(gtk::gio::FileCreateFlags::NONE | gtk::gio::FileCreateFlags::REPLACE_DESTINATION, gtk::gio::Cancellable::NONE).unwrap()
+                                };
 
-                                    let write_result = file_io_stream.output_stream().write_all(serialized.as_slice(), gtk::gio::Cancellable::NONE);
-                                    match write_result {
-                                        Ok((bytes_written, _)) => {
-                                            glib::info!("Written {} bytes", bytes_written);
-                                        },
-                                        Err(error) => {
-                                            win.add_toast(i18n("Unable to write to file"));
-                                             glib::g_critical!(G_LOG_DOMAIN, "Unable to write to file: {}", error);
-                                        }
+                                let write_result = file_io_stream.output_stream().write_all(serialized.as_slice(), gtk::gio::Cancellable::NONE);
+                                match write_result {
+                                    Ok((bytes_written, _)) => {
+                                        glib::info!("Written {} bytes", bytes_written);
+                                    },
+                                    Err(error) => {
+                                        win.add_toast(i18n("Unable to write to file"));
+                                         glib::g_critical!(G_LOG_DOMAIN, "Unable to write to file: {}", error);
                                     }
-                                },
-                                Err(error) => {
-                                    win.add_toast(i18n("Unable to serialize snapshot"));
-                                     glib::g_critical!(G_LOG_DOMAIN, "Unable to serialize universe snapshot: {}", error);
                                 }
+                            },
+                            Err(error) => {
+                                win.add_toast(i18n("Unable to serialize snapshot"));
+                                 glib::g_critical!(G_LOG_DOMAIN, "Unable to serialize universe snapshot: {}", error);
                             }
-                        },
-                        None => {}
+                        }
                     }
                 }
             })
@@ -416,43 +408,39 @@ impl GameOfLifeWindow {
             clone!(@strong dialog, @weak self as win => move |_, response| {
                 let file = dialog.file();
                 if response == gtk::ResponseType::Accept {
-                    match file.as_ref() {
-                        Some(file) => {
-                            if file.query_exists(gio::Cancellable::NONE) {
-                                let mut buffer: Vec<u8> = vec![];
+                    if let Some(file) = file.as_ref() {
+                        if file.query_exists(gio::Cancellable::NONE) {
+                            let mut buffer: Vec<u8> = vec![];
 
-                                let file_io_stream = dialog.file().unwrap();
-                                let file_name = file_io_stream.path().unwrap();
-                                let file_name = file_name.to_str().unwrap();
+                            let file_io_stream = dialog.file().unwrap();
+                            let file_name = file_io_stream.path().unwrap();
+                            let file_name = file_name.to_str().unwrap();
 
-                                if let Ok(file) = std::fs::File::open(file_name) {
-                                    let mut file = std::io::BufReader::new(file);
-                                    if let Ok(bytes_read) = file.read_to_end(&mut buffer) {
-                                        glib::debug!("Opening snapshot (read {} bytes)", bytes_read);
+                            if let Ok(file) = std::fs::File::open(file_name) {
+                                let mut file = std::io::BufReader::new(file);
+                                if let Ok(bytes_read) = file.read_to_end(&mut buffer) {
+                                    glib::debug!("Opening snapshot (read {} bytes)", bytes_read);
 
-                                        match UniverseSnapshot::try_from(&buffer) {
-                                            Ok(snapshot) => {
-                                                win.seed_from_snapshot(snapshot);
-                                            },
-                                            Err(error) => {
-                                                glib::g_critical!(G_LOG_DOMAIN, "Unreadable file: {:?}", error);
-                                                win.add_toast(i18n("Unreadable file"));
-                                            }
+                                    match UniverseSnapshot::try_from(&buffer) {
+                                        Ok(snapshot) => {
+                                            win.seed_from_snapshot(snapshot);
+                                        },
+                                        Err(error) => {
+                                            glib::g_critical!(G_LOG_DOMAIN, "Unreadable file: {:?}", error);
+                                            win.add_toast(i18n("Unreadable file"));
                                         }
-                                    } else {
-                                        // Failed to read file
-                                        glib::g_critical!(G_LOG_DOMAIN, "Unreadable file",);
-                                        win.add_toast(i18n("Unreadable file"));
                                     }
                                 } else {
-                                    // File not accessible
-                                    glib::g_critical!(G_LOG_DOMAIN, "File not accessible",);
-                                    win.add_toast(i18n("File not existing or not accessible"));
+                                    // Failed to read file
+                                    glib::g_critical!(G_LOG_DOMAIN, "Unreadable file",);
+                                    win.add_toast(i18n("Unreadable file"));
                                 }
-
+                            } else {
+                                // File not accessible
+                                glib::g_critical!(G_LOG_DOMAIN, "File not accessible",);
+                                win.add_toast(i18n("File not existing or not accessible"));
                             }
-                        },
-                        None => ()
+                        }
                     }
                 }
             })
@@ -477,35 +465,32 @@ impl GameOfLifeWindow {
 
         dialog.connect_response(
             clone!(@strong dialog, @weak self as win => move |_, response| {
-                match response {
-                    gtk::ResponseType::Ok => {
-                        let (target_w, target_h) = dialog.size();
-                        match dialog.option() {
-                            NewUniverseType::Empty => win.new_empty(target_w as usize, target_h as usize),
-                            NewUniverseType::Random => win.new_random(target_w as usize, target_h as usize),
-                            NewUniverseType::Template(template_name) => {
-                                glib::debug!("Seeding from {} template", template_name);
-                                match Template::read_template(template_name) {
-                                    Ok(read) => {
-                                        match UniverseSnapshot::try_from(&read) {
-                                            Ok(snapshot) => {
-                                                win.seed_from_snapshot(snapshot);
-                                            },
-                                            Err(error) => {
-                                                glib::g_critical!(G_LOG_DOMAIN, "Unreadable template: {:?}", error);
-                                                win.add_toast(i18n("Bad template data"));
-                                            }
+                if response == gtk::ResponseType::Ok {
+                    let (target_w, target_h) = dialog.size();
+                    match dialog.option() {
+                        NewUniverseType::Empty => win.new_empty(target_w as usize, target_h as usize),
+                        NewUniverseType::Random => win.new_random(target_w as usize, target_h as usize),
+                        NewUniverseType::Template(template_name) => {
+                            glib::debug!("Seeding from {} template", template_name);
+                            match Template::read_template(template_name) {
+                                Ok(read) => {
+                                    match UniverseSnapshot::try_from(&read) {
+                                        Ok(snapshot) => {
+                                            win.seed_from_snapshot(snapshot);
+                                        },
+                                        Err(error) => {
+                                            glib::g_critical!(G_LOG_DOMAIN, "Unreadable template: {:?}", error);
+                                            win.add_toast(i18n("Bad template data"));
                                         }
-                                    },
-                                    Err(error) => {
-                                        glib::g_critical!(G_LOG_DOMAIN, "Could not load template: {}", error);
-                                        win.add_toast(i18n("Template not found"));
                                     }
+                                },
+                                Err(error) => {
+                                    glib::g_critical!(G_LOG_DOMAIN, "Could not load template: {}", error);
+                                    win.add_toast(i18n("Template not found"));
                                 }
-                            },
+                            }
                         }
                     }
-                    _ => ()
                 }
                 dialog.close();
             })
@@ -545,7 +530,7 @@ impl GameOfLifeWindow {
         let grid = self.imp().universe_grid.get();
         let (cell_color, background_color);
 
-        if style_manager.is_dark() == true {
+        if style_manager.is_dark() {
             cell_color = settings.fg_color_dark();
             background_color = settings.bg_color_dark();
         } else {

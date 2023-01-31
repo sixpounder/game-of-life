@@ -64,7 +64,7 @@ impl Universe {
     }
 
     fn create(rows: usize, columns: usize) -> Universe {
-        let s: usize = (rows * columns) as usize;
+        let s: usize = rows * columns;
         let mut cells: Vec<UniverseCell> = Vec::with_capacity(s);
         let mut death_map: Vec<f64> = Vec::with_capacity(s);
 
@@ -73,7 +73,7 @@ impl Universe {
             death_map.insert(i, 0.0);
         }
 
-        let universe = Universe {
+        Universe {
             rows,
             columns,
             cells,
@@ -81,9 +81,7 @@ impl Universe {
             death_map,
             generations: 0,
             last_delta: None,
-        };
-
-        universe
+        }
     }
 
     /// Seeds this universe with random values
@@ -107,7 +105,7 @@ impl Universe {
     }
 
     fn get_index(&self, row: usize, column: usize) -> usize {
-        ((row * self.columns) + column) as usize
+        (row * self.columns) + column
     }
 
     /// Sets cell at `row`x`column` coordinates
@@ -123,7 +121,7 @@ impl Universe {
         let idx = self.get_index(row, column);
         match self.cells.get(idx) {
             Some(cell) => (cell, self.death_map.get(idx).unwrap_or(&0.0)),
-            None => panic!("Could not get cell at row {} column {}", row, column),
+            None => panic!("Could not get cell at row {row} column {column}"),
         }
     }
 
@@ -135,11 +133,10 @@ impl Universe {
 
         match cell {
             UniverseCell::Alive => {
-                if alive_cells_around < 2 || alive_cells_around > 3 {
+                if !(2..=3).contains(&alive_cells_around) {
                     UniverseCell::Dead
-                } else if alive_cells_around == 2 || alive_cells_around == 3 {
-                    UniverseCell::Alive
                 } else {
+                    // This include the condition alive_cells_around == 2 || alive_cells_around == 3
                     UniverseCell::Alive
                 }
             }
@@ -255,7 +252,7 @@ impl Universe {
     }
 
     pub fn iter_cells(&self) -> UniverseIterator {
-        UniverseIterator::new(&self)
+        UniverseIterator::new(self)
     }
 
     pub fn snapshot(&self) -> UniverseSnapshot {
@@ -284,15 +281,9 @@ impl UniversePointMatrix for Universe {
 
     fn get(&self, row: usize, column: usize) -> Option<UniversePoint> {
         let idx = self.get_index(row, column);
-        match self.cells.get(idx) {
-            Some(cell) => Some(UniversePoint::new(
-                row,
-                column,
-                *cell,
-                *self.death_map.get(idx).unwrap_or(&0.0),
-            )),
-            None => None,
-        }
+        self.cells.get(idx).map(|cell| {
+            UniversePoint::new(row, column, *cell, *self.death_map.get(idx).unwrap_or(&0.0))
+        })
     }
 
     fn set(
@@ -355,7 +346,7 @@ impl<'a> Iterator for UniverseIterator<'a> {
             self.column += 1;
         }
 
-        return Some(point);
+        Some(point)
     }
 }
 
@@ -368,11 +359,11 @@ impl fmt::Display for Universe {
                 } else {
                     '◼'
                 };
-                write!(f, "{}", symbol)?;
+                write!(f, "{symbol}")?;
             }
-            write!(f, "\n")?;
+            writeln!(f)?;
         }
-        write!(f, "\n")
+        writeln!(f)
     }
 }
 
@@ -406,7 +397,7 @@ impl From<&Universe> for UniverseSnapshot {
 
 impl UniverseSnapshot {
     fn get_index(&self, row: usize, column: usize) -> usize {
-        ((row * self.columns) + column) as usize
+        (row * self.columns) + column
     }
 
     pub fn serialize(&self) -> Result<Vec<u8>, bincode::Error> {
@@ -427,10 +418,9 @@ impl UniversePointMatrix for UniverseSnapshot {
 
     fn get(&self, row: usize, column: usize) -> Option<UniversePoint> {
         let idx = self.get_index(row, column);
-        match self.cells.get(idx) {
-            Some(cell) => Some(UniversePoint::new(row, column, *cell, self.death_map[idx])),
-            None => None,
-        }
+        self.cells
+            .get(idx)
+            .map(|cell| UniversePoint::new(row, column, *cell, self.death_map[idx]))
     }
 
     fn set(
@@ -448,7 +438,7 @@ pub enum SnapshotError {
     Invalid,
 }
 
-impl<'a> TryFrom<&Vec<u8>> for UniverseSnapshot {
+impl TryFrom<&Vec<u8>> for UniverseSnapshot {
     type Error = SnapshotError;
     fn try_from(value: &Vec<u8>) -> Result<Self, Self::Error> {
         match bincode::deserialize::<Self>(value.as_ref()) {
@@ -471,7 +461,7 @@ impl From<UniverseSnapshot> for Universe {
             columns: snapshot.columns,
             corpse_freeze_rate: UNIVERSE_DEFAULT_FREEZE_RATE,
             death_map,
-            cells: snapshot.cells.clone(),
+            cells: snapshot.cells,
             generations: 0,
             last_delta: None,
         }

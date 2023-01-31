@@ -77,11 +77,9 @@ mod imp {
         fn property(&self, _id: usize, pspec: &ParamSpec) -> glib::Value {
             let obj = self.obj();
             match pspec.name() {
-                "dimensions-editable" => match obj.option() {
-                    NewUniverseType::Template(_) => false,
-                    _ => true,
+                "dimensions-editable" => {
+                    (!matches!(obj.option(), NewUniverseType::Template(_))).to_value()
                 }
-                .to_value(),
                 _ => unimplemented!(),
             }
         }
@@ -96,6 +94,12 @@ glib::wrapper! {
     pub struct GameOfLifeNewUniverseView(ObjectSubclass<imp::GameOfLifeNewUniverseView>)
         @extends gtk::Widget, gtk::Window, gtk::Dialog,
         @implements gio::ActionGroup, gio::ActionMap;
+}
+
+impl Default for GameOfLifeNewUniverseView {
+    fn default() -> Self {
+        Self::new()
+    }
 }
 
 impl GameOfLifeNewUniverseView {

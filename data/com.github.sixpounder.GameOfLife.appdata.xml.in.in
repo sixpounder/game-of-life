@@ -1,25 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <component type="desktop-application">
-	<id>@APPLICATION_ID@</id>
-	<metadata_license>CC0-1.0</metadata_license>
-	<project_license>GPL-3.0-or-later</project_license>
+    <id>@APPLICATION_ID@</id>
+    <metadata_license>CC0-1.0</metadata_license>
+    <project_license>GPL-3.0-or-later</project_license>
     <name>Game Of Life</name>
     <summary>A simulator of Conway's game of life</summary>
-	<description>
-	    <p>
-	        Game Of Life lets you simulate simple universes made of cells that can be
-	        alive or dead, and evolve according to simple rules.
-	    </p>
-	    <p>
-	        Current features:
-	    </p>
-	    <ul>
-	        <li>Random seed universes</li>
-	        <li>Provide start templates</li>
-	        <li>Manually edit universes</li>
-	        <li>Save and restore snapshots</li>
-	    </ul>
-	</description>
+    <description>
+        <p>
+            Game Of Life lets you simulate simple universes made of cells that can be
+            alive or dead, and evolve according to simple rules.
+        </p>
+        <p>
+            Current features:
+        </p>
+        <ul>
+            <li>Random seed universes</li>
+            <li>Provide start templates</li>
+            <li>Manually edit universes</li>
+            <li>Save and restore snapshots</li>
+        </ul>
+    </description>
     <screenshots>
         <screenshot>
           <image>https://raw.githubusercontent.com/sixpounder/game-of-life/main/data/screenshots/1.png</image>

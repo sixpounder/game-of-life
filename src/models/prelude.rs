@@ -26,10 +26,7 @@ pub enum UniverseCell {
 
 impl UniverseCell {
     pub fn is_alive(&self) -> bool {
-        match self {
-            UniverseCell::Alive => true,
-            _ => false,
-        }
+        matches!(self, UniverseCell::Alive)
     }
 }
 
