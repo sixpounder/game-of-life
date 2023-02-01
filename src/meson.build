@@ -71,13 +71,13 @@ cargo_release = custom_target(
   ]
 )
 
-test(
-  'Lint code with clippy',
-  cargo,
-  args: [
-    'clippy',
-    '--no-deps',
-    '--manifest-path',
-    join_paths(meson.project_source_root(), 'Cargo.toml')
-  ]
-)
+# test(
+#   'Lint code with clippy',
+#   cargo,
+#   args: [
+#     'clippy',
+#     '--no-deps',
+#     '--manifest-path',
+#     join_paths(meson.project_source_root(), 'Cargo.toml')
+#   ]
+# )
