@@ -76,6 +76,7 @@ test(
   cargo,
   args: [
     'clippy',
+    '--no-deps',
     '--manifest-path',
     join_paths(meson.project_source_root(), 'Cargo.toml')
   ]
