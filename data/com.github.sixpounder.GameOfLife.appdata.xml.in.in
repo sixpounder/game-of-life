@@ -4,7 +4,7 @@
     <metadata_license>CC0-1.0</metadata_license>
     <project_license>GPL-3.0-or-later</project_license>
     <name>Game Of Life</name>
-    <summary>A simulator of Conway's game of life</summary>
+    <summary>Play Conway's Game of Life</summary>
     <description>
         <p>
             Game Of Life lets you simulate simple universes made of cells that can be
