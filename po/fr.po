@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: game-of-life\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-01-19 02:01+0100\n"
+"POT-Creation-Date: 2023-03-03 15:13+0100\n"
 "PO-Revision-Date: 2022-10-15 09:27+0200\n"
 "Last-Translator: Irénée Thirion <irenee.thirion@e.email>\n"
 "Language-Team: \n"
@@ -19,8 +19,9 @@ msgstr ""
 "X-Generator: Poedit 3.1.1\n"
 
 #: data/com.github.sixpounder.GameOfLife.desktop.in.in:3
+#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:6
 msgid "Game of Life"
-msgstr "Jeu de la vie"
+msgstr "Jeu de la Vie"
 
 #: data/com.github.sixpounder.GameOfLife.desktop.in.in:4
 msgid "Game of Life Simulator"
@@ -30,20 +31,17 @@ msgstr "Simulateur du Jeu de la vie"
 msgid "simulation;game;"
 msgstr "simulation;jeu;conway;vie;cellule;univers;"
 
-#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:6
-msgid "Game Of Life"
-msgstr "Jeu de la vie"
-
 #: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:7
-msgid "A simulator of Conway's game of life"
-msgstr "Un simulateur du Jeu de la vie de Conway"
+#, fuzzy
+msgid "Play Conway's Game of Life"
+msgstr "Un simulateur du Jeu de la Vie de Conway"
 
 #: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:9
 msgid ""
-"Game Of Life lets you simulate simple universes made of cells that can be "
+"Game of Life lets you simulate simple universes made of cells that can be "
 "alive or dead, and evolve according to simple rules."
 msgstr ""
-"Le Jeu de la vie vous permet de simuler des univers simples faits de "
+"Le Jeu de la Vie vous permet de simuler des univers simples faits de "
 "cellules qui peuvent être vivantes ou mortes et évoluent selon des règles "
 "simples."
 
@@ -72,75 +70,88 @@ msgid "Andrea Coronese"
 msgstr "Andrea Coronese"
 
 #: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:55
-#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:65
-#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:78
+#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:68
+#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:81
 #: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:94
-#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:107
+#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:110
+#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:123
 msgid "This release addresses the followings:"
 msgstr ""
 
 #: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:57
-msgid "Feature: step forward one generation"
+msgid "More consistent UI"
 msgstr ""
 
-#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:67
-msgid "New icon (thanks to Tobias Bernard)"
+#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:60
+msgid "Dutch translations (thanks Philip Goto)"
 msgstr ""
 
 #: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:70
+msgid "Feature: step forward one generation"
+msgstr ""
+
+#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:73
+msgid "Group design tools in revealer"
+msgstr ""
+
+#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:83
+msgid "New icon (thanks to Tobias Bernard)"
+msgstr ""
+
+#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:86
 #, fuzzy
 msgid "Reduce close button size"
 msgstr "Rendu lors du redimensionnement"
 
-#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:80
+#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:96
 msgid "Fixes main menu button shape"
 msgstr ""
 
-#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:83
+#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:99
 msgid "Fixes a few problems with the main menu entries"
 msgstr ""
 
-#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:87
+#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:103
 msgid "Layout changes"
 msgstr ""
 
-#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:96
+#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:112
 msgid "Fixes templates not being loaded"
 msgstr ""
 
-#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:99
+#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:115
 msgid "Moves grid rendering to gtk4 render node api"
 msgstr ""
 
-#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:109
+#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:125
 msgid "Allow for cells fade out when they die"
 msgstr ""
 
-#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:112
+#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:128
 msgid "Performance issues on edge cases"
 msgstr ""
 
-#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:115
+#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:131
 msgid "gtk4/glib/libadwaita stack upgrade"
 msgstr ""
 
-#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:123
+#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:139
 msgid "Translations:"
 msgstr ""
 
-#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:125
+#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:141
 msgid "Add french translation (Rene Coty)"
 msgstr ""
 
-#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:131
+#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:147
 msgid "This is a revision addressing a few problems"
 msgstr ""
 
-#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:133
+#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:149
 msgid "Fix interaction bugs"
 msgstr ""
 
-#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:134
+#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:150
 msgid "Minor performance tweaks"
 msgstr ""
 
@@ -245,56 +256,56 @@ msgctxt "shortcut window"
 msgid "Seed Universe"
 msgstr "Ensemencer l’univers"
 
-#: src/window.rs:321
+#: src/window.rs:317
 msgid "Left click to make a cell alive, right click to make it dead"
 msgstr ""
 "Clic gauche pour rendre une cellule vivante, clic droit pour la rendre morte"
 
-#: src/window.rs:324
+#: src/window.rs:320
 msgid "Do not show again"
 msgstr "Ne plus afficher à nouveau"
 
-#: src/window.rs:344
+#: src/window.rs:340
 msgid "_Save"
 msgstr "_Enregistrer"
 
-#: src/window.rs:345 src/window.rs:407
+#: src/window.rs:341 src/window.rs:399
 msgid "_Cancel"
 msgstr "_Annuler"
 
-#: src/window.rs:347
+#: src/window.rs:343
 msgid "Save universe snapshot"
 msgstr "Enregistrer l’instantané de l’univers"
 
-#: src/window.rs:374
+#: src/window.rs:368
 msgid "Unable to write to file"
 msgstr "Impossible d’écrire dans le fichier"
 
-#: src/window.rs:380
+#: src/window.rs:374
 msgid "Unable to serialize snapshot"
 msgstr "Impossible de sérialiser l’instantané"
 
-#: src/window.rs:406
+#: src/window.rs:398
 msgid "_Open"
 msgstr "_Ouvrir"
 
-#: src/window.rs:409
+#: src/window.rs:401
 msgid "Open universe snapshot"
 msgstr "Ouvrir un instantané de l’univers"
 
-#: src/window.rs:439 src/window.rs:445
+#: src/window.rs:430 src/window.rs:436
 msgid "Unreadable file"
 msgstr "Fichier illisible"
 
-#: src/window.rs:450
+#: src/window.rs:441
 msgid "File not existing or not accessible"
 msgstr "Fichier inexistant ou inaccessible"
 
-#: src/window.rs:496
+#: src/window.rs:483
 msgid "Bad template data"
 msgstr "Mauvaises données de modèle"
 
-#: src/window.rs:502
+#: src/window.rs:489
 msgid "Template not found"
 msgstr "Modèle non trouvé"
 
@@ -369,8 +380,8 @@ msgstr "_Raccourcis clavier"
 
 #: src/widgets/universe_controls.ui:191
 #, fuzzy
-msgid "_About Game Of Life"
-msgstr "Jeu de la vie"
+msgid "_About Game of Life"
+msgstr "Environ"
 
 #: src/widgets/universe_controls.ui:195
 msgid "_Close"

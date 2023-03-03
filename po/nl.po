@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: game-of-life\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-03-02 18:37+0100\n"
+"POT-Creation-Date: 2023-03-03 15:13+0100\n"
 "PO-Revision-Date: 2023-03-03 14:26+0100\n"
 "Last-Translator: Philip Goto <philip.goto@gmail.com>\n"
 "Language-Team: none\n"
@@ -19,6 +19,7 @@ msgstr ""
 "X-Generator: Poedit 3.1.1\n"
 
 #: data/com.github.sixpounder.GameOfLife.desktop.in.in:3
+#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:6
 msgid "Game of Life"
 msgstr "Game of Life"
 
@@ -30,17 +31,17 @@ msgstr "Simulator voor de Game of Life"
 msgid "simulation;game;"
 msgstr "simulation;game;simulatie;spel;"
 
-#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:6
-msgid "Game Of Life"
-msgstr "Game of Life"
-
 #: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:7
 msgid "Play Conway's Game of Life"
 msgstr "Speel Conway's Game of Life"
 
 #: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:9
-msgid "Game Of Life lets you simulate simple universes made of cells that can be alive or dead, and evolve according to simple rules."
-msgstr "Game of Life laat u eenvoudige universums simuleren, welke bestaan uit cellen die levend of dood kunnen zijn en evolueren volgens eenvoudige regels."
+msgid ""
+"Game of Life lets you simulate simple universes made of cells that can be "
+"alive or dead, and evolve according to simple rules."
+msgstr ""
+"Game of Life laat u eenvoudige universums simuleren, welke bestaan uit "
+"cellen die levend of dood kunnen zijn en evolueren volgens eenvoudige regels."
 
 #: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:13
 msgid "Current features:"
@@ -69,86 +70,101 @@ msgstr "Andrea Coronese"
 #: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:55
 #: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:68
 #: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:81
-#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:97
+#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:94
 #: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:110
+#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:123
 msgid "This release addresses the followings:"
 msgstr "Deze uitgave bevat de volgende wijzigingen:"
 
 #: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:57
+msgid "More consistent UI"
+msgstr ""
+
+#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:60
+msgid "Dutch translations (thanks Philip Goto)"
+msgstr ""
+
+#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:70
 msgid "Feature: step forward one generation"
 msgstr "Functie: stap één generatie vooruit"
 
-#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:60
+#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:73
 msgid "Group design tools in revealer"
 msgstr "Ontwerpgereedschap gegroepeerd"
 
-#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:70
+#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:83
 msgid "New icon (thanks to Tobias Bernard)"
 msgstr "Nieuw pictogram (door Tobias Bernard)"
 
-#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:73
+#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:86
 msgid "Reduce close button size"
 msgstr "Sluitknop verkleind"
 
-#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:83
+#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:96
 msgid "Fixes main menu button shape"
 msgstr "Vorm van hoofdmenuknop verbeterd"
 
-#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:86
+#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:99
 msgid "Fixes a few problems with the main menu entries"
 msgstr "Enkele problemen opgelost met de items in het hoofdmenu"
 
-#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:90
+#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:103
 msgid "Layout changes"
 msgstr "Wijzigingen in de lay-out"
 
-#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:99
+#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:112
 msgid "Fixes templates not being loaded"
 msgstr "Verhelpt sjablonen die niet worden geladen"
 
-#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:102
+#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:115
 msgid "Moves grid rendering to gtk4 render node api"
 msgstr "Raster-rendering naar de render-node-API van GTK 4 omgeschreven"
 
-#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:112
+#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:125
 msgid "Allow for cells fade out when they die"
 msgstr "Sta toe dat cellen vervagen als ze sterven"
 
-#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:115
+#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:128
 msgid "Performance issues on edge cases"
 msgstr "Enkele prestatieproblemen verholpen"
 
-#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:118
+#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:131
 msgid "gtk4/glib/libadwaita stack upgrade"
 msgstr "Stack-upgrade van GTK 4/GLib/LibAdwaita"
 
-#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:126
+#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:139
 msgid "Translations:"
 msgstr "Vertalingen:"
 
-#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:128
+#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:141
 msgid "Add french translation (Rene Coty)"
 msgstr "Franse vertaling toegevoegd (door René Coty)"
 
-#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:134
+#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:147
 msgid "This is a revision addressing a few problems"
 msgstr "Dit is een herziening welke enkele problemen aanpakt"
 
-#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:136
+#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:149
 msgid "Fix interaction bugs"
 msgstr "Interactiefouten opgelost"
 
-#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:137
+#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:150
 msgid "Minor performance tweaks"
 msgstr "Kleine prestatie-aanpassingen"
 
 #: data/com.github.sixpounder.GameOfLife.gschema.xml:18
 msgid "Fades out cells when they die instead of deleting them in one go"
-msgstr "Vervaagt cellen wanneer ze sterven in plaats van ze in één keer te verwijderen"
+msgstr ""
+"Vervaagt cellen wanneer ze sterven in plaats van ze in één keer te "
+"verwijderen"
 
 #: data/com.github.sixpounder.GameOfLife.gschema.xml:22
-msgid "The number of generations per seconds that should be computed when a simulation is running"
-msgstr "Het aantal generaties per seconde dat moet worden berekend wanneer een simulatie loopt"
+msgid ""
+"The number of generations per seconds that should be computed when a "
+"simulation is running"
+msgstr ""
+"Het aantal generaties per seconde dat moet worden berekend wanneer een "
+"simulatie loopt"
 
 #: data/com.github.sixpounder.GameOfLife.gschema.xml:32
 msgid "The width of the universe being generated, in cells number"
@@ -163,12 +179,17 @@ msgid "Wheter to draw cells outline in universe grid"
 msgstr "Of de omtrek van de cellen in het universumraster moet worden getekend"
 
 #: data/com.github.sixpounder.GameOfLife.gschema.xml:44
-msgid "Wheter to allow universe rendering when the application window is resizing"
-msgstr "Of het universum mag worden getekend wanneer de grootte van het app-venster wordt aangepast"
+msgid ""
+"Wheter to allow universe rendering when the application window is resizing"
+msgstr ""
+"Of het universum mag worden getekend wanneer de grootte van het app-venster "
+"wordt aangepast"
 
 #: data/com.github.sixpounder.GameOfLife.gschema.xml:48
 msgid "Wheter to show an interaction hint on design mode activated"
-msgstr "Of er een interactiehint moet worden getoond wanneer ontwerpmodus wordt geactiveerd"
+msgstr ""
+"Of er een interactiehint moet worden getoond wanneer ontwerpmodus wordt "
+"geactiveerd"
 
 #: src/gtk/help-overlay.ui:11
 msgctxt "shortcut window"
@@ -227,7 +248,9 @@ msgstr "Willekeurig universum genereren"
 
 #: src/window.rs:317
 msgid "Left click to make a cell alive, right click to make it dead"
-msgstr "Linkermuisknop om een cel levend te maken, rechtermuisknop om deze dood te maken"
+msgstr ""
+"Linkermuisknop om een cel levend te maken, rechtermuisknop om deze dood te "
+"maken"
 
 #: src/window.rs:320
 msgid "Do not show again"
@@ -343,7 +366,7 @@ msgid "_Keyboard Shortcuts"
 msgstr "Snel_toetsen"
 
 #: src/widgets/universe_controls.ui:191
-msgid "_About Game Of Life"
+msgid "_About Game of Life"
 msgstr "_Over Game of Life"
 
 #: src/widgets/universe_controls.ui:195
@@ -412,7 +435,9 @@ msgstr "Ontwerphint"
 
 #: src/widgets/preferences_window.ui:16
 msgid "Show a toast describing interaction modes during design mode"
-msgstr "Toont een toast-melding tijdens de ontwerpmodus welke interactiemodussen beschrijft"
+msgstr ""
+"Toont een toast-melding tijdens de ontwerpmodus welke interactiemodussen "
+"beschrijft"
 
 #: src/widgets/preferences_window.ui:32
 msgid "Universe"
@@ -427,7 +452,8 @@ msgid "Light colors"
 msgstr "Lichte kleuren"
 
 #: src/widgets/preferences_window.ui:40
-msgid "These colors are applied if you use a light scheme color on your desktop"
+msgid ""
+"These colors are applied if you use a light scheme color on your desktop"
 msgstr "Deze kleuren worden gebruikt bij lichte modus"
 
 #: src/widgets/preferences_window.ui:64
@@ -451,8 +477,12 @@ msgid "Render on resize"
 msgstr "Tekenen bij veranderen grootte"
 
 #: src/widgets/preferences_window.ui:118
-msgid "Allows rendering the grid during a resize event of the application window. May affect performance."
-msgstr "Staat het tekenen van het raster toe bij het vergroten of verkleinen van het app-venster. Kan de prestaties beïnvloeden."
+msgid ""
+"Allows rendering the grid during a resize event of the application window. "
+"May affect performance."
+msgstr ""
+"Staat het tekenen van het raster toe bij het vergroten of verkleinen van het "
+"app-venster. Kan de prestaties beïnvloeden."
 
 #: src/widgets/preferences_window.ui:133
 msgid "Evolution"

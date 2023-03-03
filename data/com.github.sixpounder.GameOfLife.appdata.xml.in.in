@@ -3,11 +3,11 @@
     <id>@APPLICATION_ID@</id>
     <metadata_license>CC0-1.0</metadata_license>
     <project_license>GPL-3.0-or-later</project_license>
-    <name>Game Of Life</name>
+    <name>Game of Life</name>
     <summary>Play Conway's Game of Life</summary>
     <description>
         <p>
-            Game Of Life lets you simulate simple universes made of cells that can be
+            Game of Life lets you simulate simple universes made of cells that can be
             alive or dead, and evolve according to simple rules.
         </p>
         <p>
@@ -50,6 +50,19 @@
     <content_rating type="oars-1.1"/>
     <provides>@APPLICATION_ID@.desktop</provides>
     <releases>
+        <release version="0.3.5" date="2023-03-03">
+            <description>
+                <p>This release addresses the followings:</p>
+                <ul>
+                    <li>
+                        More consistent UI
+                    </li>
+                    <li>
+                        Dutch translations (thanks Philip Goto)
+                    </li>
+                </ul>
+            </description>
+        </release>
         <release version="0.3.3" date="2023-01-15">
             <description>
                 <p>This release addresses the followings:</p>
