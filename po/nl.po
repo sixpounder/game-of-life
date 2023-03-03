@@ -1,0 +1,467 @@
+# Dutch translations for game-of-life package.
+# Copyright (C) 2023 THE game-of-life'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the game-of-life package.
+# Automatically generated, 2023.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: game-of-life\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-03-02 18:37+0100\n"
+"PO-Revision-Date: 2023-03-03 14:26+0100\n"
+"Last-Translator: Philip Goto <philip.goto@gmail.com>\n"
+"Language-Team: none\n"
+"Language: nl\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Poedit 3.1.1\n"
+
+#: data/com.github.sixpounder.GameOfLife.desktop.in.in:3
+msgid "Game of Life"
+msgstr "Game of Life"
+
+#: data/com.github.sixpounder.GameOfLife.desktop.in.in:4
+msgid "Game of Life Simulator"
+msgstr "Simulator voor de Game of Life"
+
+#: data/com.github.sixpounder.GameOfLife.desktop.in.in:12
+msgid "simulation;game;"
+msgstr "simulation;game;simulatie;spel;"
+
+#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:6
+msgid "Game Of Life"
+msgstr "Game of Life"
+
+#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:7
+msgid "Play Conway's Game of Life"
+msgstr "Speel Conway's Game of Life"
+
+#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:9
+msgid "Game Of Life lets you simulate simple universes made of cells that can be alive or dead, and evolve according to simple rules."
+msgstr "Game of Life laat u eenvoudige universums simuleren, welke bestaan uit cellen die levend of dood kunnen zijn en evolueren volgens eenvoudige regels."
+
+#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:13
+msgid "Current features:"
+msgstr "Huidige functies:"
+
+#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:17
+msgid "Random seed universes"
+msgstr "Genereer willekeurige universa"
+
+#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:18
+msgid "Provide start templates"
+msgstr "Sjablonen om mee te beginnen"
+
+#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:19
+msgid "Manually edit universes"
+msgstr "Bewerk universums handmatig"
+
+#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:20
+msgid "Save and restore snapshots"
+msgstr "Sla momentopnamen op en herstel deze"
+
+#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:39
+msgid "Andrea Coronese"
+msgstr "Andrea Coronese"
+
+#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:55
+#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:68
+#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:81
+#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:97
+#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:110
+msgid "This release addresses the followings:"
+msgstr "Deze uitgave bevat de volgende wijzigingen:"
+
+#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:57
+msgid "Feature: step forward one generation"
+msgstr "Functie: stap één generatie vooruit"
+
+#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:60
+msgid "Group design tools in revealer"
+msgstr "Ontwerpgereedschap gegroepeerd"
+
+#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:70
+msgid "New icon (thanks to Tobias Bernard)"
+msgstr "Nieuw pictogram (door Tobias Bernard)"
+
+#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:73
+msgid "Reduce close button size"
+msgstr "Sluitknop verkleind"
+
+#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:83
+msgid "Fixes main menu button shape"
+msgstr "Vorm van hoofdmenuknop verbeterd"
+
+#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:86
+msgid "Fixes a few problems with the main menu entries"
+msgstr "Enkele problemen opgelost met de items in het hoofdmenu"
+
+#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:90
+msgid "Layout changes"
+msgstr "Wijzigingen in de lay-out"
+
+#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:99
+msgid "Fixes templates not being loaded"
+msgstr "Verhelpt sjablonen die niet worden geladen"
+
+#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:102
+msgid "Moves grid rendering to gtk4 render node api"
+msgstr "Raster-rendering naar de render-node-API van GTK 4 omgeschreven"
+
+#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:112
+msgid "Allow for cells fade out when they die"
+msgstr "Sta toe dat cellen vervagen als ze sterven"
+
+#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:115
+msgid "Performance issues on edge cases"
+msgstr "Enkele prestatieproblemen verholpen"
+
+#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:118
+msgid "gtk4/glib/libadwaita stack upgrade"
+msgstr "Stack-upgrade van GTK 4/GLib/LibAdwaita"
+
+#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:126
+msgid "Translations:"
+msgstr "Vertalingen:"
+
+#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:128
+msgid "Add french translation (Rene Coty)"
+msgstr "Franse vertaling toegevoegd (door René Coty)"
+
+#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:134
+msgid "This is a revision addressing a few problems"
+msgstr "Dit is een herziening welke enkele problemen aanpakt"
+
+#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:136
+msgid "Fix interaction bugs"
+msgstr "Interactiefouten opgelost"
+
+#: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:137
+msgid "Minor performance tweaks"
+msgstr "Kleine prestatie-aanpassingen"
+
+#: data/com.github.sixpounder.GameOfLife.gschema.xml:18
+msgid "Fades out cells when they die instead of deleting them in one go"
+msgstr "Vervaagt cellen wanneer ze sterven in plaats van ze in één keer te verwijderen"
+
+#: data/com.github.sixpounder.GameOfLife.gschema.xml:22
+msgid "The number of generations per seconds that should be computed when a simulation is running"
+msgstr "Het aantal generaties per seconde dat moet worden berekend wanneer een simulatie loopt"
+
+#: data/com.github.sixpounder.GameOfLife.gschema.xml:32
+msgid "The width of the universe being generated, in cells number"
+msgstr "De breedte van het gegenereerde universum, in cellenaantal"
+
+#: data/com.github.sixpounder.GameOfLife.gschema.xml:36
+msgid "The height of the universe being generated, in cells number"
+msgstr "De hoogte van het gegenereerde universum, in cellenaantal"
+
+#: data/com.github.sixpounder.GameOfLife.gschema.xml:40
+msgid "Wheter to draw cells outline in universe grid"
+msgstr "Of de omtrek van de cellen in het universumraster moet worden getekend"
+
+#: data/com.github.sixpounder.GameOfLife.gschema.xml:44
+msgid "Wheter to allow universe rendering when the application window is resizing"
+msgstr "Of het universum mag worden getekend wanneer de grootte van het app-venster wordt aangepast"
+
+#: data/com.github.sixpounder.GameOfLife.gschema.xml:48
+msgid "Wheter to show an interaction hint on design mode activated"
+msgstr "Of er een interactiehint moet worden getoond wanneer ontwerpmodus wordt geactiveerd"
+
+#: src/gtk/help-overlay.ui:11
+msgctxt "shortcut window"
+msgid "General"
+msgstr "Algemeen"
+
+#: src/gtk/help-overlay.ui:14
+msgctxt "shortcut window"
+msgid "New Universe"
+msgstr "Nieuw universum"
+
+#: src/gtk/help-overlay.ui:20
+msgctxt "shortcut window"
+msgid "Open Snapshot"
+msgstr "Momentopname openen"
+
+#: src/gtk/help-overlay.ui:26
+msgctxt "shortcut window"
+msgid "Save Snapshot"
+msgstr "Momentopname opslaan"
+
+#: src/gtk/help-overlay.ui:32
+msgctxt "shortcut window"
+msgid "Preferences"
+msgstr "Voorkeuren"
+
+#: src/gtk/help-overlay.ui:38
+msgctxt "shortcut window"
+msgid "Show Shortcuts"
+msgstr "Sneltoetsen tonen"
+
+#: src/gtk/help-overlay.ui:44
+msgctxt "shortcut window"
+msgid "Close"
+msgstr "Sluiten"
+
+#: src/gtk/help-overlay.ui:52
+msgctxt "shortcut window"
+msgid "Universe Control"
+msgstr "Universumbeheer"
+
+#: src/gtk/help-overlay.ui:55
+msgctxt "shortcut window"
+msgid "Toggle Design Mode"
+msgstr "Ontwerpmodus omschakelen"
+
+#: src/gtk/help-overlay.ui:61
+msgctxt "shortcut window"
+msgid "Toggle Run Universe"
+msgstr "Universum uitvoeren/pauzeren"
+
+#: src/gtk/help-overlay.ui:67
+msgctxt "shortcut window"
+msgid "Seed Universe"
+msgstr "Willekeurig universum genereren"
+
+#: src/window.rs:317
+msgid "Left click to make a cell alive, right click to make it dead"
+msgstr "Linkermuisknop om een cel levend te maken, rechtermuisknop om deze dood te maken"
+
+#: src/window.rs:320
+msgid "Do not show again"
+msgstr "Toon dit niet opnieuw"
+
+#: src/window.rs:340
+msgid "_Save"
+msgstr "_Opslaan"
+
+#: src/window.rs:341 src/window.rs:399
+msgid "_Cancel"
+msgstr "_Annuleren"
+
+#: src/window.rs:343
+msgid "Save universe snapshot"
+msgstr "Momentopname van universum opslaan"
+
+#: src/window.rs:368
+msgid "Unable to write to file"
+msgstr "Kon niet naar bestand schrijven"
+
+#: src/window.rs:374
+msgid "Unable to serialize snapshot"
+msgstr "Kon momentopname niet serialiseren"
+
+#: src/window.rs:398
+msgid "_Open"
+msgstr "_Openen"
+
+#: src/window.rs:401
+msgid "Open universe snapshot"
+msgstr "Momentopname van universum openen"
+
+#: src/window.rs:430 src/window.rs:436
+msgid "Unreadable file"
+msgstr "Onleesbaar bestand"
+
+#: src/window.rs:441
+msgid "File not existing or not accessible"
+msgstr "Bestand bestaat niet of is niet toegankelijk"
+
+#: src/window.rs:483
+msgid "Bad template data"
+msgstr "Ongeldige sjabloongegevens"
+
+#: src/window.rs:489
+msgid "Template not found"
+msgstr "Sjabloon niet gevonden"
+
+#: src/widgets/universe_controls.ui:53
+msgctxt "a11y"
+msgid "Toggle design mode"
+msgstr "Ontwerpmodus omschakelen"
+
+#: src/widgets/universe_controls.ui:62
+msgid "Toggle design tools"
+msgstr "Ontwerpgereedschap omschakelen"
+
+#: src/widgets/universe_controls.ui:74
+msgid "Cell brush"
+msgstr "Celkwast"
+
+#: src/widgets/universe_controls.ui:80
+msgctxt "a11y"
+msgid "Cell brush"
+msgstr "Celkwast"
+
+#: src/widgets/universe_controls.ui:87
+msgid "Randomly seed this universe"
+msgstr "Willekeurig universum genereren"
+
+#: src/widgets/universe_controls.ui:97
+msgctxt "a11y"
+msgid "Randomly seed this universe"
+msgstr "Willekeurig universum genereren"
+
+#: src/widgets/universe_controls.ui:110
+msgid "Toggle universe run"
+msgstr "Universum uitvoeren/pauzeren"
+
+#: src/widgets/universe_controls.ui:118
+msgctxt "a11y"
+msgid "Toggle universe run"
+msgstr "Universum uitvoeren/pauzeren"
+
+#: src/widgets/universe_controls.ui:125
+msgid "Skip forward one generation"
+msgstr "Volgende generatie"
+
+#: src/widgets/universe_controls.ui:135
+msgctxt "a11y"
+msgid "Skip forward one generation"
+msgstr "Volgende generatie"
+
+#: src/widgets/universe_controls.ui:169
+msgid "_New Universe"
+msgstr "_Nieuw universum"
+
+#: src/widgets/universe_controls.ui:173
+msgid "_Open Snapshot"
+msgstr "Momentopname _openen"
+
+#: src/widgets/universe_controls.ui:177
+msgid "_Save Snapshot"
+msgstr "Momentopname op_slaan"
+
+#: src/widgets/universe_controls.ui:183
+msgid "_Preferences"
+msgstr "_Voorkeuren"
+
+#: src/widgets/universe_controls.ui:187
+msgid "_Keyboard Shortcuts"
+msgstr "Snel_toetsen"
+
+#: src/widgets/universe_controls.ui:191
+msgid "_About Game Of Life"
+msgstr "_Over Game of Life"
+
+#: src/widgets/universe_controls.ui:195
+msgid "_Close"
+msgstr "_Sluiten"
+
+#: src/widgets/new_universe_view.ui:4
+msgid "New universe"
+msgstr "Nieuw universum"
+
+#: src/widgets/new_universe_view.ui:36
+msgid "Empty universe"
+msgstr "Leeg universum"
+
+#: src/widgets/new_universe_view.ui:42
+msgid "Random seed"
+msgstr "Willekeurige seed"
+
+#: src/widgets/new_universe_view.ui:53
+msgid "Template"
+msgstr "Sjabloon"
+
+#: src/widgets/new_universe_view.ui:64
+msgid "Glider"
+msgstr "Vlieger"
+
+#: src/widgets/new_universe_view.ui:65
+msgid "Pulsar"
+msgstr "Pulsar"
+
+#: src/widgets/new_universe_view.ui:66
+msgid "Quadpole"
+msgstr "Quadpaal"
+
+#: src/widgets/new_universe_view.ui:67
+msgid "Spaceship"
+msgstr "Ruimteschip"
+
+#: src/widgets/new_universe_view.ui:68
+msgid "Circle of fire"
+msgstr "Vuurcirkel"
+
+#: src/widgets/new_universe_view.ui:80
+msgid "Cancel"
+msgstr "Annuleren"
+
+#: src/widgets/new_universe_view.ui:89
+msgid "Create"
+msgstr "Aanmaken"
+
+#: src/widgets/preferences_window.ui:6
+msgid "General"
+msgstr "Algemeen"
+
+#: src/widgets/preferences_window.ui:10
+msgid "Feedbacks"
+msgstr "Feedback"
+
+#: src/widgets/preferences_window.ui:11
+msgid "Various application feedbacks settings"
+msgstr "Verscheidene feedbackinstallingen voor de app"
+
+#: src/widgets/preferences_window.ui:14
+msgid "Design hint"
+msgstr "Ontwerphint"
+
+#: src/widgets/preferences_window.ui:16
+msgid "Show a toast describing interaction modes during design mode"
+msgstr "Toont een toast-melding tijdens de ontwerpmodus welke interactiemodussen beschrijft"
+
+#: src/widgets/preferences_window.ui:32
+msgid "Universe"
+msgstr "Universum"
+
+#: src/widgets/preferences_window.ui:36
+msgid "Appearance"
+msgstr "Uiterlijk"
+
+#: src/widgets/preferences_window.ui:39
+msgid "Light colors"
+msgstr "Lichte kleuren"
+
+#: src/widgets/preferences_window.ui:40
+msgid "These colors are applied if you use a light scheme color on your desktop"
+msgstr "Deze kleuren worden gebruikt bij lichte modus"
+
+#: src/widgets/preferences_window.ui:64
+msgid "Dark colors"
+msgstr "Donkere kleuren"
+
+#: src/widgets/preferences_window.ui:65
+msgid "These colors are applied if you use a dark scheme color on your desktop"
+msgstr "Deze kleuren worden gebruikt bij donkere modus"
+
+#: src/widgets/preferences_window.ui:89
+msgid "Draw cells outline"
+msgstr "Celomtrek tekenen"
+
+#: src/widgets/preferences_window.ui:102
+msgid "Fade out dead cells"
+msgstr "Dode cellen uitvagen"
+
+#: src/widgets/preferences_window.ui:115
+msgid "Render on resize"
+msgstr "Tekenen bij veranderen grootte"
+
+#: src/widgets/preferences_window.ui:118
+msgid "Allows rendering the grid during a resize event of the application window. May affect performance."
+msgstr "Staat het tekenen van het raster toe bij het vergroten of verkleinen van het app-venster. Kan de prestaties beïnvloeden."
+
+#: src/widgets/preferences_window.ui:133
+msgid "Evolution"
+msgstr "Evolutie"
+
+#: src/widgets/preferences_window.ui:136
+msgid "Evolutions speed"
+msgstr "Evolutiesnelheid"
+
+#: src/widgets/preferences_window.ui:138
+msgid "The number of generations to be computed per second during an evolution"
+msgstr "Het aantal berekende generaties per seconde tijdens evolutie"
