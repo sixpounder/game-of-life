@@ -1,7 +1,7 @@
 Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
-Upstream-Name: amberol
+Upstream-Name: game-of-life
 Upstream-Contact: Andrea Coronese
-Source: https://gitlab.gnome.org/ebassi/amberol
+Source: https://github.com/sixpounder/game-of-life
 
 Files: .gitignore
 Copyright: 2022  Andrea Coronese
