@@ -39,7 +39,7 @@ msgid ""
 "Game of Life lets you simulate simple universes made of cells that can be "
 "alive or dead, and evolve according to simple rules."
 msgstr ""
-""Game of Life ti permette di simulare semplici universi fatti di celle che possono essere "
+"Game of Life ti permette di simulare semplici universi fatti di celle che possono essere"
 "vive o morte, ed evolversi secondo semplici regole."
 
 #: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in:13
