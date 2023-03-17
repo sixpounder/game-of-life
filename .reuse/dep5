@@ -7,6 +7,26 @@ Files: .gitignore
 Copyright: 2022  Andrea Coronese
 License: CC0-1.0
 
+Files: .editorconfig
+Copyright: 2022  Andrea Coronese
+License: CC0-1.0
+
+Files: .rustfmt.toml
+Copyright: 2022  Andrea Coronese
+License: CC0-1.0
+
+Files: .github/**/*
+Copyright: 2023  Andrea Coronese
+License: CC0-1.0
+
+Files: meson_options.txt
+Copyright: 2023  Andrea Coronese
+License: GPL-3.0-or-later
+
+Files: *.build
+Copyright: 2023  Andrea Coronese
+License: GPL-3.0-or-later
+
 Files: Cargo.toml
 Copyright: 2022  Andrea Coronese
 License: GPL-3.0-or-later
@@ -23,9 +43,21 @@ Files: com.github.sixpounder.GameOfLife.json
 Copyright: 2022  Andrea Coronese
 License: CC0-1.0
 
-Files: data/com.github.sixpounder.GameOfLife.appdata.xml.in
+Files: build-aux/*
 Copyright: 2022  Andrea Coronese
 License: CC0-1.0
+
+Files: po/*
+Copyright: 2022  Andrea Coronese
+License: CC0-1.0
+
+Files: data/com.github.sixpounder.GameOfLife.appdata.xml.in.in
+Copyright: 2022  Andrea Coronese
+License: CC0-1.0
+
+Files: data/**/com.github.sixpounder.GameOfLife*.svg
+Copyright: 2022  Tobias Bernard
+License: GPL-3.0-or-later
 
 Files: data/com.github.sixpounder.GameOfLife.desktop.in.in
 Copyright: 2022  Andrea Coronese
@@ -75,4 +107,37 @@ Files: src/gtk/style.css
 Copyright: 2022  Andrea Coronese
 License: GPL-3.0-or-later
 
+Files: src/**/*.ui
+Copyright: 2023  Andrea Coronese
+License: GPL-3.0-or-later
+
+Files: src/*.ui
+Copyright: 2023  Andrea Coronese
+License: GPL-3.0-or-later
+
+
+Files: src/*.rs
+Copyright: 2023  Andrea Coronese
+License: GPL-3.0-or-later
+
+Files: src/*.rs.in
+Copyright: 2023  Andrea Coronese
+License: GPL-3.0-or-later
+
+
+Files: src/**/*.rs
+Copyright: 2023  Andrea Coronese
+License: GPL-3.0-or-later
+
+Files: src/styles/*.css
+Copyright: 2023  Andrea Coronese
+License: GPL-3.0-or-later
+
+Files: **/*.build
+Copyright: 2023  Andrea Coronese
+License: GPL-3.0-or-later
+
+Files: src/assets/**/*
+Copyright: 2023  Andrea Coronese
+License: GPL-3.0-or-later
 
