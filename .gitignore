@@ -1,4 +1,5 @@
 # Common exclusions
+.flatpak-builder
 *.log
 tmp
 
