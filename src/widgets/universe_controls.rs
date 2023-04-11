@@ -3,7 +3,7 @@ use gtk::{prelude::*, subclass::prelude::*, CompositeTemplate};
 
 mod imp {
     use super::*;
-    use glib::{ParamFlags, ParamSpec, ParamSpecBoolean, ParamSpecString};
+    use glib::{ParamSpec, ParamSpecBoolean, ParamSpecString};
     use once_cell::sync::Lazy;
 
     #[derive(Debug, Default, CompositeTemplate)]
@@ -40,17 +40,26 @@ mod imp {
         fn properties() -> &'static [ParamSpec] {
             static PROPERTIES: Lazy<Vec<ParamSpec>> = Lazy::new(|| {
                 vec![
-                    ParamSpecBoolean::new("playing", "", "", false, ParamFlags::READWRITE),
-                    ParamSpecBoolean::new("stopped", "", "", true, ParamFlags::READABLE),
-                    ParamSpecBoolean::new("reveal-tools", "", "", false, ParamFlags::READWRITE),
-                    ParamSpecBoolean::new("brush-mode", "", "", false, ParamFlags::READWRITE),
-                    ParamSpecString::new(
-                        "run-button-icon-name",
-                        "",
-                        "",
-                        Some("media-playback-start-symbolic"),
-                        ParamFlags::READABLE,
-                    ),
+                    ParamSpecBoolean::builder("playing")
+                        .default_value(false)
+                        .readwrite()
+                        .build(),
+                    ParamSpecBoolean::builder("stopped")
+                        .default_value(true)
+                        .read_only()
+                        .build(),
+                    ParamSpecBoolean::builder("reveal-tools")
+                        .default_value(false)
+                        .readwrite()
+                        .build(),
+                    ParamSpecBoolean::builder("brush-mode")
+                        .default_value(false)
+                        .readwrite()
+                        .build(),
+                    ParamSpecString::builder("run-button-icon-name")
+                        .default_value(Some("media-playback-start-symbolic"))
+                        .readwrite()
+                        .build(),
                 ]
             });
             PROPERTIES.as_ref()
@@ -117,7 +126,9 @@ glib::wrapper! {
 
 impl GameOfLifeUniverseControls {
     pub fn new<P: glib::IsA<gtk::Application>>(application: &P) -> Self {
-        glib::Object::new::<Self>(&[("application", application)])
+        glib::Object::builder()
+            .property("application", application)
+            .build()
     }
 
     pub fn set_tools_revealed(&self, value: bool) {

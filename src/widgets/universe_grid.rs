@@ -134,9 +134,7 @@ impl Default for UniverseGridInteractionState {
 
 mod imp {
     use super::*;
-    use glib::{
-        types::StaticType, ParamFlags, ParamSpec, ParamSpecBoolean, ParamSpecEnum, ParamSpecUInt,
-    };
+    use glib::{ParamSpec, ParamSpecBoolean, ParamSpecEnum, ParamSpecUInt};
     use once_cell::sync::Lazy;
 
     #[derive(Debug, Default, CompositeTemplate)]
@@ -231,31 +229,32 @@ mod imp {
         fn properties() -> &'static [glib::ParamSpec] {
             static PROPERTIES: Lazy<Vec<ParamSpec>> = Lazy::new(|| {
                 vec![
-                    ParamSpecEnum::new(
-                        "mode",
-                        "",
-                        "",
-                        UniverseGridMode::static_type(),
-                        1,
-                        ParamFlags::READWRITE,
-                    ),
-                    ParamSpecBoolean::new(
-                        "allow-render-on-resize",
-                        "",
-                        "",
-                        false,
-                        ParamFlags::READWRITE,
-                    ),
-                    ParamSpecBoolean::new(
-                        "draw-cells-outline",
-                        "",
-                        "",
-                        false,
-                        ParamFlags::READWRITE,
-                    ),
-                    ParamSpecBoolean::new("running", "", "", false, ParamFlags::READABLE),
-                    ParamSpecBoolean::new("animated", "", "", true, ParamFlags::READWRITE),
-                    ParamSpecUInt::new("evolution-speed", "", "", 1, 100, 5, ParamFlags::READWRITE),
+                    ParamSpecEnum::builder("mode")
+                        .default_value(UniverseGridMode::Locked)
+                        .read_only()
+                        .build(),
+                    ParamSpecBoolean::builder("allow-render-on-resize")
+                        .default_value(false)
+                        .read_only()
+                        .build(),
+                    ParamSpecBoolean::builder("draw-cells-outline")
+                        .default_value(false)
+                        .readwrite()
+                        .build(),
+                    ParamSpecBoolean::builder("running")
+                        .default_value(false)
+                        .readwrite()
+                        .build(),
+                    ParamSpecBoolean::builder("animated")
+                        .default_value(true)
+                        .readwrite()
+                        .build(),
+                    ParamSpecUInt::builder("evolution-speed")
+                        .minimum(1)
+                        .maximum(100)
+                        .default_value(5)
+                        .readwrite()
+                        .build(),
                 ]
             });
             PROPERTIES.as_ref()
@@ -321,7 +320,9 @@ glib::wrapper! {
 
 impl GameOfLifeUniverseGrid {
     pub fn new<P: glib::IsA<gtk::Application>>(application: &P) -> Self {
-        glib::Object::new::<Self>(&[("application", application)])
+        glib::Object::builder()
+            .property("application", application)
+            .build()
     }
 
     fn setup_channel(&self) {
@@ -359,7 +360,7 @@ impl GameOfLifeUniverseGrid {
                 this.on_drawing_area_click_unpaired_released(gesture, x, y, button, events);
             }),
         );
-        drawing_area.add_controller(&left_click_gesture_controller);
+        drawing_area.add_controller(left_click_gesture_controller);
 
         let right_click_gesture_controller = gtk::GestureClick::new();
         right_click_gesture_controller.set_button(gtk::gdk::ffi::GDK_BUTTON_SECONDARY as u32);
@@ -384,7 +385,7 @@ impl GameOfLifeUniverseGrid {
                 this.on_drawing_area_click_unpaired_released(gesture, x, y, button, events);
             }),
         );
-        drawing_area.add_controller(&right_click_gesture_controller);
+        drawing_area.add_controller(right_click_gesture_controller);
 
         let left_drag_gesture_controller = gtk::GestureDrag::new();
         left_drag_gesture_controller.set_button(gtk::gdk::ffi::GDK_BUTTON_PRIMARY as u32);
@@ -399,7 +400,7 @@ impl GameOfLifeUniverseGrid {
                 this.on_drawing_area_drag_move(gesture, events, Some(UniverseCell::Alive))
             }),
         );
-        drawing_area.add_controller(&left_drag_gesture_controller);
+        drawing_area.add_controller(left_drag_gesture_controller);
 
         let right_drag_gesture_controller = gtk::GestureDrag::new();
         right_drag_gesture_controller.set_button(gtk::gdk::ffi::GDK_BUTTON_SECONDARY as u32);
@@ -414,7 +415,7 @@ impl GameOfLifeUniverseGrid {
                 this.on_drawing_area_drag_move(gesture, events, Some(UniverseCell::Dead))
             }),
         );
-        drawing_area.add_controller(&right_drag_gesture_controller);
+        drawing_area.add_controller(right_drag_gesture_controller);
 
         let motion_controller = gtk::EventControllerMotion::new();
         motion_controller.connect_enter(clone!(@strong self as this => move |controller, x, y| {
@@ -429,7 +430,7 @@ impl GameOfLifeUniverseGrid {
             this.on_drawing_area_mouse_position(controller, x, y);
         }));
 
-        drawing_area.add_controller(&motion_controller);
+        drawing_area.add_controller(motion_controller);
     }
 
     fn process_action(&self, action: UniverseGridRequest) -> glib::Continue {

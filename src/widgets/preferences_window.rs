@@ -7,7 +7,7 @@ use gtk::{gdk::RGBA, gio, glib, prelude::*, subclass::prelude::*, CompositeTempl
 
 mod imp {
     use super::*;
-    use glib::{ParamFlags, ParamSpec, ParamSpecString};
+    use glib::{ParamSpec, ParamSpecString};
     use once_cell::sync::Lazy;
 
     #[derive(Debug, Default, CompositeTemplate)]
@@ -68,34 +68,22 @@ mod imp {
         fn properties() -> &'static [glib::ParamSpec] {
             static PROPERTIES: Lazy<Vec<ParamSpec>> = Lazy::new(|| {
                 vec![
-                    ParamSpecString::new(
-                        "universe-cell-color",
-                        "",
-                        "",
-                        None,
-                        ParamFlags::READWRITE,
-                    ),
-                    ParamSpecString::new(
-                        "universe-background-color",
-                        "",
-                        "",
-                        None,
-                        ParamFlags::READWRITE,
-                    ),
-                    ParamSpecString::new(
-                        "universe-cell-color-dark",
-                        "",
-                        "",
-                        None,
-                        ParamFlags::READWRITE,
-                    ),
-                    ParamSpecString::new(
-                        "universe-background-color-dark",
-                        "",
-                        "",
-                        None,
-                        ParamFlags::READWRITE,
-                    ),
+                    ParamSpecString::builder("universe-cell-color")
+                        .readwrite()
+                        .default_value(None)
+                        .build(),
+                    ParamSpecString::builder("universe-background-color")
+                        .default_value(None)
+                        .readwrite()
+                        .build(),
+                    ParamSpecString::builder("universe-cell-color-dark")
+                        .default_value(None)
+                        .readwrite()
+                        .build(),
+                    ParamSpecString::builder("universe-background-color-dark")
+                        .default_value(None)
+                        .readwrite()
+                        .build(),
                 ]
             });
             PROPERTIES.as_ref()
@@ -170,7 +158,7 @@ impl Default for GameOfLifePreferencesWindow {
 
 impl GameOfLifePreferencesWindow {
     pub fn new() -> Self {
-        glib::Object::new::<Self>(&[])
+        glib::Object::builder().build()
     }
 
     fn setup_bindings(&self) {

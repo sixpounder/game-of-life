@@ -73,7 +73,11 @@ glib::wrapper! {
 
 impl GameOfLifeApplication {
     pub fn new(application_id: &str, flags: &gio::ApplicationFlags) -> Self {
-        glib::Object::new::<Self>(&[("application-id", &application_id), ("flags", flags)])
+        // glib::Object::new::<Self>(&[("application-id", &application_id), ("flags", flags)])
+        glib::Object::builder()
+            .property("application-id", application_id)
+            .property("flags", flags)
+            .build()
     }
 
     fn setup_gactions(&self) {
@@ -118,7 +122,7 @@ impl GameOfLifeApplication {
             .modal(true)
             .version(VERSION)
             .license_type(gtk::License::Gpl30)
-            .developers(vec!["Andrea Coronese".into()])
+            .developers(vec!["Andrea Coronese"])
             .translator_credits(translators_list().join("\n").as_str())
             .build();
 

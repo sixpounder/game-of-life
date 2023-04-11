@@ -15,7 +15,7 @@ use crate::{
 
 mod imp {
     use super::*;
-    use glib::{ParamFlags, ParamSpec, ParamSpecBoolean, ParamSpecString};
+    use glib::{ParamSpec, ParamSpecBoolean, ParamSpecString};
     use once_cell::sync::Lazy;
 
     #[derive(Debug, CompositeTemplate)]
@@ -112,22 +112,22 @@ mod imp {
         fn properties() -> &'static [glib::ParamSpec] {
             static PROPERTIES: Lazy<Vec<ParamSpec>> = Lazy::new(|| {
                 vec![
-                    ParamSpecString::new(
-                        "run-button-icon-name",
-                        "",
-                        "",
-                        Some("media-playback-start-symbolic"),
-                        ParamFlags::READABLE,
-                    ),
-                    ParamSpecBoolean::new("running", "", "", false, ParamFlags::READABLE),
-                    ParamSpecBoolean::new("stopped", "", "", true, ParamFlags::READABLE),
-                    ParamSpecBoolean::new(
-                        "allow-render-on-resize",
-                        "",
-                        "",
-                        false,
-                        ParamFlags::READABLE,
-                    ),
+                    ParamSpecString::builder("run-button-icon-name")
+                        .default_value(Some("media-playback-start-symbolic"))
+                        .readwrite()
+                        .build(),
+                    ParamSpecBoolean::builder("running")
+                        .default_value(false)
+                        .read_only()
+                        .build(),
+                    ParamSpecBoolean::builder("stopped")
+                        .default_value(true)
+                        .read_only()
+                        .build(),
+                    ParamSpecBoolean::builder("allow-render-on-resize")
+                        .default_value(false)
+                        .read_only()
+                        .build(),
                 ]
             });
 
@@ -163,7 +163,9 @@ glib::wrapper! {
 
 impl GameOfLifeWindow {
     pub fn new<P: glib::IsA<adw::Application>>(application: &P) -> Self {
-        let win: Self = glib::Object::new::<Self>(&[("application", application)]);
+        let win: Self = glib::Object::builder()
+            .property("application", application)
+            .build();
 
         let style_manager = application.style_manager();
 
@@ -198,7 +200,7 @@ impl GameOfLifeWindow {
         imp.provider
             .load_from_resource(format!("{}/{}", APPLICATION_G_PATH, "style.css").as_str());
         if let Some(display) = gtk::gdk::Display::default() {
-            gtk::StyleContext::add_provider_for_display(&display, &imp.provider, 400);
+            gtk::style_context_add_provider_for_display(&display, &imp.provider, 400);
         }
     }
 
@@ -318,7 +320,7 @@ impl GameOfLifeWindow {
                 let toast = adw::Toast::new(&msg);
                 toast.set_action_name(Some("app.disable-design-hint"));
                 toast.set_button_label(Some(i18n("Do not show again").as_str()));
-                self.imp().toast_overlay.add_toast(&toast);
+                self.imp().toast_overlay.add_toast(toast);
             }
         } else {
             self.imp().universe_grid.set_mode(UniverseGridMode::Locked);
@@ -549,6 +551,6 @@ impl GameOfLifeWindow {
 
     fn add_toast(&self, msg: String) {
         let toast = adw::Toast::new(&msg);
-        self.imp().toast_overlay.add_toast(&toast);
+        self.imp().toast_overlay.add_toast(toast);
     }
 }

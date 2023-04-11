@@ -18,7 +18,7 @@ impl Default for NewUniverseType {
 
 mod imp {
     use super::*;
-    use glib::{ParamFlags, ParamSpec, ParamSpecBoolean};
+    use glib::{ParamSpec, ParamSpecBoolean};
     use once_cell::sync::Lazy;
 
     #[derive(Debug, Default, CompositeTemplate)]
@@ -63,13 +63,10 @@ mod imp {
 
         fn properties() -> &'static [ParamSpec] {
             static PROPERTIES: Lazy<Vec<ParamSpec>> = Lazy::new(|| {
-                vec![ParamSpecBoolean::new(
-                    "dimensions-editable",
-                    "",
-                    "",
-                    false,
-                    ParamFlags::READABLE,
-                )]
+                vec![ParamSpecBoolean::builder("dimensions-editable")
+                    .default_value(false)
+                    .read_only()
+                    .build()]
             });
             PROPERTIES.as_ref()
         }
@@ -104,7 +101,7 @@ impl Default for GameOfLifeNewUniverseView {
 
 impl GameOfLifeNewUniverseView {
     pub fn new() -> Self {
-        glib::Object::new::<Self>(&[])
+        glib::Object::new::<Self>()
     }
 
     fn setup_widgets(&self) {
