@@ -43,7 +43,7 @@ fn snapshot_grid(
     let fg_color = widget.fg_color.get().unwrap();
     let bg_color = widget.bg_color.get().unwrap();
     let wants_outlines = widget.draw_cells_outline.get();
-    let fades_dead_cells = widget.fades_dead_cells.get();
+    let animated = widget.animated.get();
 
     let mut outline_color = bg_color;
     outline_color.set_red(outline_color.red() + 0.1);
@@ -88,7 +88,7 @@ fn snapshot_grid(
                     height as f32,
                 );
                 snapshot.append_color(&fg_color, &cell_rect_bounds);
-            } else if fades_dead_cells {
+            } else if animated {
                 let transparency_factor = el.corpse_heat();
                 if transparency_factor > 0.0 {
                     let cell_rect_bounds = gtk::graphene::Rect::new(
@@ -140,13 +140,25 @@ mod imp {
     #[derive(Debug, Default, CompositeTemplate)]
     #[template(resource = "/com/github/sixpounder/GameOfLife/universe_grid.ui")]
     pub struct GameOfLifeUniverseGrid {
+        /// Reference to the settings object
         pub(super) settings: GameOfLifeSettings,
 
+        /// The universe being rendered
+        pub(super) universe: RefCell<Option<Universe>>,
+
+        /// Used to suspend or permit drawing operations
         pub(super) frozen: Cell<bool>,
 
-        pub(super) mode: Cell<UniverseGridMode>,
+        /// The speed at which universe states should tick
+        pub(super) evolution_speed: Cell<u32>,
 
-        pub(super) universe: RefCell<Option<Universe>>,
+        /// Whether to animate cells transitions
+        pub(super) animated: Cell<bool>,
+
+        /// Whether to draw cells outlines
+        pub(super) draw_cells_outline: Cell<bool>,
+
+        pub(super) mode: Cell<UniverseGridMode>,
 
         pub(super) receiver: RefCell<Option<Receiver<UniverseGridRequest>>>,
 
@@ -156,21 +168,18 @@ mod imp {
 
         pub(super) allow_draw_on_resize: Cell<bool>,
 
+        /// The grid foreground color
         pub(super) fg_color: Cell<Option<gtk::gdk::RGBA>>,
 
+        /// The grid background color
         pub(super) bg_color: Cell<Option<gtk::gdk::RGBA>>,
 
-        pub(super) point_under_pointing_device: Cell<Option<UniversePoint>>,
-
-        pub(super) evolution_speed: Cell<u32>,
-
-        pub(super) animated: Cell<bool>,
-
-        pub(super) draw_cells_outline: Cell<bool>,
-
-        pub(super) fades_dead_cells: Cell<bool>,
-
+        /// Tracks the state of the interaction in order to drive interaction controllers
         pub(super) interaction_state: Cell<UniverseGridInteractionState>,
+
+        /// While editing the grid this is used as the "next state" for each cell that gets edited.
+        /// This will be tipically set at the beginning of a user interaction and unset at the end of it
+        pub(super) interaction_next_state: Cell<Option<UniverseCell>>
     }
 
     #[glib::object_subclass]
@@ -193,7 +202,8 @@ mod imp {
             this.receiver = receiver;
             this.sender = Some(sender);
 
-            // Start universe in running mode
+            // Start universe in locked mode, meaning no interactions
+            // are possible
             this.mode.set(UniverseGridMode::Locked);
 
             // Defaults to light color scheme
@@ -272,9 +282,6 @@ mod imp {
                 "draw-cells-outline" => {
                     obj.set_draw_cells_outline(value.get::<bool>().unwrap());
                 }
-                "fades-dead-cells" => {
-                    obj.set_fades_dead_cells(value.get::<bool>().unwrap());
-                }
                 "animated" => {
                     obj.set_animated(value.get::<bool>().unwrap());
                 }
@@ -291,7 +298,6 @@ mod imp {
                 "mode" => self.mode.get().to_value(),
                 "allow-render-on-resize" => self.allow_draw_on_resize.get().to_value(),
                 "draw-cells-outline" => obj.draw_cells_outline().to_value(),
-                "fades-dead-cells" => obj.fades_dead_cells().to_value(),
                 "animated" => obj.animated().to_value(),
                 "evolution-speed" => obj.evolution_speed().to_value(),
                 "running" => obj.is_running().to_value(),
@@ -341,12 +347,27 @@ impl GameOfLifeUniverseGrid {
         left_click_gesture_controller.set_button(gtk::gdk::ffi::GDK_BUTTON_PRIMARY as u32);
         left_click_gesture_controller.connect_pressed(
             clone!(@strong self as this => move |gesture, n_press, x, y| {
+                let imp = this.imp();
+                let clicked_cell = widget_area_point_to_universe_cell(
+                    &imp.obj(),
+                    imp.universe.borrow().as_ref(),
+                    x,
+                    y,
+                );
+
+                // Memorize the next state for each cell touched by this interaction
+                // as the inverse of the state of the cell under the current pointing
+                // device
+                this.imp().interaction_next_state.set(
+                    clicked_cell.map(|p| !p.cell().clone())
+                );
+
                 this.on_drawing_area_clicked(
                     gesture,
                     n_press,
                     x,
                     y,
-                    Some(UniverseCell::Alive)
+                    this.interaction_next_state()
                 );
             }),
         );
@@ -362,75 +383,20 @@ impl GameOfLifeUniverseGrid {
         );
         drawing_area.add_controller(left_click_gesture_controller);
 
-        let right_click_gesture_controller = gtk::GestureClick::new();
-        right_click_gesture_controller.set_button(gtk::gdk::ffi::GDK_BUTTON_SECONDARY as u32);
-        right_click_gesture_controller.connect_pressed(
-            clone!(@strong self as this => move |gesture, n_press, x, y| {
-                this.on_drawing_area_clicked(
-                    gesture,
-                    n_press,
-                    x,
-                    y,
-                    Some(UniverseCell::Dead)
-                );
-            }),
-        );
-        right_click_gesture_controller.connect_released(
-            clone!(@strong self as this => move |gesture, n_press, x, y| {
-                this.on_drawing_area_click_released(gesture, n_press, x, y);
-            }),
-        );
-        right_click_gesture_controller.connect_unpaired_release(
-            clone!(@strong self as this => move |gesture, x, y, button, events| {
-                this.on_drawing_area_click_unpaired_released(gesture, x, y, button, events);
-            }),
-        );
-        drawing_area.add_controller(right_click_gesture_controller);
-
         let left_drag_gesture_controller = gtk::GestureDrag::new();
         left_drag_gesture_controller.set_button(gtk::gdk::ffi::GDK_BUTTON_PRIMARY as u32);
         left_drag_gesture_controller.connect_begin(
             clone!(@strong self as this => move |gesture, events| {
-                this.on_drawing_area_drag_begin(gesture, events, Some(UniverseCell::Alive))
+                this.on_drawing_area_drag_begin(gesture, events, this.interaction_next_state());
             }),
         );
 
         left_drag_gesture_controller.connect_update(
             clone!(@strong self as this => move |gesture, events| {
-                this.on_drawing_area_drag_move(gesture, events, Some(UniverseCell::Alive))
+                this.on_drawing_area_drag_move(gesture, events, this.interaction_next_state())
             }),
         );
         drawing_area.add_controller(left_drag_gesture_controller);
-
-        let right_drag_gesture_controller = gtk::GestureDrag::new();
-        right_drag_gesture_controller.set_button(gtk::gdk::ffi::GDK_BUTTON_SECONDARY as u32);
-        right_drag_gesture_controller.connect_begin(
-            clone!(@strong self as this => move |gesture, events| {
-                this.on_drawing_area_drag_begin(gesture, events, Some(UniverseCell::Dead))
-            }),
-        );
-
-        right_drag_gesture_controller.connect_update(
-            clone!(@strong self as this => move |gesture, events| {
-                this.on_drawing_area_drag_move(gesture, events, Some(UniverseCell::Dead))
-            }),
-        );
-        drawing_area.add_controller(right_drag_gesture_controller);
-
-        let motion_controller = gtk::EventControllerMotion::new();
-        motion_controller.connect_enter(clone!(@strong self as this => move |controller, x, y| {
-            this.on_drawing_area_mouse_position(controller, x, y);
-        }));
-
-        motion_controller.connect_leave(clone!(@strong self as this => move |controller| {
-            this.on_drawing_area_mouse_leave(controller);
-        }));
-
-        motion_controller.connect_motion(clone!(@strong self as this => move |controller, x, y| {
-            this.on_drawing_area_mouse_position(controller, x, y);
-        }));
-
-        drawing_area.add_controller(motion_controller);
     }
 
     fn process_action(&self, action: UniverseGridRequest) -> glib::Continue {
@@ -455,7 +421,7 @@ impl GameOfLifeUniverseGrid {
         y: f64,
         alter_state: Option<UniverseCell>,
     ) {
-        if self.mode() == UniverseGridMode::Unlocked {
+        if self.editable() {
             self.imp()
                 .interaction_state
                 .set(UniverseGridInteractionState::Ongoing);
@@ -470,9 +436,11 @@ impl GameOfLifeUniverseGrid {
         _x: f64,
         _y: f64,
     ) {
-        self.imp()
+        let imp = self.imp();
+        imp
             .interaction_state
             .set(UniverseGridInteractionState::Idle);
+        imp.interaction_next_state.set(None);
     }
 
     fn on_drawing_area_click_unpaired_released(
@@ -483,9 +451,11 @@ impl GameOfLifeUniverseGrid {
         _button: u32,
         _events: Option<&gtk::gdk::EventSequence>,
     ) {
-        self.imp()
+        let imp = self.imp();
+        imp
             .interaction_state
             .set(UniverseGridInteractionState::Idle);
+        imp.interaction_next_state.set(None);
     }
 
     fn on_drawing_area_drag_begin(
@@ -513,26 +483,6 @@ impl GameOfLifeUniverseGrid {
                 self.alter_universe_point(origin.0 + point.0, origin.1 + point.1, alter_state);
             }
         }
-    }
-
-    fn on_drawing_area_mouse_position(
-        &self,
-        _controller: &gtk::EventControllerMotion,
-        x: f64,
-        y: f64,
-    ) {
-        self.imp()
-            .point_under_pointing_device
-            .set(widget_area_point_to_universe_cell(
-                &self.imp().obj(),
-                self.imp().universe.borrow().as_ref(),
-                x,
-                y,
-            ));
-    }
-
-    fn on_drawing_area_mouse_leave(&self, _controller: &gtk::EventControllerMotion) {
-        self.imp().point_under_pointing_device.set(None);
     }
 
     /// Alters the universe cell visually located at `x` and `y` coordinates. If `Some(value)`
@@ -566,10 +516,14 @@ impl GameOfLifeUniverseGrid {
     }
 
     pub fn set_mode(&self, value: UniverseGridMode) {
-        if !self.is_running() {
-            self.imp().mode.set(value);
-            self.notify("mode");
-        }
+      if !self.is_running() {
+          self.imp().mode.set(value);
+          self.notify("mode");
+      }
+    }
+
+    pub fn editable(&self) -> bool {
+        !self.is_running() && self.mode() != UniverseGridMode::Locked
     }
 
     pub fn is_running(&self) -> bool {
@@ -600,7 +554,6 @@ impl GameOfLifeUniverseGrid {
     }
 
     pub fn run(&self) {
-        // self.set_mode(UniverseGridMode::Run);
         let local_sender = self.get_sender();
 
         let (thread_render_stopper_sender, thread_render_stopper_receiver) =
@@ -711,21 +664,6 @@ impl GameOfLifeUniverseGrid {
         }
     }
 
-    pub fn fades_dead_cells(&self) -> bool {
-        self.imp().fades_dead_cells.get()
-    }
-
-    pub fn set_fades_dead_cells(&self, value: bool) {
-        let current = self.imp().fades_dead_cells.get();
-        if value != current {
-            self.imp().fades_dead_cells.set(value);
-
-            if !self.is_running() {
-                self.redraw();
-            }
-        }
-    }
-
     pub fn evolution_speed(&self) -> u32 {
         self.imp().evolution_speed.get()
     }
@@ -741,4 +679,9 @@ impl GameOfLifeUniverseGrid {
     pub fn set_animated(&self, value: bool) {
         self.imp().animated.set(value);
     }
+
+    fn interaction_next_state(&self) -> Option<UniverseCell> {
+        self.imp().interaction_next_state.get()
+    }
 }
+

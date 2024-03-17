@@ -32,7 +32,7 @@ mod imp {
         pub(super) draw_cells_outline: TemplateChild<gtk::Switch>,
 
         #[template_child]
-        pub(super) fade_out_dead_cells: TemplateChild<gtk::Switch>,
+        pub(super) animated: TemplateChild<gtk::Switch>,
 
         #[template_child]
         pub(super) allow_render_on_resize: TemplateChild<gtk::Switch>,
@@ -171,7 +171,7 @@ impl GameOfLifePreferencesWindow {
             &imp.draw_cells_outline.get(),
             "active",
         );
-        settings.bind("fade-out-cells", &imp.fade_out_dead_cells.get(), "active");
+        settings.bind("animated", &imp.animated.get(), "active");
         settings.bind(
             "allow-render-during-resize",
             &imp.allow_render_on_resize.get(),

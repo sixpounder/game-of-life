@@ -99,12 +99,13 @@
             </child>
             <child>
               <object class="AdwActionRow">
-                <property name="title" translatable="yes">Fade out dead cells</property>
+                <property name="title" translatable="yes">Animate grid</property>
                 <property name="title-selectable">false</property>
+                <property name="subtitle" translatable="yes">Allows animations for the universe grid, such as fading out dead cells.</property>
                 <property name="activatable">true</property>
-                <property name="activatable-widget">fade_out_dead_cells</property>
+                <property name="activatable-widget">animated</property>
                 <child>
-                  <object class="GtkSwitch" id="fade_out_dead_cells">
+                  <object class="GtkSwitch" id="animated">
                     <property name="valign">center</property>
                   </object>
                 </child>

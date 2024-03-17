@@ -13,9 +13,9 @@
 	  <key name="bg-color-dark" type="s">
 	    <default>"#3D3846"</default>
 	  </key>
-	  <key name="fade-out-cells" type="b">
+	  <key name="animated" type="b">
 	    <default>false</default>
-	    <description>Fades out cells when they die instead of deleting them in one go</description>
+	    <description>Allows the application to animate the universe grid</description>
 	  </key>
 	  <key name="evolution-speed" type="u">
 	    <default>10</default>

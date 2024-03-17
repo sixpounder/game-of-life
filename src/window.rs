@@ -192,7 +192,7 @@ impl GameOfLifeWindow {
         grid.set_allow_render_on_resize(settings.allow_render_during_resize());
         grid.set_evolution_speed(settings.evolution_speed());
         grid.set_draw_cells_outline(settings.draw_cells_outline());
-        grid.set_fades_dead_cells(settings.fade_out_cells());
+        grid.set_animated(settings.animated());
     }
 
     fn setup_provider(&self) {
@@ -228,7 +228,7 @@ impl GameOfLifeWindow {
         settings.connect_changed(
             "fade-out-cells",
             clone!(@strong self as this, @strong settings as s => move |_,_| {
-                this.imp().universe_grid.set_fades_dead_cells(s.fade_out_cells())
+                this.imp().universe_grid.set_animated(s.animated())
             }),
         );
 

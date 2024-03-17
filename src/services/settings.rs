@@ -121,8 +121,15 @@ impl GameOfLifeSettings {
         self.inner.boolean("draw-cells-outline")
     }
 
-    pub fn fade_out_cells(&self) -> bool {
-        self.inner.boolean("fade-out-cells")
+    #[allow(dead_code)]
+    pub fn set_animated(&self, value: bool) {
+        self.inner
+            .set_boolean("animated", value)
+            .expect("Could not store animated setting");
+    }
+
+    pub fn animated(&self) -> bool {
+        self.inner.boolean("animated")
     }
 
     #[allow(dead_code)]

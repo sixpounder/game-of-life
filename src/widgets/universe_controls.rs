@@ -103,7 +103,6 @@ mod imp {
                         }
 
                         obj.notify("run-button-icon-name");
-                        obj.notify("running");
                         obj.notify("stopped");
                     }
                 }
@@ -149,3 +148,4 @@ impl GameOfLifeUniverseControls {
         self.imp().brush_mode.get()
     }
 }
+

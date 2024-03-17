@@ -24,6 +24,12 @@ pub enum UniverseCell {
     Alive = 1,
 }
 
+impl Default for UniverseCell {
+    fn default() -> Self {
+        Self::Dead
+    }
+}
+
 impl UniverseCell {
     pub fn is_alive(&self) -> bool {
         matches!(self, UniverseCell::Alive)
