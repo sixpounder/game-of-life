@@ -36,6 +36,8 @@
     </screenshots>
     <launchable type="desktop-id">@APPLICATION_ID@.desktop</launchable>
     <url type="homepage">https://github.com/sixpounder/game-of-life</url>
+    <url type="bugtracker">https://github.com/sixpounder/game-of-life/issues</url>
+    <url type="vcs-browser">https://github.com/sixpounder/game-of-life</url>
     <developer_name>Andrea Coronese</developer_name>
     <update_contact>sixpounder_at_protonmail.com</update_contact>
     <translation type="gettext">game-of-life</translation>
