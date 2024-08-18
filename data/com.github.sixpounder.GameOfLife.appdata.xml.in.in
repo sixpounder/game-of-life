@@ -21,7 +21,7 @@
         </ul>
     </description>
     <screenshots>
-        <screenshot>
+        <screenshot type="default">
           <image>https://raw.githubusercontent.com/sixpounder/game-of-life/main/data/screenshots/1.png</image>
         </screenshot>
         <screenshot>
@@ -36,6 +36,8 @@
     </screenshots>
     <launchable type="desktop-id">@APPLICATION_ID@.desktop</launchable>
     <url type="homepage">https://github.com/sixpounder/game-of-life</url>
+    <url type="bugtracker">https://github.com/sixpounder/game-of-life/issues</url>
+    <url type="vcs-browser">https://github.com/sixpounder/game-of-life</url>
     <developer_name>Andrea Coronese</developer_name>
     <update_contact>sixpounder_at_protonmail.com</update_contact>
     <translation type="gettext">game-of-life</translation>
@@ -118,7 +120,7 @@
                         Fixes a few problems with the main menu entries
                     </li>
                     <li>
-                        <b>Layout changes</b>: Moves main menu to the left of the window, introduce close button to the right
+                        Layout changes: Moves main menu to the left of the window, introduce close button to the right
                     </li>
                 </ul>
             </description>
