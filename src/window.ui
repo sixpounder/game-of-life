@@ -10,7 +10,7 @@
         <property name="child">
           <object class="GtkBox">
             <property name="orientation">vertical</property>
-            <property name="spacing">10</property>
+            <property name="spacing">0</property>
             <property name="margin-bottom">10</property>
             <child>
               <object class="GameOfLifeUniverseGrid" id="universe_grid">
@@ -18,11 +18,12 @@
                 <property name="halign">fill</property>
                 <property name="vexpand">True</property>
                 <property name="mode">Run</property>
-                <property name="allow-render-on-resize" bind-property="allow-render-on-resize" bind-source="GameOfLifeWindow" bind-flags="default|sync-create"></property>
+                <property name="allow-render-on-resize" bind-property="allow-render-on-resize" bind-source="GameOfLifeWindow" bind-flags="default|sync-create"/>
               </object>
             </child>
             <child>
               <object class="GameOfLifeUniverseControls" id="controls">
+                <property name="margin-top">10</property>
                 <property name="playing" bind-property="running" bind-source="GameOfLifeWindow" bind-flags="default|sync-create"/>
               </object>
             </child>

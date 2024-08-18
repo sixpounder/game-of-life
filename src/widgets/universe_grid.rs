@@ -1,17 +1,20 @@
 use crate::config::G_LOG_DOMAIN;
+use crate::lib::WindowedStack;
 use crate::models::{
     Universe, UniverseCell, UniverseGridMode, UniversePoint, UniversePointMatrix, UniverseSnapshot,
 };
 use crate::services::GameOfLifeSettings;
 use gtk::{
     gio,
-    glib::{clone, Receiver, Sender},
+    glib::clone,
     prelude::*,
     subclass::prelude::*,
     CompositeTemplate,
 };
 
-use std::cell::{Cell, RefCell};
+use async_channel::{Receiver, Sender};
+
+use std::cell::{Cell, RefCell, Ref, RefMut};
 use std::str::FromStr;
 
 /// Maps a point on the widget area onto a cell in a given universe
@@ -89,7 +92,7 @@ fn snapshot_grid(
                 );
                 snapshot.append_color(&fg_color, &cell_rect_bounds);
             } else if animated {
-                let transparency_factor = el.corpse_heat();
+                let transparency_factor = el.corpse_heat() as f32;
                 if transparency_factor > 0.0 {
                     let cell_rect_bounds = gtk::graphene::Rect::new(
                         coords.0 as f32,
@@ -98,7 +101,7 @@ fn snapshot_grid(
                         height as f32,
                     );
                     let mut fade_color = fg_color;
-                    fade_color.set_alpha(fade_color.alpha() * transparency_factor as f32);
+                    fade_color.set_alpha(fade_color.alpha() * transparency_factor);
                     snapshot.append_color(&fade_color, &cell_rect_bounds);
                 }
             }
@@ -146,6 +149,9 @@ mod imp {
         /// The universe being rendered
         pub(super) universe: RefCell<Option<Universe>>,
 
+        /// A fixed size stack holding previous states
+        pub(super) cache: RefCell<Option<WindowedStack<Universe>>>,
+
         /// Used to suspend or permit drawing operations
         pub(super) frozen: Cell<bool>,
 
@@ -189,18 +195,19 @@ mod imp {
         type ParentType = gtk::Widget;
 
         fn new() -> Self {
-            let (sender, r) = glib::MainContext::channel(glib::PRIORITY_DEFAULT);
+            let (sender, r) = async_channel::unbounded();
             let receiver = RefCell::new(Some(r));
 
             let mut this = Self::default();
 
+            this.receiver = receiver;
+            this.sender = Some(sender);
+
+            // Start with a random universe
             this.universe.replace(Some(Universe::new_random(
                 this.settings.universe_width() as usize,
                 this.settings.universe_height() as usize,
             )));
-
-            this.receiver = receiver;
-            this.sender = Some(sender);
 
             // Start universe in locked mode, meaning no interactions
             // are possible
@@ -265,6 +272,10 @@ mod imp {
                         .default_value(5)
                         .readwrite()
                         .build(),
+                    ParamSpecBoolean::builder("can-rewind-one")
+                        .default_value(false)
+                        .read_only()
+                        .build(),
                 ]
             });
             PROPERTIES.as_ref()
@@ -274,7 +285,7 @@ mod imp {
             let obj = self.obj();
             match pspec.name() {
                 "allow-render-on-resize" => {
-                    obj.set_allow_render_on_resize(value.get::<bool>().unwrap());
+                    obj.set_allow_render_on_resize(value.get::<bool>().unwrap_or(true));
                 }
                 "mode" => {
                     obj.set_mode(value.get::<UniverseGridMode>().unwrap());
@@ -301,10 +312,12 @@ mod imp {
                 "animated" => obj.animated().to_value(),
                 "evolution-speed" => obj.evolution_speed().to_value(),
                 "running" => obj.is_running().to_value(),
+                "can-rewind-one" => obj.can_rewind_one().to_value(),
                 _ => unimplemented!(),
             }
         }
     }
+
     impl WidgetImpl for GameOfLifeUniverseGrid {
         fn snapshot(&self, snapshot: &gtk::Snapshot) {
             let widget_bounds = gtk::graphene::Rect::new(
@@ -325,7 +338,7 @@ glib::wrapper! {
 }
 
 impl GameOfLifeUniverseGrid {
-    pub fn new<P: glib::IsA<gtk::Application>>(application: &P) -> Self {
+    pub fn new<P: IsA<gtk::Application>>(application: &P) -> Self {
         glib::Object::builder()
             .property("application", application)
             .build()
@@ -333,9 +346,13 @@ impl GameOfLifeUniverseGrid {
 
     fn setup_channel(&self) {
         let receiver = self.imp().receiver.borrow_mut().take().unwrap();
-        receiver.attach(
-            None,
-            clone!(@strong self as this => move |action| this.process_action(action)),
+        glib::spawn_future_local(
+            clone!(@strong self as this => async move {
+                loop {
+                    let action: UniverseGridRequest = receiver.recv().await.unwrap();
+                    this.process_action(action);
+                }
+            })
         );
     }
 
@@ -347,10 +364,10 @@ impl GameOfLifeUniverseGrid {
         left_click_gesture_controller.set_button(gtk::gdk::ffi::GDK_BUTTON_PRIMARY as u32);
         left_click_gesture_controller.connect_pressed(
             clone!(@strong self as this => move |gesture, n_press, x, y| {
-                let imp = this.imp();
+                // Detect the cell at the point of interaction
                 let clicked_cell = widget_area_point_to_universe_cell(
-                    &imp.obj(),
-                    imp.universe.borrow().as_ref(),
+                    &this,
+                    this.universe().as_ref(),
                     x,
                     y,
                 );
@@ -399,7 +416,7 @@ impl GameOfLifeUniverseGrid {
         drawing_area.add_controller(left_drag_gesture_controller);
     }
 
-    fn process_action(&self, action: UniverseGridRequest) -> glib::Continue {
+    fn process_action(&self, action: UniverseGridRequest) -> glib::ControlFlow {
         match action {
             UniverseGridRequest::Unfreeze => self.set_frozen(false),
             UniverseGridRequest::Redraw(new_universe_state) => {
@@ -410,7 +427,7 @@ impl GameOfLifeUniverseGrid {
             }
         }
 
-        glib::Continue(true)
+        glib::ControlFlow::Continue
     }
 
     fn on_drawing_area_clicked(
@@ -489,15 +506,14 @@ impl GameOfLifeUniverseGrid {
     /// is provided it will be used as the new cell value, else the opposite value of the current
     /// one will be set
     fn alter_universe_point(&self, x: f64, y: f64, value: Option<UniverseCell>) {
-        let drawing_area = self.imp().obj();
         let universe_borrow = self.imp().universe.borrow();
 
         if let Some(universe_point) =
-            widget_area_point_to_universe_cell(&drawing_area, universe_borrow.as_ref(), x, y)
+            widget_area_point_to_universe_cell(self, universe_borrow.as_ref(), x, y)
         {
             // If a point is found, set its cell value
             drop(universe_borrow);
-            let mut universe_mut_borrow = self.imp().universe.borrow_mut();
+            let mut universe_mut_borrow = self.universe_mut();
             let mut_borrow = universe_mut_borrow.as_mut().unwrap();
 
             // NONE value means invert the cell value, SOME value sets it
@@ -530,6 +546,12 @@ impl GameOfLifeUniverseGrid {
         self.imp().render_thread_stopper.borrow().is_some()
     }
 
+    pub fn can_rewind_one(&self) -> bool {
+        self.imp().cache.borrow().as_ref()
+            .map(|c| !c.is_empty())
+            .unwrap_or(false)
+    }
+
     pub fn set_frozen(&self, value: bool) {
         self.imp().frozen.set(value);
         if !value {
@@ -554,7 +576,7 @@ impl GameOfLifeUniverseGrid {
     }
 
     pub fn run(&self) {
-        let local_sender = self.get_sender();
+        let universe_action_sender = self.get_sender();
 
         let (thread_render_stopper_sender, thread_render_stopper_receiver) =
             std::sync::mpsc::channel::<()>();
@@ -568,13 +590,11 @@ impl GameOfLifeUniverseGrid {
         if let Some(universe) = thread_universe.as_ref() {
             let mut thread_universe = universe.clone();
             let wait: u64 = 1000 / u64::from(self.evolution_speed());
-            std::thread::spawn(move || {
+            glib::spawn_future(async move {
                 while thread_render_stopper_sender.send(()).is_ok() {
-                    std::thread::sleep(std::time::Duration::from_millis(wait));
+                    glib::timeout_future(std::time::Duration::from_millis(wait)).await;
                     thread_universe.tick();
-                    local_sender
-                        .send(UniverseGridRequest::Redraw(Some(thread_universe.clone())))
-                        .unwrap();
+                    let _ = universe_action_sender.send(UniverseGridRequest::Redraw(Some(thread_universe.clone()))).await;
                 }
             });
 
@@ -625,6 +645,12 @@ impl GameOfLifeUniverseGrid {
         }
     }
 
+    pub fn rewind_one(&self) {
+        if let Ok(mut borrow) = self.imp().universe.try_borrow_mut() {
+
+        }
+    }
+
     pub fn set_universe(&self, universe: Universe) {
         self.imp().universe.replace(Some(universe));
         self.redraw();
@@ -642,6 +668,14 @@ impl GameOfLifeUniverseGrid {
     pub fn set_background_color(&self, color: Option<gtk::gdk::RGBA>) {
         self.imp().bg_color.set(color);
         self.redraw();
+    }
+
+    pub fn universe(&self) -> Ref<Option<Universe>> {
+        self.imp().universe.borrow()
+    }
+
+    pub fn universe_mut(&self) -> RefMut<Option<Universe>> {
+        self.imp().universe.borrow_mut()
     }
 
     pub fn rows(&self) -> usize {
@@ -684,4 +718,5 @@ impl GameOfLifeUniverseGrid {
         self.imp().interaction_next_state.get()
     }
 }
+
 

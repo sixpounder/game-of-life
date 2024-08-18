@@ -1,5 +1,6 @@
 mod application;
 mod config;
+mod lib;
 mod i18n;
 mod models;
 mod services;

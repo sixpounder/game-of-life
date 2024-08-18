@@ -1,7 +1,7 @@
 use crate::config::{APPLICATION_ID, G_LOG_DOMAIN};
 use gtk::gdk;
 use gtk::gio::prelude::{SettingsExt, SettingsExtManual};
-use gtk::glib::IsA;
+use glib::prelude::IsA;
 
 #[derive(Debug, Clone)]
 pub struct GameOfLifeSettings {

@@ -1,4 +1,5 @@
 use gtk::{gio, glib};
+use glib::prelude::IsA;
 use gtk::{prelude::*, subclass::prelude::*, CompositeTemplate};
 
 mod imp {
@@ -124,7 +125,7 @@ glib::wrapper! {
 }
 
 impl GameOfLifeUniverseControls {
-    pub fn new<P: glib::IsA<gtk::Application>>(application: &P) -> Self {
+    pub fn new<P: IsA<gtk::Application>>(application: &P) -> Self {
         glib::Object::builder()
             .property("application", application)
             .build()

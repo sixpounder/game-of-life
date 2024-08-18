@@ -5,6 +5,7 @@ use adw::prelude::AdwApplicationExt;
 use gtk::prelude::*;
 use gtk::subclass::prelude::*;
 use gtk::{gio, glib, glib::clone, CompositeTemplate};
+use glib::prelude::IsA;
 
 use crate::{
     config::{APPLICATION_G_PATH, G_LOG_DOMAIN},
@@ -71,6 +72,10 @@ mod imp {
 
             klass.install_action("win.skip-forward-one", None, move |win, _, _| {
                 win.skip_forward_one();
+            });
+
+            klass.install_action("win.rewind-one", None, move |win, _, _| {
+                win.rewind_one();
             });
 
             klass.install_action("win.play", None, move |win, _, _| {
@@ -162,7 +167,7 @@ glib::wrapper! {
 }
 
 impl GameOfLifeWindow {
-    pub fn new<P: glib::IsA<adw::Application>>(application: &P) -> Self {
+    pub fn new<P: IsA<adw::Application>>(application: &P) -> Self {
         let win: Self = glib::Object::builder()
             .property("application", application)
             .build();
@@ -241,7 +246,7 @@ impl GameOfLifeWindow {
 
         settings.connect_changed("allow-render-during-resize",
             clone!(@strong self as this, @strong settings as s => move |_,_| {
-                this.imp().universe_grid.set_property("allow-render-on-resize", s.allow_render_during_resize())
+                this.imp().universe_grid.set_allow_render_on_resize(s.allow_render_during_resize());
             })
         );
 
@@ -280,7 +285,7 @@ impl GameOfLifeWindow {
             let settings = GameOfLifeSettings::default();
             settings.set_window_width(width);
             settings.set_window_height(height);
-            glib::signal::Inhibit(false)
+            glib::Propagation::Proceed
         });
     }
 
@@ -518,6 +523,11 @@ impl GameOfLifeWindow {
     fn skip_forward_one(&self) {
         let universe_grid = self.imp().universe_grid.get();
         universe_grid.skip_forward_one();
+    }
+
+    fn rewind_one(&self) {
+        let universe_grid = self.imp().universe_grid.get();
+        universe_grid.rewind_one();
     }
 
     fn seed_from_snapshot(&self, snapshot: UniverseSnapshot) {
