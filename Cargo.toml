@@ -13,14 +13,14 @@ async-channel = "2.2.1"
 
 [dependencies.adw]
 package = "libadwaita"
-version  = "0.6.0"
+version  = "0.7.0"
 features = ["v1_5"]
 
 [dependencies.gtk]
 package = "gtk4"
-version = "0.8.1"
+version = "0.9.0"
 
 [dependencies.glib]
-version = "0.19.4"
+version = "0.20.1"
 features = ["log_macros"]
 
