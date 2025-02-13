@@ -231,11 +231,11 @@ mod imp {
                 vec![
                     ParamSpecEnum::builder("mode")
                         .default_value(UniverseGridMode::Locked)
-                        .read_only()
+                        .readwrite()
                         .build(),
                     ParamSpecBoolean::builder("allow-render-on-resize")
                         .default_value(false)
-                        .read_only()
+                        .readwrite()
                         .build(),
                     ParamSpecBoolean::builder("draw-cells-outline")
                         .default_value(false)
@@ -600,7 +600,6 @@ impl GameOfLifeUniverseGrid {
     }
 
     pub fn run(&self) {
-        // self.set_mode(UniverseGridMode::Run);
         let local_sender = self.get_sender();
 
         let (thread_render_stopper_sender, thread_render_stopper_receiver) =

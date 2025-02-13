@@ -103,7 +103,7 @@ mod imp {
                         }
 
                         obj.notify("run-button-icon-name");
-                        obj.notify("running");
+                        obj.notify("playing");
                         obj.notify("stopped");
                     }
                 }
