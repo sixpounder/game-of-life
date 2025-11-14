@@ -251,7 +251,7 @@ impl Universe {
         }
     }
 
-    pub fn iter_cells(&self) -> UniverseIterator {
+    pub fn iter_cells(&self) -> UniverseIterator<'_> {
         UniverseIterator::new(self)
     }
 

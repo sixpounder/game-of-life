@@ -52,6 +52,11 @@
     <content_rating type="oars-1.1"/>
     <provides>@APPLICATION_ID@.desktop</provides>
     <releases>
+        <release version="0.6.1" date="2025-10-14">
+            <description>
+                <p>This release updates Gnome runtime to version 49</p>
+            </description>
+        </release>
         <release version="0.4.0" date="2023-04-11">
             <description>
                 <p>This release updates GTK stack dependencies as well as Gnome runtime to version 44</p>
