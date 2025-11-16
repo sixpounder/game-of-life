@@ -95,25 +95,21 @@ mod imp {
                     let str_value = value.get::<String>().unwrap();
                     let rgba_value = RGBA::parse(str_value.as_str()).unwrap();
                     self.cell_color_picker.set_rgba(&rgba_value);
-                    // self.settings.set_fg_color(rgba_value.to_string());
                 }
                 "universe-background-color" => {
                     let str_value = value.get::<String>().unwrap();
                     let rgba_value = RGBA::parse(str_value.as_str()).unwrap();
                     self.background_color_picker.set_rgba(&rgba_value);
-                    // self.settings.set_fg_color(rgba_value.to_string());
                 }
                 "universe-cell-color-dark" => {
                     let str_value = value.get::<String>().unwrap();
                     let rgba_value = RGBA::parse(str_value.as_str()).unwrap();
                     self.cell_color_dark_picker.set_rgba(&rgba_value);
-                    // self.settings.set_fg_color(rgba_value.to_string());
                 }
                 "universe-background-color-dark" => {
                     let str_value = value.get::<String>().unwrap();
                     let rgba_value = RGBA::parse(str_value.as_str()).unwrap();
                     self.background_color_dark_picker.set_rgba(&rgba_value);
-                    // self.settings.set_fg_color(rgba_value.to_string());
                 }
                 _ => unimplemented!(),
             }
@@ -146,8 +142,8 @@ mod imp {
 
 glib::wrapper! {
     pub struct GameOfLifePreferencesWindow(ObjectSubclass<imp::GameOfLifePreferencesWindow>)
-        @extends gtk::Widget, gtk::Window, adw::PreferencesWindow,
-        @implements gio::ActionGroup, gio::ActionMap;
+        @extends gtk::Widget, gtk::Window, adw::Window, adw::PreferencesWindow,
+        @implements gio::ActionGroup, gio::ActionMap, gtk::Root, gtk::Native, gtk::Buildable, gtk::ConstraintTarget, gtk::Accessible, gtk::ShortcutManager;
 }
 
 impl Default for GameOfLifePreferencesWindow {
@@ -200,28 +196,46 @@ impl GameOfLifePreferencesWindow {
 
         // Listen for color pickers
 
-        imp.cell_color_picker.connect_color_set(
-            glib::clone!(@strong self as this => move |picker| {
+        imp.cell_color_picker.connect_color_set(glib::clone!(
+            #[strong(rename_to = this)]
+            self,
+            move |picker| {
                 this.set_property("universe-cell-color", picker.rgba().to_string().to_value());
-            }),
-        );
+            }
+        ));
 
-        imp.background_color_picker.connect_color_set(
-            glib::clone!(@strong self as this => move |picker| {
-                this.set_property("universe-background-color", picker.rgba().to_string().to_value());
-            })
-        );
+        imp.background_color_picker.connect_color_set(glib::clone!(
+            #[strong(rename_to = this)]
+            self,
+            move |picker| {
+                this.set_property(
+                    "universe-background-color",
+                    picker.rgba().to_string().to_value(),
+                );
+            }
+        ));
 
-        imp.cell_color_dark_picker.connect_color_set(
-            glib::clone!(@strong self as this => move |picker| {
-                this.set_property("universe-cell-color-dark", picker.rgba().to_string().to_value());
-            }),
-        );
+        imp.cell_color_dark_picker.connect_color_set(glib::clone!(
+            #[strong(rename_to = this)]
+            self,
+            move |picker| {
+                this.set_property(
+                    "universe-cell-color-dark",
+                    picker.rgba().to_string().to_value(),
+                );
+            }
+        ));
 
-        imp.background_color_dark_picker.connect_color_set(
-            glib::clone!(@strong self as this => move |picker| {
-                this.set_property("universe-background-color-dark", picker.rgba().to_string().to_value());
-            })
-        );
+        imp.background_color_dark_picker
+            .connect_color_set(glib::clone!(
+                #[strong(rename_to = this)]
+                self,
+                move |picker| {
+                    this.set_property(
+                        "universe-background-color-dark",
+                        picker.rgba().to_string().to_value(),
+                    );
+                }
+            ));
     }
 }

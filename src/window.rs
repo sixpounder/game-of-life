@@ -157,12 +157,12 @@ mod imp {
 
 glib::wrapper! {
     pub struct GameOfLifeWindow(ObjectSubclass<imp::GameOfLifeWindow>)
-        @extends gtk::Widget, gtk::Window, gtk::ApplicationWindow,
-        @implements gio::ActionGroup, gio::ActionMap;
+        @extends gtk::Widget, gtk::Window, gtk::ApplicationWindow, adw::ApplicationWindow,
+        @implements gio::ActionGroup, gio::ActionMap, gtk::Root, gtk::Native, gtk::Buildable, gtk::ConstraintTarget, gtk::Accessible, gtk::ShortcutManager;
 }
 
 impl GameOfLifeWindow {
-    pub fn new<P: glib::IsA<adw::Application>>(application: &P) -> Self {
+    pub fn new<P: glib::prelude::IsA<adw::Application>>(application: &P) -> Self {
         let win: Self = glib::Object::builder()
             .property("application", application)
             .build();
@@ -171,9 +171,13 @@ impl GameOfLifeWindow {
 
         win.update_widgets();
 
-        style_manager.connect_dark_notify(glib::clone!(@strong win as this => move |_sm| {
-            this.update_widgets();
-        }));
+        style_manager.connect_dark_notify(glib::clone!(
+            #[strong(rename_to = this)]
+            win,
+            move |_sm| {
+                this.update_widgets();
+            }
+        ));
 
         win
     }
@@ -211,66 +215,127 @@ impl GameOfLifeWindow {
         // Updates buttons and other stuff when UniverseGrid running state changes
         imp.universe_grid.connect_notify_local(
             Some("running"),
-            clone!(@strong self as this => move |_widget, _param| {
-                this.notify("run-button-icon-name");
-                this.notify("running");
-                this.notify("stopped");
-            }),
+            clone!(
+                #[strong(rename_to = this)]
+                self,
+                move |_widget, _param| {
+                    this.notify("run-button-icon-name");
+                    this.notify("running");
+                    this.notify("stopped");
+                }
+            ),
         );
 
         settings.connect_changed(
             "draw-cells-outline",
-            clone!(@strong self as this, @strong settings as s => move |_,_| {
-                this.imp().universe_grid.set_draw_cells_outline(s.draw_cells_outline())
-            }),
+            clone!(
+                #[strong(rename_to = this)]
+                self,
+                #[strong(rename_to = s)]
+                settings,
+                move |_, _| {
+                    this.imp()
+                        .universe_grid
+                        .set_draw_cells_outline(s.draw_cells_outline())
+                }
+            ),
         );
 
         settings.connect_changed(
             "fade-out-cells",
-            clone!(@strong self as this, @strong settings as s => move |_,_| {
-                this.imp().universe_grid.set_fades_dead_cells(s.fade_out_cells())
-            }),
+            clone!(
+                #[strong(rename_to = this)]
+                self,
+                #[strong(rename_to = s)]
+                settings,
+                move |_, _| {
+                    this.imp()
+                        .universe_grid
+                        .set_fades_dead_cells(s.fade_out_cells())
+                }
+            ),
         );
 
         settings.connect_changed(
             "evolution-speed",
-            clone!(@strong self as this, @strong settings as s => move |_,_| {
-                this.imp().universe_grid.set_evolution_speed(s.evolution_speed())
-            }),
+            clone!(
+                #[strong(rename_to = this)]
+                self,
+                #[strong(rename_to = s)]
+                settings,
+                move |_, _| {
+                    this.imp()
+                        .universe_grid
+                        .set_evolution_speed(s.evolution_speed())
+                }
+            ),
         );
 
-        settings.connect_changed("allow-render-during-resize",
-            clone!(@strong self as this, @strong settings as s => move |_,_| {
-                this.imp().universe_grid.set_property("allow-render-on-resize", s.allow_render_during_resize())
-            })
+        settings.connect_changed(
+            "allow-render-during-resize",
+            clone!(
+                #[strong(rename_to = this)]
+                self,
+                #[strong(rename_to = s)]
+                settings,
+                move |_, _| {
+                    this.imp()
+                        .universe_grid
+                        .set_property("allow-render-on-resize", s.allow_render_during_resize())
+                }
+            ),
         );
 
         settings.connect_changed(
             "fg-color",
-            clone!(@strong self as this, @strong settings as s => move |_, _| {
-                this.update_widgets();
-            }),
+            clone!(
+                #[strong(rename_to = this)]
+                self,
+                #[strong(rename_to = _s)]
+                settings,
+                move |_, _| {
+                    this.update_widgets();
+                }
+            ),
         );
 
         settings.connect_changed(
             "bg-color",
-            clone!(@strong self as this, @strong settings as s => move |_, _| {
-                this.update_widgets();
-            }),
+            clone!(
+                #[strong(rename_to = this)]
+                self,
+                #[strong(rename_to = _s)]
+                settings,
+                move |_, _| {
+                    this.update_widgets();
+                }
+            ),
         );
 
         settings.connect_changed(
             "fg-color-dark",
-            clone!(@strong self as this, @strong settings as s => move |_, _| {
-                this.update_widgets();
-            }),
+            clone!(
+                #[strong(rename_to = this)]
+                self,
+                #[strong(rename_to = _s)]
+                settings,
+                move |_, _| {
+                    this.update_widgets();
+                }
+            ),
         );
 
         settings.connect_changed(
             "bg-color-dark",
-            clone!(@strong self as this, @strong settings as s => move |_, _| {
-                this.update_widgets();
-            }),
+            clone!(
+                #[strong(rename_to = this)]
+                self,
+                #[strong(rename_to = _s)]
+                settings,
+                move |_, _| {
+                    this.update_widgets();
+                }
+            ),
         );
 
         self.connect_close_request(move |window| {
@@ -280,7 +345,7 @@ impl GameOfLifeWindow {
             let settings = GameOfLifeSettings::default();
             settings.set_window_width(width);
             settings.set_window_height(height);
-            glib::signal::Inhibit(false)
+            glib::signal::Propagation::Stop
         });
     }
 
@@ -348,39 +413,59 @@ impl GameOfLifeWindow {
             .action(gtk::FileChooserAction::Save)
             .build();
 
-        dialog.connect_response(
-            clone!(@strong dialog, @weak self as win => move |_, response| {
+        dialog.connect_response(clone!(
+            #[strong]
+            dialog,
+            #[weak(rename_to = win)]
+            self,
+            move |_, response| {
                 if response == gtk::ResponseType::Accept {
                     if let Some(file) = dialog.file().as_ref() {
                         let snapshot = win.imp().universe_grid.get_universe_snapshot();
                         match snapshot.serialize() {
                             Ok(serialized) => {
-                                let file_io_stream = if file.query_exists(gtk::gio::Cancellable::NONE) {
-                                    file.open_readwrite(gtk::gio::Cancellable::NONE).unwrap()
-                                } else {
-                                    file.create_readwrite(gtk::gio::FileCreateFlags::NONE | gtk::gio::FileCreateFlags::REPLACE_DESTINATION, gtk::gio::Cancellable::NONE).unwrap()
-                                };
+                                let file_io_stream =
+                                    if file.query_exists(gtk::gio::Cancellable::NONE) {
+                                        file.open_readwrite(gtk::gio::Cancellable::NONE).unwrap()
+                                    } else {
+                                        file.create_readwrite(
+                                            gtk::gio::FileCreateFlags::NONE
+                                                | gtk::gio::FileCreateFlags::REPLACE_DESTINATION,
+                                            gtk::gio::Cancellable::NONE,
+                                        )
+                                        .unwrap()
+                                    };
 
-                                let write_result = file_io_stream.output_stream().write_all(serialized.as_slice(), gtk::gio::Cancellable::NONE);
+                                let write_result = file_io_stream
+                                    .output_stream()
+                                    .write_all(serialized.as_slice(), gtk::gio::Cancellable::NONE);
                                 match write_result {
                                     Ok((bytes_written, _)) => {
                                         glib::info!("Written {} bytes", bytes_written);
-                                    },
+                                    }
                                     Err(error) => {
                                         win.add_toast(i18n("Unable to write to file"));
-                                         glib::g_critical!(G_LOG_DOMAIN, "Unable to write to file: {}", error);
+                                        glib::g_critical!(
+                                            G_LOG_DOMAIN,
+                                            "Unable to write to file: {}",
+                                            error
+                                        );
                                     }
                                 }
-                            },
+                            }
                             Err(error) => {
                                 win.add_toast(i18n("Unable to serialize snapshot"));
-                                 glib::g_critical!(G_LOG_DOMAIN, "Unable to serialize universe snapshot: {}", error);
+                                glib::g_critical!(
+                                    G_LOG_DOMAIN,
+                                    "Unable to serialize universe snapshot: {}",
+                                    error
+                                );
                             }
                         }
                     }
                 }
-            })
-        );
+            }
+        ));
 
         dialog.show();
     }
@@ -406,8 +491,12 @@ impl GameOfLifeWindow {
             .action(gtk::FileChooserAction::Open)
             .build();
 
-        dialog.connect_response(
-            clone!(@strong dialog, @weak self as win => move |_, response| {
+        dialog.connect_response(clone!(
+            #[strong]
+            dialog,
+            #[weak(rename_to = win)]
+            self,
+            move |_, response| {
                 let file = dialog.file();
                 if response == gtk::ResponseType::Accept {
                     if let Some(file) = file.as_ref() {
@@ -426,9 +515,13 @@ impl GameOfLifeWindow {
                                     match UniverseSnapshot::try_from(&buffer) {
                                         Ok(snapshot) => {
                                             win.seed_from_snapshot(snapshot);
-                                        },
+                                        }
                                         Err(error) => {
-                                            glib::g_critical!(G_LOG_DOMAIN, "Unreadable file: {:?}", error);
+                                            glib::g_critical!(
+                                                G_LOG_DOMAIN,
+                                                "Unreadable file: {:?}",
+                                                error
+                                            );
                                             win.add_toast(i18n("Unreadable file"));
                                         }
                                     }
@@ -445,8 +538,8 @@ impl GameOfLifeWindow {
                         }
                     }
                 }
-            })
-        );
+            }
+        ));
 
         dialog.show();
     }
@@ -465,29 +558,43 @@ impl GameOfLifeWindow {
         dialog.set_modal(true);
         dialog.set_transient_for(Some(&win));
 
-        dialog.connect_response(
-            clone!(@strong dialog, @weak self as win => move |_, response| {
+        dialog.connect_response(clone!(
+            #[strong]
+            dialog,
+            #[weak(rename_to = win)]
+            self,
+            move |_, response| {
                 if response == gtk::ResponseType::Ok {
                     let (target_w, target_h) = dialog.size();
                     match dialog.option() {
-                        NewUniverseType::Empty => win.new_empty(target_w as usize, target_h as usize),
-                        NewUniverseType::Random => win.new_random(target_w as usize, target_h as usize),
+                        NewUniverseType::Empty => {
+                            win.new_empty(target_w as usize, target_h as usize)
+                        }
+                        NewUniverseType::Random => {
+                            win.new_random(target_w as usize, target_h as usize)
+                        }
                         NewUniverseType::Template(template_name) => {
                             glib::debug!("Seeding from {} template", template_name);
                             match Template::read_template(template_name) {
-                                Ok(read) => {
-                                    match UniverseSnapshot::try_from(&read) {
-                                        Ok(snapshot) => {
-                                            win.seed_from_snapshot(snapshot);
-                                        },
-                                        Err(error) => {
-                                            glib::g_critical!(G_LOG_DOMAIN, "Unreadable template: {:?}", error);
-                                            win.add_toast(i18n("Bad template data"));
-                                        }
+                                Ok(read) => match UniverseSnapshot::try_from(&read) {
+                                    Ok(snapshot) => {
+                                        win.seed_from_snapshot(snapshot);
+                                    }
+                                    Err(error) => {
+                                        glib::g_critical!(
+                                            G_LOG_DOMAIN,
+                                            "Unreadable template: {:?}",
+                                            error
+                                        );
+                                        win.add_toast(i18n("Bad template data"));
                                     }
                                 },
                                 Err(error) => {
-                                    glib::g_critical!(G_LOG_DOMAIN, "Could not load template: {}", error);
+                                    glib::g_critical!(
+                                        G_LOG_DOMAIN,
+                                        "Could not load template: {}",
+                                        error
+                                    );
                                     win.add_toast(i18n("Template not found"));
                                 }
                             }
@@ -495,8 +602,8 @@ impl GameOfLifeWindow {
                     }
                 }
                 dialog.close();
-            })
-        );
+            }
+        ));
         dialog.show();
     }
 

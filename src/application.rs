@@ -1,6 +1,6 @@
 use adw::subclass::prelude::*;
+use adw::prelude::*;
 use glib::clone;
-use gtk::prelude::*;
 use gtk::{gio, glib};
 
 use crate::config::{APPLICATION_ID, VERSION};
@@ -82,50 +82,65 @@ impl GameOfLifeApplication {
 
     fn setup_gactions(&self) {
         let quit_action = gio::SimpleAction::new("quit", None);
-        quit_action.connect_activate(clone!(@weak self as app => move |_, _| {
-            app.quit();
-        }));
+        quit_action.connect_activate(clone!(
+            #[weak(rename_to = app)]
+            self,
+            move |_, _| {
+                app.quit();
+            }
+        ));
         self.add_action(&quit_action);
 
         let about_action = gio::SimpleAction::new("about", None);
-        about_action.connect_activate(clone!(@weak self as app => move |_, _| {
-            app.show_about();
-        }));
+        about_action.connect_activate(clone!(
+            #[weak(rename_to = app)]
+            self,
+            move |_, _| {
+                app.show_about();
+            }
+        ));
         self.add_action(&about_action);
 
         let preferences_action = gio::SimpleAction::new("preferences", None);
-        preferences_action.connect_activate(clone!(@weak self as app => move |_, _| {
-            let preferences_window = GameOfLifePreferencesWindow::new();
-            preferences_window.set_transient_for(app.active_window().as_ref());
-            preferences_window.set_modal(false);
-            preferences_window.show();
-        }));
+        preferences_action.connect_activate(clone!(
+            #[weak(rename_to = app)]
+            self,
+            move |_, _| {
+                let preferences_window = GameOfLifePreferencesWindow::new();
+                preferences_window.set_transient_for(app.active_window().as_ref());
+                preferences_window.set_modal(false);
+                preferences_window.show();
+            }
+        ));
         self.add_action(&preferences_action);
 
         let disable_design_hint_action = gio::SimpleAction::new("disable-design-hint", None);
-        disable_design_hint_action.connect_activate(clone!(@weak self as app => move |_, _| {
-            GameOfLifeSettings::default().set_show_design_hint(false);
-        }));
+        disable_design_hint_action.connect_activate(clone!(
+            #[weak(rename_to = _app)]
+            self,
+            move |_, _| {
+                GameOfLifeSettings::default().set_show_design_hint(false);
+            }
+        ));
         self.add_action(&disable_design_hint_action);
     }
 
     fn show_about(&self) {
         let window = self.active_window().unwrap();
-        let dialog = adw::AboutWindow::builder()
-            .transient_for(&window)
+        let dialog = adw::AboutDialog::builder()
             .application_name("Game of Life")
             .developer_name("Andrea Coronese")
+            .developers(vec!["Andrea Coronese"])
             .copyright("© 2022 Andrea Coronese")
             .application_icon(APPLICATION_ID)
             .website("https://flathub.org/apps/details/com.github.sixpounder.GameOfLife")
             .issue_url("https://github.com/sixpounder/game-of-life/issues")
-            .modal(true)
             .version(VERSION)
             .license_type(gtk::License::Gpl30)
-            .developers(vec!["Andrea Coronese"])
             .translator_credits(translators_list().join("\n").as_str())
             .build();
 
-        dialog.present();
+        dialog.present(Some(&window));
     }
 }
+

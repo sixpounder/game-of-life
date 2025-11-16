@@ -1,3 +1,4 @@
+use glib::prelude::*;
 use gtk::{gio, glib};
 use gtk::{prelude::*, subclass::prelude::*, CompositeTemplate};
 
@@ -121,11 +122,11 @@ mod imp {
 glib::wrapper! {
     pub struct GameOfLifeUniverseControls(ObjectSubclass<imp::GameOfLifeUniverseControls>)
         @extends gtk::Widget,
-        @implements gio::ActionGroup, gio::ActionMap;
+        @implements gio::ActionGroup, gio::ActionMap, gtk::Root, gtk::Native, gtk::Buildable, gtk::ConstraintTarget, gtk::Accessible, gtk::ShortcutManager;
 }
 
 impl GameOfLifeUniverseControls {
-    pub fn new<P: glib::IsA<gtk::Application>>(application: &P) -> Self {
+    pub fn new<P: IsA<gtk::Application>>(application: &P) -> Self {
         glib::Object::builder()
             .property("application", application)
             .build()

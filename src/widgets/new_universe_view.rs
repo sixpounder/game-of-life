@@ -90,7 +90,7 @@ mod imp {
 glib::wrapper! {
     pub struct GameOfLifeNewUniverseView(ObjectSubclass<imp::GameOfLifeNewUniverseView>)
         @extends gtk::Widget, gtk::Window, gtk::Dialog,
-        @implements gio::ActionGroup, gio::ActionMap;
+        @implements gio::ActionGroup, gio::ActionMap, gtk::Root, gtk::Native, gtk::Buildable, gtk::ConstraintTarget, gtk::Accessible, gtk::ShortcutManager;
 }
 
 impl Default for GameOfLifeNewUniverseView {
@@ -125,16 +125,24 @@ impl GameOfLifeNewUniverseView {
 
         row_adjust.connect_notify_local(
             Some("value"),
-            clone!(@strong settings => move |adj, _| {
-                settings.set_universe_width(adj.value() as i32);
-            }),
+            clone!(
+                #[strong]
+                settings,
+                move |adj, _| {
+                    settings.set_universe_width(adj.value() as i32);
+                }
+            ),
         );
 
         column_adjust.connect_notify_local(
             Some("value"),
-            clone!(@strong settings => move |adj, _| {
-                settings.set_universe_height(adj.value() as i32);
-            }),
+            clone!(
+                #[strong]
+                settings,
+                move |adj, _| {
+                    settings.set_universe_height(adj.value() as i32);
+                }
+            ),
         );
         self.imp().rows_entry.set_adjustment(&row_adjust);
         self.imp().columns_entry.set_adjustment(&column_adjust);
@@ -145,12 +153,16 @@ impl GameOfLifeNewUniverseView {
     }
 
     fn connect_events(&self) {
-        self.imp()
-            .template_check
-            .connect_toggled(clone!(@strong self as this => move |widget| {
-                this.imp().template_list_dropdown.set_sensitive(widget.is_active());
+        self.imp().template_check.connect_toggled(clone!(
+            #[strong(rename_to = this)]
+            self,
+            move |widget| {
+                this.imp()
+                    .template_list_dropdown
+                    .set_sensitive(widget.is_active());
                 this.notify("dimensions-editable");
-            }));
+            }
+        ));
     }
 
     pub fn option(&self) -> NewUniverseType {

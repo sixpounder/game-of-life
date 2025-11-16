@@ -3,16 +3,12 @@ use crate::models::{
     Universe, UniverseCell, UniverseGridMode, UniversePoint, UniversePointMatrix, UniverseSnapshot,
 };
 use crate::services::GameOfLifeSettings;
-use gtk::{
-    gio,
-    glib::{clone, Receiver, Sender},
-    prelude::*,
-    subclass::prelude::*,
-    CompositeTemplate,
-};
+use gtk::{gio, glib::clone, prelude::*, subclass::prelude::*, CompositeTemplate};
 
 use std::cell::{Cell, RefCell};
 use std::str::FromStr;
+
+use async_channel::{Receiver, Sender};
 
 /// Maps a point on the widget area onto a cell in a given universe
 fn widget_area_point_to_universe_cell(
@@ -180,7 +176,7 @@ mod imp {
         type ParentType = gtk::Widget;
 
         fn new() -> Self {
-            let (sender, r) = glib::MainContext::channel(glib::PRIORITY_DEFAULT);
+            let (sender, r) = async_channel::unbounded();
             let receiver = RefCell::new(Some(r));
 
             let mut this = Self::default();
@@ -315,11 +311,11 @@ mod imp {
 glib::wrapper! {
     pub struct GameOfLifeUniverseGrid(ObjectSubclass<imp::GameOfLifeUniverseGrid>)
         @extends gtk::Widget,
-        @implements gio::ActionGroup, gio::ActionMap;
+        @implements gio::ActionGroup, gio::ActionMap, gtk::Root, gtk::Native, gtk::Buildable, gtk::ConstraintTarget, gtk::Accessible, gtk::ShortcutManager;
 }
 
 impl GameOfLifeUniverseGrid {
-    pub fn new<P: glib::IsA<gtk::Application>>(application: &P) -> Self {
+    pub fn new<P: glib::prelude::IsA<gtk::Application>>(application: &P) -> Self {
         glib::Object::builder()
             .property("application", application)
             .build()
@@ -327,10 +323,15 @@ impl GameOfLifeUniverseGrid {
 
     fn setup_channel(&self) {
         let receiver = self.imp().receiver.borrow_mut().take().unwrap();
-        receiver.attach(
-            None,
-            clone!(@strong self as this => move |action| this.process_action(action)),
-        );
+        glib::MainContext::default().spawn_local(clone!(
+            #[strong(rename_to = me)]
+            self,
+            async move {
+                while let Ok(action) = receiver.recv().await {
+                    me.process_action(action);
+                }
+            }
+        ));
     }
 
     /// Initializes the inner drawing area with callbacks, controllers etc...
@@ -339,101 +340,121 @@ impl GameOfLifeUniverseGrid {
 
         let left_click_gesture_controller = gtk::GestureClick::new();
         left_click_gesture_controller.set_button(gtk::gdk::ffi::GDK_BUTTON_PRIMARY as u32);
-        left_click_gesture_controller.connect_pressed(
-            clone!(@strong self as this => move |gesture, n_press, x, y| {
-                this.on_drawing_area_clicked(
-                    gesture,
-                    n_press,
-                    x,
-                    y,
-                    Some(UniverseCell::Alive)
-                );
-            }),
-        );
-        left_click_gesture_controller.connect_released(
-            clone!(@strong self as this => move |gesture, n_press, x, y| {
+        left_click_gesture_controller.connect_pressed(clone!(
+            #[strong(rename_to = this)]
+            self,
+            move |gesture, n_press, x, y| {
+                this.on_drawing_area_clicked(gesture, n_press, x, y, Some(UniverseCell::Alive));
+            }
+        ));
+        left_click_gesture_controller.connect_released(clone!(
+            #[strong(rename_to = this)]
+            self,
+            move |gesture, n_press, x, y| {
                 this.on_drawing_area_click_released(gesture, n_press, x, y);
-            }),
-        );
-        left_click_gesture_controller.connect_unpaired_release(
-            clone!(@strong self as this => move |gesture, x, y, button, events| {
+            }
+        ));
+        left_click_gesture_controller.connect_unpaired_release(clone!(
+            #[strong(rename_to = this)]
+            self,
+            move |gesture, x, y, button, events| {
                 this.on_drawing_area_click_unpaired_released(gesture, x, y, button, events);
-            }),
-        );
+            }
+        ));
         drawing_area.add_controller(left_click_gesture_controller);
 
         let right_click_gesture_controller = gtk::GestureClick::new();
         right_click_gesture_controller.set_button(gtk::gdk::ffi::GDK_BUTTON_SECONDARY as u32);
-        right_click_gesture_controller.connect_pressed(
-            clone!(@strong self as this => move |gesture, n_press, x, y| {
-                this.on_drawing_area_clicked(
-                    gesture,
-                    n_press,
-                    x,
-                    y,
-                    Some(UniverseCell::Dead)
-                );
-            }),
-        );
-        right_click_gesture_controller.connect_released(
-            clone!(@strong self as this => move |gesture, n_press, x, y| {
+        right_click_gesture_controller.connect_pressed(clone!(
+            #[strong(rename_to = this)]
+            self,
+            move |gesture, n_press, x, y| {
+                this.on_drawing_area_clicked(gesture, n_press, x, y, Some(UniverseCell::Dead));
+            }
+        ));
+        right_click_gesture_controller.connect_released(clone!(
+            #[strong(rename_to = this)]
+            self,
+            move |gesture, n_press, x, y| {
                 this.on_drawing_area_click_released(gesture, n_press, x, y);
-            }),
-        );
-        right_click_gesture_controller.connect_unpaired_release(
-            clone!(@strong self as this => move |gesture, x, y, button, events| {
+            }
+        ));
+        right_click_gesture_controller.connect_unpaired_release(clone!(
+            #[strong(rename_to = this)]
+            self,
+            move |gesture, x, y, button, events| {
                 this.on_drawing_area_click_unpaired_released(gesture, x, y, button, events);
-            }),
-        );
+            }
+        ));
         drawing_area.add_controller(right_click_gesture_controller);
 
         let left_drag_gesture_controller = gtk::GestureDrag::new();
         left_drag_gesture_controller.set_button(gtk::gdk::ffi::GDK_BUTTON_PRIMARY as u32);
-        left_drag_gesture_controller.connect_begin(
-            clone!(@strong self as this => move |gesture, events| {
+        left_drag_gesture_controller.connect_begin(clone!(
+            #[strong(rename_to = this)]
+            self,
+            move |gesture, events| {
                 this.on_drawing_area_drag_begin(gesture, events, Some(UniverseCell::Alive))
-            }),
-        );
+            }
+        ));
 
-        left_drag_gesture_controller.connect_update(
-            clone!(@strong self as this => move |gesture, events| {
+        left_drag_gesture_controller.connect_update(clone!(
+            #[strong(rename_to = this)]
+            self,
+            move |gesture, events| {
                 this.on_drawing_area_drag_move(gesture, events, Some(UniverseCell::Alive))
-            }),
-        );
+            }
+        ));
         drawing_area.add_controller(left_drag_gesture_controller);
 
         let right_drag_gesture_controller = gtk::GestureDrag::new();
         right_drag_gesture_controller.set_button(gtk::gdk::ffi::GDK_BUTTON_SECONDARY as u32);
-        right_drag_gesture_controller.connect_begin(
-            clone!(@strong self as this => move |gesture, events| {
+        right_drag_gesture_controller.connect_begin(clone!(
+            #[strong(rename_to = this)]
+            self,
+            move |gesture, events| {
                 this.on_drawing_area_drag_begin(gesture, events, Some(UniverseCell::Dead))
-            }),
-        );
+            }
+        ));
 
-        right_drag_gesture_controller.connect_update(
-            clone!(@strong self as this => move |gesture, events| {
+        right_drag_gesture_controller.connect_update(clone!(
+            #[strong(rename_to = this)]
+            self,
+            move |gesture, events| {
                 this.on_drawing_area_drag_move(gesture, events, Some(UniverseCell::Dead))
-            }),
-        );
+            }
+        ));
         drawing_area.add_controller(right_drag_gesture_controller);
 
         let motion_controller = gtk::EventControllerMotion::new();
-        motion_controller.connect_enter(clone!(@strong self as this => move |controller, x, y| {
-            this.on_drawing_area_mouse_position(controller, x, y);
-        }));
+        motion_controller.connect_enter(clone!(
+            #[strong(rename_to = this)]
+            self,
+            move |controller, x, y| {
+                this.on_drawing_area_mouse_position(controller, x, y);
+            }
+        ));
 
-        motion_controller.connect_leave(clone!(@strong self as this => move |controller| {
-            this.on_drawing_area_mouse_leave(controller);
-        }));
+        motion_controller.connect_leave(clone!(
+            #[strong(rename_to = this)]
+            self,
+            move |controller| {
+                this.on_drawing_area_mouse_leave(controller);
+            }
+        ));
 
-        motion_controller.connect_motion(clone!(@strong self as this => move |controller, x, y| {
-            this.on_drawing_area_mouse_position(controller, x, y);
-        }));
+        motion_controller.connect_motion(clone!(
+            #[strong(rename_to = this)]
+            self,
+            move |controller, x, y| {
+                this.on_drawing_area_mouse_position(controller, x, y);
+            }
+        ));
 
         drawing_area.add_controller(motion_controller);
     }
 
-    fn process_action(&self, action: UniverseGridRequest) -> glib::Continue {
+    fn process_action(&self, action: UniverseGridRequest) -> glib::ControlFlow {
         match action {
             UniverseGridRequest::Unfreeze => self.set_frozen(false),
             UniverseGridRequest::Redraw(new_universe_state) => {
@@ -444,7 +465,7 @@ impl GameOfLifeUniverseGrid {
             }
         }
 
-        glib::Continue(true)
+        glib::ControlFlow::Continue
     }
 
     fn on_drawing_area_clicked(
@@ -618,9 +639,8 @@ impl GameOfLifeUniverseGrid {
                 while thread_render_stopper_sender.send(()).is_ok() {
                     std::thread::sleep(std::time::Duration::from_millis(wait));
                     thread_universe.tick();
-                    local_sender
-                        .send(UniverseGridRequest::Redraw(Some(thread_universe.clone())))
-                        .unwrap();
+                    let _ = local_sender
+                        .send_blocking(UniverseGridRequest::Redraw(Some(thread_universe.clone())));
                 }
             });
 
